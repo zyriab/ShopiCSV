@@ -4,7 +4,6 @@ import App from './App';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import './index.css';
-// import './bootstrap.min.css';
 
 const theme = createTheme({});
 
