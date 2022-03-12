@@ -53,7 +53,7 @@ export function MtDropZone(props) {
               fontSize: '3rem!important',
               verticalAlign: 'top!important',
               marginBottom: '1.5rem',
-              color: '#3c76d2',
+              color: '#1976d2',
             }}
           />
         </div>
