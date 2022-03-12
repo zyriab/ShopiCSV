@@ -17,6 +17,7 @@ import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import Button from '@mui/material/Button';
 
 // FIXME: need to double-check maxPageNum calculation because it's possible to have an empty page last
+// OR maybe it's because we have an empty row at the end ;)
 export function usePagination(dataLength, maxElemStorageId) {
   const [selectedPage, setSelectedPage] = useState(1);
   const [currentPageNum, setCurrentPageNum] = useState(1);
@@ -218,13 +219,13 @@ const ChangePageButtons = forwardRef((props, ref) => {
   }));
 
   return (
-    <Grid spacing={2} xs={1.5} container item>
+    <Grid spacing={2} container item alignItems="center" justifyContent="center">
       <Grid item>
         <Button ref={leftButtonEl} variant="contained" onClick={goPrevPage}>
           <ArrowBackRoundedIcon />
         </Button>
       </Grid>
-      <Grid alignItems="center" item>
+      <Grid item>
         <Typography variant="subtitle1" component="div">
           {`${currentPageNum} / ${maxPageNum}`}
         </Typography>
@@ -242,7 +243,6 @@ function GoToPageField(props) {
   const { helperText, value, onChange, targetRef } = props;
 
   return (
-    <Grid xs={0.53} item>
       <TextField
         ref={targetRef}
         id="go-to-page-field"
@@ -254,6 +254,5 @@ function GoToPageField(props) {
         value={value}
         onChange={onChange}
       />
-    </Grid>
   );
 }
