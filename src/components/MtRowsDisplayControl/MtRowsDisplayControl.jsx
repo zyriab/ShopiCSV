@@ -7,9 +7,12 @@ export function MtRowsDisplayControl(props) {
   const { maxRowDisplay, handleRowsDisplayChange } = props;
 
   return (
-    <Grid xs container item>
+    <Grid xs container item alignItems="center">
       <Grid item>
-        <Typography variant="paragraph" component="p">
+        <Typography
+          variant="paragraph"
+          component="p"
+          sx={{ paddingBottom: '.3rem', marginRight: '.5rem' }}>
           Display rows per:
         </Typography>
       </Grid>
