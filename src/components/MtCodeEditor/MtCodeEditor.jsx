@@ -20,7 +20,6 @@ const options = {
   minimap: { enabled: false },
 };
 
-// FIXME: problem when height is different than 500px, need to modify the rendered DOM element's CSS
 export const MtCodeEditor = withSize({ monitorWidth: true })(
   forwardRef((props, ref) => {
     const { inputref, kid } = props;
@@ -67,7 +66,6 @@ export const MtCodeEditor = withSize({ monitorWidth: true })(
     return (
       <MonacoEditor
         ref={editorEl}
-        height="1000px"
         options={props.options || options}
         {...props}
       />
