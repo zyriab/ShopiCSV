@@ -8,6 +8,7 @@ import { MtDropZone } from '../MtDropZone/MtDropZone';
 import { MtBackToTopBtn } from '../MtBackToTopBtn/MtBackToTopBtn';
 import { MtEditorField } from '../MtEditorField/MtEditorField';
 
+// TODO: display the current fields page when changing rows display num
 export function MtEditorContent(props) {
   const {
     display,
@@ -227,13 +228,21 @@ export function MtEditorContent(props) {
             justifyContent="flex-end"
             alignItems="center"
             spacing={2}>
-            <MtRowsDisplayControl
-              maxRowDisplay={maxElementsPerPage}
-              handleRowsDisplayChange={handleElementsPerPageChange}
-            />
-            <Grid xs item />
-            <GoToPageField {...goToPageFieldProps} />
-            <ChangePageButtons {...changePageButtonsProps} />
+            <Grid item>
+              <MtRowsDisplayControl
+                maxRowDisplay={maxElementsPerPage}
+                handleRowsDisplayChange={handleElementsPerPageChange}
+              />
+            </Grid>
+            <Grid sm={1} lg item />
+            <Grid xs item container direction="row" justifyContent="flex-end">
+              <Grid xs={1.5} item>
+                <GoToPageField {...goToPageFieldProps} />
+              </Grid>
+              <Grid xs={4} item sx={{paddingTop: '1rem'}}>
+                <ChangePageButtons {...changePageButtonsProps} />
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       ) : (
