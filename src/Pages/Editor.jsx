@@ -112,7 +112,8 @@ function Editor() {
         comments: '#',
 
         step: (row) => {
-          parsedData.current.push(row);
+          if (row.data.length > 7) row.data = row.data.splice(0, 7);
+          if (row.data.length === 7) parsedData.current.push(row);
         },
         complete: async () => {
           displayAlert('Successfully parsed document 🤓');
