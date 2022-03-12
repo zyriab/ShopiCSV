@@ -17,7 +17,6 @@ import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import Button from '@mui/material/Button';
 
 // FIXME: need to double-check maxPageNum calculation because it's possible to have an empty page last
-// OR maybe it's because we have an empty row at the end ;)
 export function usePagination(dataLength, maxElemStorageId) {
   const [selectedPage, setSelectedPage] = useState(1);
   const [currentPageNum, setCurrentPageNum] = useState(1);
