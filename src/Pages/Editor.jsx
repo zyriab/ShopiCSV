@@ -136,6 +136,7 @@ function Editor() {
   // TODO: need to test this on Shopify now :D
   function handleDownload() {
     if (parsedData.current) {
+      handleSave();
       let lines = [];
       for (let l of parsedData.current) {
         lines.push(l.data);
