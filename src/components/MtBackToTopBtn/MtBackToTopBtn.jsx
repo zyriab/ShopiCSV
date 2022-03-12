@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTheme } from '@mui/material';
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 import IconButton from '@mui/material/IconButton';
 import debounce from 'lodash.debounce';
@@ -7,6 +8,7 @@ import './MtBackToTopBtn.css';
 
 export function MtBackToTopBtn() {
   const [display, setDisplay] = useState(0);
+  const theme = useTheme();
 
   function handleScroll() {
     document.body.scrollTop = 0;
@@ -27,7 +29,11 @@ export function MtBackToTopBtn() {
   }, [debouncedDisplayFn]);
 
   return (
-    <IconButton id="top-btn" sx={{ opacity: display }} onClick={handleScroll}>
+    <IconButton
+      id="top-btn"
+      sx={{ opacity: display }}
+      color="primary"
+      onClick={handleScroll}>
       <ArrowCircleUpIcon sx={{ fontSize: '3rem' }} />
     </IconButton>
   );
