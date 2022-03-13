@@ -1,5 +1,6 @@
 import { useRef, forwardRef, useImperativeHandle } from 'react';
 import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
 import { MtCodeEditor } from '../MtCodeEditor/MtCodeEditor';
 
 // -FIXME debug all this
@@ -33,15 +34,17 @@ export const MtEditorField = forwardRef((props, ref) => {
   }));
 
   return code ? (
+    <Box sx={{height: '500px'}}>
     <MtCodeEditor
       inputref={inputEl}
       kid={kid}
       language="liquid"
-      // height={height}
       height="500px"
       value={value}
     />
+    </Box>
   ) : (
+    // TODO: when losing focus, cursor should stay in place, not reset position
     <TextField
       ref={inputEl}
       multiline={multiline}
