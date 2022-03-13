@@ -133,7 +133,6 @@ function Editor() {
     }
   }
 
-  // TODO: need to test this on Shopify now :D
   function handleDownload() {
     if (parsedData.current) {
       handleSave();
