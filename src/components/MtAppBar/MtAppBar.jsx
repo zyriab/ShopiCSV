@@ -3,6 +3,7 @@ import { formatBytes } from '../../utils/formatBytes.utils';
 import store from 'store';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -14,7 +15,12 @@ import Typography from '@mui/material/Typography';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { MtSearchField } from '../MtSearchField/MtSearchField';
+import { MtDarkModeSwitch } from '../MtDarkModeSwitch/MtDarkModeSwitch';
 
+// TODO: APPBAR ->
+// 1. add ellipsis (+ tooltip when hovering
+// 2. add tooltips on buttons
+// 3 align everything good (solo upload button, search bar)
 export const MtAppBar = (props) => {
   const {
     onDownload,
@@ -26,7 +32,7 @@ export const MtAppBar = (props) => {
     loadValue = -1,
     display,
     onDisplayChange,
-    data
+    data,
   } = props;
   const [displayFields, setDisplayFields] = useState(display);
   const inputEl = useRef(null);
@@ -44,80 +50,93 @@ export const MtAppBar = (props) => {
   return (
     <AppBar
       sx={{ zIndex: (theme) => theme.zIndex.drawer + 2 }}
+      enableColorOnDark
+      color="primary"
       position="sticky">
       <Toolbar>
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography variant="h5" component="div">
-            ShopiCSV 🤠
-          </Typography>
-          <Typography variant="caption">
-            by{' '}
-            <a
-              style={{ color: 'white' }}
-              href="https://metaoist.io/"
-              target="_blank"
-              rel="noreferrer">
-              Metaoist Dsgn
-            </a>
-          </Typography>
-        </Box>
-        <MtSearchField data={data} />
-        <Box sx={{ flexGrow: 1 }} />
-        <Box sx={{ flexGrow: 1 }}>
-          {store.get('fileData') && (
-            <>
-              <Typography variant="subtitle1" component="div">
-                {store.get('fileData').name}
-              </Typography>
-              <Typography variant="subtitle1" component="div">
-                {`Last modified: ${new Date(
-                  store.get('fileData').lastModified
-                ).toLocaleString()}`}
-              </Typography>
-              <Typography variant="subtitle1" component="div">
-                {`Last saved: ${new Date(
-                  store.get('fileData').savedAt
-                ).toLocaleString()}`}
-              </Typography>
-              <Typography variant="subtitle1" component="div">
-                {`${formatBytes(store.get('fileData').size, 2)} | Rows: ${
-                  store
-                    .get('fileData')
-                    .content.filter((e) => e.data.length === 7).length
-                }`}
-              </Typography>
-            </>
+        <Grid container direction="row" alignItems="center">
+          <Grid xs={0.2} item />
+          <Grid
+            xs={5}
+            container
+            item
+            spacing={1}
+            direction="column"
+            // p={2}
+          >
+            <Grid xs sx={{ width: '100%' }} item>
+              <MtSearchField data={data} />
+            </Grid>
+            {store.get('fileData') && (
+              <Grid xs item>
+                <Typography
+                  sx={{
+                    width: '100%',
+                    whiteSpace: 'nowrap',
+                    //overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                  variant="subtitle1"
+                  component="div">
+                  {store.get('fileData').name}
+                  {store.get('fileData').name}
+                  {store.get('fileData').name}
+                  {store.get('fileData').name}
+                </Typography>
+              </Grid>
+            )}
+          </Grid>
+          {store.get('fileData') ? (
+            <Grid xs={3} container item direction="row" justifyContent="center">
+              <Grid xs item>
+                <Typography variant="subtitle1" component="p">
+                  {`Last modified: ${new Date(
+                    store.get('fileData').lastModified
+                  ).toLocaleString()}`}
+                </Typography>
+                <Typography variant="subtitle1" component="p">
+                  {`Last saved: ${new Date(
+                    store.get('fileData').savedAt
+                  ).toLocaleString()}`}
+                </Typography>
+                <Typography variant="subtitle1" component="p">
+                  {`${formatBytes(store.get('fileData').size, 2)} | Rows: ${
+                    store
+                      .get('fileData')
+                      .content.filter((e) => e.data.length === 7).length
+                  }`}
+                </Typography>
+              </Grid>
+            </Grid>
+          ) : (
+            <Grid xs />
           )}
-        </Box>
-        <Box>
-          {isEditing && (
-            <IconButton disabled={isLoading} onClick={onCancel}>
+          <Grid xs={1.5} item>
+            <IconButton disabled={isLoading || !isEditing} onClick={onCancel}>
               <DeleteForeverIcon />
             </IconButton>
-          )}
-          <IconButton
-            disabled={isLoading}
-            onClick={() => inputEl.current.click()}>
-            <UploadFileIcon />
-          </IconButton>
-          <input
-            ref={inputEl}
-            onChange={onUpload}
-            type="file"
-            accept="text/csv"
-            style={{ display: 'none' }}
-          />
-          {isEditing && (
-            <IconButton disabled={isLoading} onClick={() => onSave(true)}>
+            <IconButton
+              disabled={isLoading}
+              onClick={() => inputEl.current.click()}>
+              <UploadFileIcon />
+            </IconButton>
+            <input
+              ref={inputEl}
+              onChange={onUpload}
+              type="file"
+              accept="text/csv"
+              style={{ display: 'none' }}
+            />
+            <IconButton
+              disabled={isLoading || !isEditing}
+              onClick={() => onSave(true)}>
               <SaveIcon />
             </IconButton>
-          )}
-          {isEditing && (
-            <IconButton disabled={isLoading} onClick={onDownload}>
+            <IconButton disabled={isLoading || !isEditing} onClick={onDownload}>
               <DownloadIcon />
             </IconButton>
-          )}
-        </Box>
+          </Grid>
+        </Grid>
       </Toolbar>
       <Toolbar>
         <ToggleButtonGroup
@@ -126,25 +145,35 @@ export const MtAppBar = (props) => {
           value={displayFields}
           onChange={handleDisplayFields}
           aria-label="Fields to display">
-          <ToggleButton value={0} aria-label="Type">
+          <ToggleButton sx={{ color: 'white' }} value={0} aria-label="Type">
             Type
           </ToggleButton>
-          <ToggleButton value={1} aria-label="Identification">
+          <ToggleButton
+            sx={{ color: 'white' }}
+            value={1}
+            aria-label="Identification">
             Identification
           </ToggleButton>
-          <ToggleButton value={2} aria-label="Field">
+          <ToggleButton sx={{ color: 'white' }} value={2} aria-label="Field">
             Field
           </ToggleButton>
-          <ToggleButton value={3} aria-label="Locale">
+          <ToggleButton sx={{ color: 'white' }} value={3} aria-label="Locale">
             Locale
           </ToggleButton>
-          <ToggleButton value={4} aria-label="Status">
+          <ToggleButton sx={{ color: 'white' }} value={4} aria-label="Status">
             Status
           </ToggleButton>
-          <ToggleButton value={5} aria-label="Default content">
+          <ToggleButton
+            sx={{ color: 'white' }}
+            value={5}
+            aria-label="Default content">
             Default content
           </ToggleButton>
-          <ToggleButton value={6} aria-label="Translated content">
+          <ToggleButton
+            // color="white" // FIXME: not working on light theme, need either to do a custom theme or find a solution bc black font is ugly
+            sx={{ color: 'white' }}
+            value={6}
+            aria-label="Translated content">
             Translated content
           </ToggleButton>
         </ToggleButtonGroup>
