@@ -2,7 +2,6 @@ import { useRef, useState, useEffect } from 'react';
 import { formatBytes } from '../../utils/formatBytes.utils';
 import store from 'store';
 import LinearProgress from '@mui/material/LinearProgress';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -15,7 +14,6 @@ import Typography from '@mui/material/Typography';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { MtSearchField } from '../MtSearchField/MtSearchField';
-import { MtDarkModeSwitch } from '../MtDarkModeSwitch/MtDarkModeSwitch';
 
 // TODO: APPBAR ->
 // 1. add ellipsis (+ tooltip when hovering
@@ -109,7 +107,7 @@ export const MtAppBar = (props) => {
               </Grid>
             </Grid>
           ) : (
-            <Grid xs />
+            <Grid xs item />
           )}
           <Grid xs={1.5} item>
             <IconButton disabled={isLoading || !isEditing} onClick={onCancel}>

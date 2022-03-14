@@ -91,8 +91,7 @@ function Editor() {
 
   async function handleUpload(e) {
     if (e?.target?.files) {
-      // TODO: display prompt if file already loaded
-
+      if(isEditing) handleSave(true, true);
       if (e.target.files[0].type !== 'text/csv') {
         displayAlert(
           'File rejected. You may only upload .CSV files 🧐',
