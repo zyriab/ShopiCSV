@@ -9,6 +9,7 @@ import { MtBackToTopBtn } from '../MtBackToTopBtn/MtBackToTopBtn';
 import { MtEditorField } from '../MtEditorField/MtEditorField';
 
 // TODO: display the current fields page when changing rows display num
+// TODO: Reset to page 1 when uploading new file
 export function MtEditorContent(props) {
   const {
     display,
@@ -78,16 +79,6 @@ export function MtEditorContent(props) {
             }
           }
 
-          // function getEditorHeight(row) {
-          //   let n = Math.max(
-          //     getNumOfLines(row.data[5]),
-          //     getNumOfLines(row.data[6])
-          //   );
-          //   if (n > 25) n = 500;
-          //   else if (n < 4) n = 50;
-          //   return `${n}px`;
-          // }
-
           // i.e: (2 x 5) - (5 - [0, 1, 2, 3, 4])
           const index = Math.round(
             selectedPage * maxElementsPerPage - (maxElementsPerPage - (i + 1))
@@ -103,8 +94,6 @@ export function MtEditorContent(props) {
 
           if (row?.data.length === 7) {
             const hasEditor = hasHTMLInRow(row);
-            // let editorHeight = 0;
-            // if (hasEditor) editorHeight = getEditorHeight(row);
 
             for (let x = 0; x < 7; x++) {
               let width =
