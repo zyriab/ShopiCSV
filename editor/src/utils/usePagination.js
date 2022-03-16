@@ -131,6 +131,10 @@ export function usePagination(dataLength, maxElemStorageId) {
         !isNaN(+goToPageInputVal) &&
         e.path[0].getAttribute('id') === 'go-to-page-field'
       ) {
+        // FIXME: called way to much and below functions breaks the binding
+        // (nothing happens and still called a lot, although less)
+        // e.stopImmediatePropagation();
+        // e.preventDefault();
         let n = +goToPageInputVal;
         if (+goToPageInputVal > maxPageNum) n = maxPageNum;
         else if (+goToPageInputVal <= 0) n = 1;
@@ -168,7 +172,9 @@ export function usePagination(dataLength, maxElemStorageId) {
   }, [setupPagination, cancelDelayedCalls]);
 
   useEffect(() => {
-    setMaxPageNum(Math.round(dataLength / maxElementsPerPage));
+    let val = Math.round(dataLength / maxElementsPerPage);
+    if (val === 0) val = 1;
+    setMaxPageNum(val);
   }, [dataLength, maxElementsPerPage]);
 
   useEffect(() => {
@@ -218,7 +224,12 @@ const ChangePageButtons = forwardRef((props, ref) => {
   }));
 
   return (
-    <Grid spacing={2} container item alignItems="center" justifyContent="center">
+    <Grid
+      spacing={2}
+      container
+      item
+      alignItems="center"
+      justifyContent="center">
       <Grid item>
         <Button ref={leftButtonEl} variant="contained" onClick={goPrevPage}>
           <ArrowBackRoundedIcon />
@@ -242,16 +253,16 @@ function GoToPageField(props) {
   const { helperText, value, onChange, targetRef } = props;
 
   return (
-      <TextField
-        ref={targetRef}
-        id="go-to-page-field"
-        variant="standard"
-        type="number"
-        label="Go to page"
-        sx={{ minHeight: '4.5rem' }}
-        helperText={helperText}
-        value={value}
-        onChange={onChange}
-      />
+    <TextField
+      ref={targetRef}
+      id="go-to-page-field"
+      variant="standard"
+      type="number"
+      label="Go to page"
+      sx={{ minHeight: '4.5rem' }}
+      helperText={helperText}
+      value={value}
+      onChange={onChange}
+    />
   );
 }
