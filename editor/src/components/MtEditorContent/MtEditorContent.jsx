@@ -124,11 +124,7 @@ export function MtEditorContent(props) {
                 renderedFields.current.push(createRef());
                 const key = `${index}-${x}`;
                 const isCode = (x === 5 || x === 6) && hasEditor;
-                const isMultiline =
-                  ((x === 5 || x === 6) &&
-                    (getNumOfLines(row.data[5]) > 1 ||
-                      getNumOfLines(row.data[6]) > 1)) ||
-                  getNumOfLines(row.data[x]) > 1;
+                // TODO: need to calculate the field height to make all the same
                 const fieldRef =
                   renderedFields.current[renderedFields.current.length - 1];
 
@@ -139,7 +135,6 @@ export function MtEditorContent(props) {
                       key={key}
                       kid={key}
                       code={isCode}
-                      multiline={isMultiline}
                       label={fieldNames[x]}
                       fullWidth={width === true}
                       value={row.data[x]}

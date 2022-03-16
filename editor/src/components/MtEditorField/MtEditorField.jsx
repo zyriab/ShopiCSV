@@ -1,23 +1,28 @@
-import { useRef, forwardRef, useImperativeHandle } from 'react';
+import {
+  useRef,
+  useState,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { MtCodeEditor } from '../MtCodeEditor/MtCodeEditor';
 
-// -FIXME debug all this
-// 1. Store props in states
-// 3. still having problem accessing editor's value (undefined -> already unmounted?)
+// TODO: fields should all have the same height as the tallest, excluding code editor (add \n ?)
 export const MtEditorField = forwardRef((props, ref) => {
   const {
     code = false,
-    multiline = false,
     fullWidth,
     label,
     kid,
     value,
   } = props;
+  const [shouldUpdate, setShouldUpdate] = useState(true);
   const inputEl = useRef();
-
+  
   function getValue() {
+    console.log('code: ', code);
     if (code) return inputEl.current.getValue();
     return inputEl.current.children[1].children[0].value;
   }
@@ -33,22 +38,27 @@ export const MtEditorField = forwardRef((props, ref) => {
     isCode: () => code,
   }));
 
+  // re-rendering to make sure the ref is set
+  useEffect(() => {
+    if (shouldUpdate) setShouldUpdate(false);
+  }, [shouldUpdate]);
+
   return code ? (
-    <Box sx={{height: '500px'}}>
-    <MtCodeEditor
-      inputref={inputEl}
-      kid={kid}
-      language="liquid"
-      height="500px"
-      value={value}
-    />
+    <Box sx={{ height: '500px' }}>
+      <MtCodeEditor
+        inputref={inputEl}
+        kid={kid}
+        language="liquid"
+        height="500px"
+        value={value}
+      />
     </Box>
   ) : (
     // TODO: when losing focus, cursor should stay in place, not reset position
+    // TODO: see if multiline=true fixes the problem :) (looks like yes)
     <TextField
       ref={inputEl}
-      multiline={multiline}
-      maxRows={4}
+      multiline={true}
       label={label}
       variant="filled"
       kid={kid}
