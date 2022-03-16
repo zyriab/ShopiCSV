@@ -24,7 +24,7 @@ export function usePagination(dataLength, maxElemStorageId) {
     store.get(`${maxElemStorageId}`) || 4
   );
   const [maxPageNum, setMaxPageNum] = useState(
-    Math.round(dataLength / maxElementsPerPage) || 1
+    Math.round((dataLength - 1) / maxElementsPerPage) || 1
   );
   const [pageContent, setPageContent] = useState([]);
   const [goToPageInputVal, setGoToPageInputVal] = useState('');
@@ -172,7 +172,7 @@ export function usePagination(dataLength, maxElemStorageId) {
   }, [setupPagination, cancelDelayedCalls]);
 
   useEffect(() => {
-    let val = Math.round(dataLength / maxElementsPerPage);
+    let val = Math.round((dataLength-1) / maxElementsPerPage);
     if (val === 0) val = 1;
     setMaxPageNum(val);
   }, [dataLength, maxElementsPerPage]);
