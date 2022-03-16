@@ -5,13 +5,24 @@ import { MtAlert } from '../components/MtAlert/MtAlert';
 import { MtAppBar } from '../components/MtAppBar/MtAppBar';
 import { MtEditorContent } from '../components/MtEditorContent/MtEditorContent';
 
+const TYPE = {
+  ALL: 'all',
+  PRODUCTS: 'products',
+  EMAILS: 'emails',
+  SMS: 'sms',
+  // TODO: check what needs to be here
+};
+
 function Editor() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [file, setFile] = useState(); // uploaded file or data of restored session (name, size, lastModified, lastSave?, content?)
   const fileRef = useRef(null); // used for direct update/access when saving
   const [displayCol, setDisplayCol] = useState();
-  const [fileData, setFileData] = useState([]); // used for rendering content
+  const [fileData, setFileData] = useState([]);
+  const [displayedData, setDisplayedData] = useState([]); // used for rendering content
+  const [filteredDataIds, setFilteredDataIds] = useState([]);
+  const [filteredType, setFilteredType] = useState(TYPE.ALL);
   const parsedData = useRef([]); // stores the file's content, used for data manipulation (saving, downloading, etc)
   const renderedFields = useRef([]);
   const alertRef = useRef(null);
@@ -45,6 +56,7 @@ function Editor() {
     fileRef.current = null;
     setFile(null);
     setFileData([]);
+    setDisplayedData([]);
 
     setIsEditing(false);
     setIsLoading(false);
@@ -65,7 +77,7 @@ function Editor() {
             parsedData.current[kid[0]].data[kid[1]] = field.current.getValue();
           }
 
-          setFileData([...parsedData.current]);
+          //setFileData([...parsedData.current]);
           store.remove('fileData');
           store.set('fileData', {
             content: parsedData.current,
@@ -91,7 +103,7 @@ function Editor() {
 
   async function handleUpload(e) {
     if (e?.target?.files) {
-      if(isEditing) handleSave(true, true);
+      if (isEditing) handleSave(true, true);
       if (e.target.files[0].type !== 'text/csv') {
         displayAlert(
           'File rejected. You may only upload .CSV files 🧐',
@@ -105,17 +117,28 @@ function Editor() {
       setFile(e.target.files[0]);
       fileRef.current = e.target.files[0];
       parsedData.current = [];
+      let index = 0;
 
       Papa.parse(e.target.files[0], {
         worker: true,
         comments: '#',
 
         step: (row) => {
+          if (index === 0 && row.data[0] !== 'Type') {
+            displayAlert(
+              'The uploaded file does not seem to be from Shopify',
+              'error'
+            );
+            setIsLoading(false);
+            return;
+          }
           if (row.data.length > 7) row.data = row.data.splice(0, 7);
           if (row.data.length === 7) parsedData.current.push(row);
+          index++;
         },
         complete: async () => {
           displayAlert('Successfully parsed document 🤓');
+          setDisplayedData([...parsedData.current]);
           setFileData([...parsedData.current]);
           store.remove('fileData');
           store.set('fileData', {
@@ -156,6 +179,21 @@ function Editor() {
     else setDisplayCol([2, 5, 6]);
   }, []);
 
+  // TODO: implement filterd types
+  useEffect(() => {}, [filteredType]);
+
+  useEffect(() => {
+    let arr = [];
+    if (filteredDataIds.length > 0) {
+      for (let e of filteredDataIds) {
+        arr.push(parsedData.current[e.id]);
+      }
+    } else {
+      arr = [...parsedData.current];
+    }
+    setDisplayedData(arr);
+  }, [filteredDataIds]);
+
   /* KEY BINDINGS */
   useEffect(() => {
     window.addEventListener('keydown', (e) => {
@@ -194,6 +232,7 @@ function Editor() {
         parsedData.current = [];
         parsedData.current = store.get('fileData').content;
         setFileData([...parsedData.current]);
+        setDisplayedData([...parsedData.current]);
 
         fileRef.current = { ...store.get('fileData') };
         setFile({ ...store.get('fileData') });
@@ -230,10 +269,12 @@ function Editor() {
         onCancel={handleCloseFile}
         isLoading={isLoading}
         isEditing={isEditing}
+        filteredDataIds={setFilteredDataIds}
+        filteredType={setFilteredType}
       />
       <MtEditorContent
         display={displayCol}
-        data={fileData}
+        data={displayedData}
         renderedFields={renderedFields}
         onSave={handleSave}
         onUpload={handleUpload}

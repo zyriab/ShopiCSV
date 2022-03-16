@@ -3,12 +3,9 @@ import debounce from 'lodash.debounce';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
-import Autocomplete from '@mui/material/Autocomplete';
-import CircularProgress from '@mui/material/CircularProgress';
-import TextField from '@mui/material/TextField';
 
-// TODO: implement search bar (async), search function, search menu
-// FIXME: 'label' (option.label) is undefined in useAutocomplete
+// TODO: implement async/loading to make the UX more seamless
+// TODO: display number of elements found
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -51,138 +48,42 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export function MtSearchField(props) {
-  const { data } = props;
+  const { data, filteredDataIds } = props;
+  const [inputValue, setInputValue] = useState('');
 
-  const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState([]);
-  const loading = open && options.length === 0;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debSearch = useMemo(() => debounce(searchInput, 600), [filteredDataIds, data])
+  function searchInput(value) {
+    const dt = data.map((e, i) => {
+      return { data: e.data[5], id: i };
+    });
+    if (value.trim() !== '') {
+      filteredDataIds(dt.filter((e) => e.data.trim().includes(value.trim())));
+    } else {
+      filteredDataIds(dt);
+    }
+  }
+
+  function handleChange(e) {
+    setInputValue(e.target.value);
+    debSearch(e.target.value);
+  }
 
   useEffect(() => {
-    let active = true;
-
-    if (!loading) {
-      return undefined;
-    }
-
-    (async () => {
-      if (active) {
-        console.log('loading...')
-        setOptions([1, 2, 3]
-          // data.map((option) =>
-          //   option.data[5] !== 'Default content' ? option.data[5] : '')
-        );
-      }
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, [loading, data]);
-
-  useEffect(() => {
-    if (!open) {
-      setOptions([]);
-    }
-  }, [open]);
+    return () => debSearch.cancel();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
-    <Autocomplete
-      id="asynchronous-demo"
-      sx={{ width: 300 }}
-      open={open}
-      onOpen={() => {
-        setOpen(true);
-      }}
-      onClose={() => {
-        setOpen(false);
-      }}
-      isOptionEqualToValue={(option, value) => option.title === value.title}
-      getOptionLabel={(option) => `${option}`}
-      options={options}
-      loading={loading}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label="Asynchronous"
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: (
-              <>
-                {loading ? (
-                  <CircularProgress color="inherit" size={20} />
-                ) : null}
-                {params.InputProps.endAdornment}
-              </>
-            ),
-          }}
-        />
-      )}
-    />
+    <Search>
+      <SearchIconWrapper>
+        <SearchIcon />
+      </SearchIconWrapper>
+      <StyledInputBase
+        placeholder="Search…"
+        value={inputValue}
+        onChange={handleChange}
+      />
+    </Search>
   );
-
-  // const [options, setOptions] = useState([]);
-  // const loading = open && options.length === 0;
-  // const [value, setValue] = useState('');
-  // const [results, setResults] = useState([]);
-  // const [open, setOpen] = useState(false);
-
-  // const debouncedSearch = useMemo(debounce(search, 600), [data]);
-
-  // function search(val) {
-  //   if (val.trim() !== '') {
-  //     setResults(data.filter((e) => e.includes(val)));
-  //     setOpen(true);
-  //   } else setOpen(false);
-  // }
-
-  // function handleInput(e) {
-  //   setValue(e.target.value);
-  //   debouncedSearch(e.target.value);
-  // }
-
-  // return (
-  //   <>
-  //     <Search>
-  //       <SearchIconWrapper>
-  //         <SearchIcon />
-  //       </SearchIconWrapper>
-  //       <Autocomplete
-  //         freeSolo
-  //         id="search-field"
-  //         options={data.map((option) =>
-  //           option.data[5] !== 'Default content' ? option.data[5] : ''
-  //         )}
-  //         renderInput={(params) => {
-  //           const { InputLabelProps, InputProps, ...props } = params;
-  //           console.log(params);
-  //           return (
-  //             <StyledInputBase
-  //               ref={params.InputProps.ref}
-  //               placeholder="Search…"
-  //               {...params.InputProps}
-  //               {...props}
-  //               InputProps={{
-  //                 ...params.InputProps,
-  //                 endAdornment: (
-  //                   <>
-  //                     {loading ? (
-  //                       <CircularProgress color="inherit" size={20} />
-  //                     ) : null}
-  //                     {params.InputProps.endAdornment}
-  //                   </>
-  //                 ),
-  //               }}
-  //             />
-  //           );
-  //         }}
-  //         // <StyledInputBase
-  //         //   ref={params.InputProps.ref}
-  //         //   type="search"
-  //         //   placeholder="Search…"
-  //         //   inputProps={{ ...params.InputProps, 'aria-label': 'search' }}
-  //         // />}
-  //       />
-  //     </Search>
-  //   </>
-  // );
 }

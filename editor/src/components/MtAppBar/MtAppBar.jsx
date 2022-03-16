@@ -16,9 +16,10 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { MtSearchField } from '../MtSearchField/MtSearchField';
 
 // TODO: APPBAR ->
-// 1. add ellipsis (+ tooltip when hovering
+// 1. add filename ellipsis (+ tooltip when hovering)
 // 2. add tooltips on buttons
 // 3 align everything good (solo upload button, search bar)
+// 4. add filers "SMS_TEMPLATE", "EMAILS", etc
 export const MtAppBar = (props) => {
   const {
     onDownload,
@@ -31,6 +32,8 @@ export const MtAppBar = (props) => {
     display,
     onDisplayChange,
     data,
+    filteredDataIds,
+    filteredType // TODO: add toggle filters : all, products, email, sms_template, etc
   } = props;
   const [displayFields, setDisplayFields] = useState(display);
   const inputEl = useRef(null);
@@ -54,16 +57,9 @@ export const MtAppBar = (props) => {
       <Toolbar>
         <Grid container direction="row" alignItems="center">
           <Grid xs={0.2} item />
-          <Grid
-            xs={5}
-            container
-            item
-            spacing={1}
-            direction="column"
-            // p={2}
-          >
+          <Grid xs={5} container item spacing={1} direction="column">
             <Grid xs sx={{ width: '100%' }} item>
-              <MtSearchField data={data} />
+              <MtSearchField data={data} filteredDataIds={filteredDataIds} />
             </Grid>
             {store.get('fileData') && (
               <Grid xs item>
@@ -71,7 +67,7 @@ export const MtAppBar = (props) => {
                   sx={{
                     width: '100%',
                     whiteSpace: 'nowrap',
-                    //overflow: 'hidden',
+                    overflow: 'hidden',
                     textOverflow: 'ellipsis',
                   }}
                   variant="subtitle1"
