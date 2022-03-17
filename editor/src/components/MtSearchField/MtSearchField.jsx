@@ -3,6 +3,10 @@ import debounce from 'lodash.debounce';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import ClearIcon from '@mui/icons-material/Clear';
+import { useTheme } from '@mui/material/styles';
 
 // TODO: implement async/loading to make the UX more seamless
 // TODO: display number of elements found
@@ -18,7 +22,7 @@ const Search = styled('div')(({ theme }) => ({
   marginLeft: 0,
   width: '100%',
   [theme.breakpoints.up('sm')]: {
-    // marginLeft: theme.spacing(3),
+    marginLeft: theme.spacing(3),
     width: 'auto',
   },
 }));
@@ -42,7 +46,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
-      width: '50ch',
+      width: '45ch',
     },
   },
 }));
@@ -50,9 +54,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export function MtSearchField(props) {
   const { data, filteredDataIds } = props;
   const [inputValue, setInputValue] = useState('');
+  const theme = useTheme();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debSearch = useMemo(() => debounce(searchInput, 600), [filteredDataIds, data])
+  const debSearch = useMemo(
+    () => debounce(searchInput, 600),
+    [filteredDataIds, data]
+  );
   function searchInput(value) {
     const dt = data.map((e, i) => {
       return { data: e.data[5], id: i };
@@ -71,8 +79,8 @@ export function MtSearchField(props) {
 
   useEffect(() => {
     return () => debSearch.cancel();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Search>
@@ -83,6 +91,17 @@ export function MtSearchField(props) {
         placeholder="Search…"
         value={inputValue}
         onChange={handleChange}
+        endAdornment={
+          <InputAdornment position="end">
+            <IconButton
+              sx={{
+                visibility: inputValue.length === 0 ? 'hidden' : 'visible',
+              }}
+              onClick={() => setInputValue('')}>
+              <ClearIcon sx={{ color: 'white' }} />
+            </IconButton>
+          </InputAdornment>
+        }
       />
     </Search>
   );
