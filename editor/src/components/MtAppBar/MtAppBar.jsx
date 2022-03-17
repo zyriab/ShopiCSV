@@ -15,6 +15,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Typography from '@mui/material/Typography';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Tooltip from '@mui/material/Tooltip';
 import { MtSearchField } from '../MtSearchField/MtSearchField';
 
 // TODO: APPBAR ->
@@ -41,8 +42,9 @@ export const MtAppBar = (props) => {
   const [saveTime, setSaveTime] = useState(
     new Date(store.get('fileData')?.savedAt || null)
   );
-  const inputEl = useRef(null);
   const [saveDisplayInterval, setSaveDisplayInterval] = useState(null);
+  const inputEl = useRef(null);
+  const fileNameEl = useRef(null);
 
   function handleDisplayFields(event, fields) {
     if (fields.length < displayFields.length) onSave();
@@ -87,21 +89,29 @@ export const MtAppBar = (props) => {
             <MtSearchField data={data} filteredDataIds={filteredDataIds} />
           </Grid>
           {store.get('fileData') ? (
-            <Grid xs={5} alignItems="center" container item spacing={1}>
+            <Grid
+              xs={5}
+              alignItems="center"
+              justifyContent="space-evenly"
+              container
+              item>
               <Grid item>
                 <Stack>
                   {store.get('fileData') && (
-                    <Typography
-                      sx={{
-                        width: '35ch',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                      variant="subtitle2"
-                      component="p">
-                      {store.get('fileData').name}
-                    </Typography>
+                    <Tooltip title={store.get('fileData').name}>
+                      <Typography
+                        ref={fileNameEl}
+                        sx={{
+                          width: '35ch',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                        variant="subtitle2"
+                        component="p">
+                        {store.get('fileData').name}
+                      </Typography>
+                    </Tooltip>
                   )}
                   <Typography variant="subtitle2" component="p">
                     {`${formatBytes(store.get('fileData').size, 2)} | Rows: ${
@@ -116,12 +126,12 @@ export const MtAppBar = (props) => {
                 <Stack>
                   {/* TODO: Work on i18n of dates (ago -> il y a) */}
                   <Typography variant="subtitle1" component="p">
-                    {`Last modified: ${formatDistanceToNow(
+                    {`Modified ${formatDistanceToNow(
                       new Date(store.get('fileData').lastModified)
                     )} ago`}
                   </Typography>
                   <Typography variant="subtitle1" component="p">
-                    {`Last saved: ${formatDistanceToNow(saveTime)} ago`}
+                    {`Saved ${formatDistanceToNow(saveTime)} ago`}
                   </Typography>
                 </Stack>
               </Grid>
@@ -130,14 +140,22 @@ export const MtAppBar = (props) => {
             <Grid xs={4} item />
           )}
           <Grid xs={'auto'} item>
-            <IconButton disabled={isLoading || !isEditing} onClick={onCancel}>
-              <DeleteForeverIcon />
-            </IconButton>
-            <IconButton
-              disabled={isLoading}
-              onClick={() => inputEl.current.click()}>
-              <UploadFileIcon />
-            </IconButton>
+            <Tooltip title="Close & delete">
+              <IconButton
+                sx={{ color: 'white' }}
+                disabled={isLoading || !isEditing}
+                onClick={onCancel}>
+                <DeleteForeverIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Upload a file">
+              <IconButton
+                sx={{ color: 'white' }}
+                disabled={isLoading}
+                onClick={() => inputEl.current.click()}>
+                <UploadFileIcon />
+              </IconButton>
+            </Tooltip>
             <input
               ref={inputEl}
               onChange={onUpload}
@@ -145,12 +163,22 @@ export const MtAppBar = (props) => {
               accept="text/csv"
               style={{ display: 'none' }}
             />
-            <IconButton disabled={isLoading || !isEditing} onClick={handleSave}>
-              <SaveIcon />
-            </IconButton>
-            <IconButton disabled={isLoading || !isEditing} onClick={onDownload}>
-              <DownloadIcon />
-            </IconButton>
+            <Tooltip title="Save">
+              <IconButton
+                sx={{ color: 'white' }}
+                disabled={isLoading || !isEditing}
+                onClick={handleSave}>
+                <SaveIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Download">
+              <IconButton
+                sx={{ color: 'white' }}
+                disabled={isLoading || !isEditing}
+                onClick={onDownload}>
+                <DownloadIcon />
+              </IconButton>
+            </Tooltip>
           </Grid>
         </Grid>
       </Toolbar>
@@ -164,30 +192,22 @@ export const MtAppBar = (props) => {
           <ToggleButton value={0} aria-label="Type">
             Type
           </ToggleButton>
-          <ToggleButton
-            value={1}
-            aria-label="Identification">
+          <ToggleButton value={1} aria-label="Identification">
             Identification
           </ToggleButton>
           <ToggleButton value={2} aria-label="Field">
             Field
           </ToggleButton>
-          <ToggleButton
-            value={3}
-            aria-label="Locale">
+          <ToggleButton value={3} aria-label="Locale">
             Locale
           </ToggleButton>
           <ToggleButton value={4} aria-label="Status">
             Status
           </ToggleButton>
-          <ToggleButton
-            value={5}
-            aria-label="Default content">
+          <ToggleButton value={5} aria-label="Default content">
             Default content
           </ToggleButton>
-          <ToggleButton
-            value={6}
-            aria-label="Translated content">
+          <ToggleButton value={6} aria-label="Translated content">
             Translated content
           </ToggleButton>
         </ToggleButtonGroup>
