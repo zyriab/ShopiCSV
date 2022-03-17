@@ -1,8 +1,10 @@
 import { useRef, useState, useEffect } from 'react';
 import { formatBytes } from '../../utils/formatBytes.utils';
 import store from 'store';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -33,7 +35,7 @@ export const MtAppBar = (props) => {
     onDisplayChange,
     data,
     filteredDataIds,
-    filteredType // TODO: add toggle filters : all, products, email, sms_template, etc
+    filteredType, // TODO: add toggle filters : all, products, email, sms_template, etc
   } = props;
   const [displayFields, setDisplayFields] = useState(display);
   const inputEl = useRef(null);
@@ -55,55 +57,59 @@ export const MtAppBar = (props) => {
       color="primary"
       position="sticky">
       <Toolbar>
-        <Grid container direction="row" alignItems="center">
-          <Grid xs={0.2} item />
-          <Grid xs={5} container item spacing={1} direction="column">
-            <Grid xs sx={{ width: '100%' }} item>
-              <MtSearchField data={data} filteredDataIds={filteredDataIds} />
-            </Grid>
-            {store.get('fileData') && (
-              <Grid xs item>
-                <Typography
-                  sx={{
-                    width: '100%',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                  variant="subtitle1"
-                  component="div">
-                  {store.get('fileData').name}
-                  {store.get('fileData').name}
-                  {store.get('fileData').name}
-                  {store.get('fileData').name}
-                </Typography>
-              </Grid>
-            )}
+        <Grid container alignItems="center">
+          <Grid xs={5} sx={{ width: '100%' }} item>
+            <MtSearchField data={data} filteredDataIds={filteredDataIds} />
           </Grid>
           {store.get('fileData') ? (
-            <Grid xs={3} container item direction="row" justifyContent="center">
-              <Grid xs item>
-                <Typography variant="subtitle1" component="p">
-                  {`Last modified: ${new Date(
-                    store.get('fileData').lastModified
-                  ).toLocaleString()}`}
-                </Typography>
-                <Typography variant="subtitle1" component="p">
-                  {`Last saved: ${new Date(
-                    store.get('fileData').savedAt
-                  ).toLocaleString()}`}
-                </Typography>
-                <Typography variant="subtitle1" component="p">
-                  {`${formatBytes(store.get('fileData').size, 2)} | Rows: ${
-                    store
-                      .get('fileData')
-                      .content.filter((e) => e.data.length === 7).length
-                  }`}
-                </Typography>
+            <>
+              <Grid sx={1.5} item>
+                <Stack>
+                  {store.get('fileData') && (
+                    <Typography
+                      sx={{
+                        width: '20rem',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                      variant="subtitle1"
+                      component="p">
+                      {store.get('fileData').name}
+                      {store.get('fileData').name}
+                      {store.get('fileData').name}
+                      {store.get('fileData').name}
+                    </Typography>
+                  )}
+                  <Typography variant="subtitle1" component="p">
+                    {`${formatBytes(store.get('fileData').size, 2)} | Rows: ${
+                      store
+                        .get('fileData')
+                        .content.filter((e) => e.data.length === 7).length - 1
+                    }`}
+                  </Typography>
+                </Stack>
               </Grid>
-            </Grid>
+              <Grid sx={1.5} item>
+                <Stack>
+                  <Typography variant="subtitle1" component="p">
+                    {`Last modified: ${formatDistanceToNow(
+                      new Date(store.get('fileData').lastModified)
+                    )}`}
+                  </Typography>
+                  <Typography variant="subtitle1" component="p">
+                    {`Last saved: ${formatDistanceToNow(new Date(
+                      store.get('fileData').savedAt
+                    ))}`}
+                  </Typography>
+                </Stack>
+              </Grid>
+            </>
           ) : (
-            <Grid xs item />
+            <>
+              <Grid xs={3} item />
+              <Grid xs={2.5} item />
+            </>
           )}
           <Grid xs={1.5} item>
             <IconButton disabled={isLoading || !isEditing} onClick={onCancel}>
