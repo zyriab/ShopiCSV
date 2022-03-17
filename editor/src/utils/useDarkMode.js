@@ -4,6 +4,7 @@ import store from 'store';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { darkTheme, lightTheme } from './../themes/themes';
 
+// FIXME: sometimes store.get doesn't get it right (too soon?)
 export function useDarkMode() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [isDark, setIsDark] = useState(
@@ -17,7 +18,7 @@ export function useDarkMode() {
 
   useEffect(() => {
     if (prefersDarkMode) store.set('themeMode', 'dark');
-  }, []);
+  }, [prefersDarkMode]);
 
   return {
     theme,
