@@ -12,6 +12,18 @@ export const lightTheme = {
       paper: '#fff',
     },
   },
+  components: {
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          color: 'white',
+          '&.Mui-selected': {
+            color: 'white',
+          },
+        },
+      },
+    },
+  },
 };
 
 export const darkTheme = {

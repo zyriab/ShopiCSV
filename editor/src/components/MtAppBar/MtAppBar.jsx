@@ -161,33 +161,31 @@ export const MtAppBar = (props) => {
           value={displayFields}
           onChange={handleDisplayFields}
           aria-label="Fields to display">
-          <ToggleButton sx={{ color: 'white' }} value={0} aria-label="Type">
+          <ToggleButton value={0} aria-label="Type">
             Type
           </ToggleButton>
           <ToggleButton
-            sx={{ color: 'white' }}
             value={1}
             aria-label="Identification">
             Identification
           </ToggleButton>
-          <ToggleButton sx={{ color: 'white' }} value={2} aria-label="Field">
+          <ToggleButton value={2} aria-label="Field">
             Field
           </ToggleButton>
-          <ToggleButton sx={{ color: 'white' }} value={3} aria-label="Locale">
+          <ToggleButton
+            value={3}
+            aria-label="Locale">
             Locale
           </ToggleButton>
-          <ToggleButton sx={{ color: 'white' }} value={4} aria-label="Status">
+          <ToggleButton value={4} aria-label="Status">
             Status
           </ToggleButton>
           <ToggleButton
-            sx={{ color: 'white' }}
             value={5}
             aria-label="Default content">
             Default content
           </ToggleButton>
           <ToggleButton
-            // color="white" // FIXME: not working on light theme, need either to do a custom theme or find a solution bc black font is ugly
-            sx={{ color: 'white' }}
             value={6}
             aria-label="Translated content">
             Translated content
