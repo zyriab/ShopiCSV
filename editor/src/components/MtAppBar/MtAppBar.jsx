@@ -38,13 +38,38 @@ export const MtAppBar = (props) => {
     filteredType, // TODO: add toggle filters : all, products, email, sms_template, etc
   } = props;
   const [displayFields, setDisplayFields] = useState(display);
+  const [saveTime, setSaveTime] = useState(
+    new Date(store.get('fileData')?.savedAt || null)
+  );
   const inputEl = useRef(null);
+  const [saveDisplayInterval, setSaveDisplayInterval] = useState(null);
 
   function handleDisplayFields(event, fields) {
     if (fields.length < displayFields.length) onSave();
     setDisplayFields(fields);
     onDisplayChange(fields);
   }
+
+  function handleSave() {
+    const hasSaved = onSave(true);
+    if (hasSaved) {
+      if (saveDisplayInterval !== null) {
+        clearInterval(saveDisplayInterval);
+        setSaveDisplayInterval(null);
+      }
+      setSaveTime(new Date());
+    }
+  }
+
+  useEffect(() => {
+    if (saveDisplayInterval === null) {
+      setSaveDisplayInterval(
+        setInterval(() => {
+          setSaveTime(new Date(store.get('fileData').savedAt));
+        }, 60000)
+      );
+    }
+  }, [saveDisplayInterval]);
 
   useEffect(() => {
     setDisplayFields(display);
@@ -57,31 +82,28 @@ export const MtAppBar = (props) => {
       color="primary"
       position="sticky">
       <Toolbar>
-        <Grid container alignItems="center">
+        <Grid container alignItems="center" justifyContent="space-between">
           <Grid xs={5} sx={{ width: '100%' }} item>
             <MtSearchField data={data} filteredDataIds={filteredDataIds} />
           </Grid>
           {store.get('fileData') ? (
-            <>
-              <Grid sx={1.5} item>
+            <Grid xs={5} alignItems="center" container item spacing={1}>
+              <Grid item>
                 <Stack>
                   {store.get('fileData') && (
                     <Typography
                       sx={{
-                        width: '20rem',
+                        width: '35ch',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                       }}
-                      variant="subtitle1"
+                      variant="subtitle2"
                       component="p">
-                      {store.get('fileData').name}
-                      {store.get('fileData').name}
-                      {store.get('fileData').name}
                       {store.get('fileData').name}
                     </Typography>
                   )}
-                  <Typography variant="subtitle1" component="p">
+                  <Typography variant="subtitle2" component="p">
                     {`${formatBytes(store.get('fileData').size, 2)} | Rows: ${
                       store
                         .get('fileData')
@@ -90,28 +112,24 @@ export const MtAppBar = (props) => {
                   </Typography>
                 </Stack>
               </Grid>
-              <Grid sx={1.5} item>
+              <Grid item>
                 <Stack>
+                  {/* TODO: Work on i18n of dates (ago -> il y a) */}
                   <Typography variant="subtitle1" component="p">
                     {`Last modified: ${formatDistanceToNow(
                       new Date(store.get('fileData').lastModified)
-                    )}`}
+                    )} ago`}
                   </Typography>
                   <Typography variant="subtitle1" component="p">
-                    {`Last saved: ${formatDistanceToNow(new Date(
-                      store.get('fileData').savedAt
-                    ))}`}
+                    {`Last saved: ${formatDistanceToNow(saveTime)} ago`}
                   </Typography>
                 </Stack>
               </Grid>
-            </>
+            </Grid>
           ) : (
-            <>
-              <Grid xs={3} item />
-              <Grid xs={2.5} item />
-            </>
+            <Grid xs={4} item />
           )}
-          <Grid xs={1.5} item>
+          <Grid xs={'auto'} item>
             <IconButton disabled={isLoading || !isEditing} onClick={onCancel}>
               <DeleteForeverIcon />
             </IconButton>
@@ -127,9 +145,7 @@ export const MtAppBar = (props) => {
               accept="text/csv"
               style={{ display: 'none' }}
             />
-            <IconButton
-              disabled={isLoading || !isEditing}
-              onClick={() => onSave(true)}>
+            <IconButton disabled={isLoading || !isEditing} onClick={handleSave}>
               <SaveIcon />
             </IconButton>
             <IconButton disabled={isLoading || !isEditing} onClick={onDownload}>

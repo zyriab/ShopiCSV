@@ -96,7 +96,9 @@ function Editor() {
           }
         }
         setIsLoading(false);
+        return hasEdit;
       }
+      return false;
     },
     [hasEdited]
   );
