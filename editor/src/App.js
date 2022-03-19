@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
+import { ConfirmProvider } from 'material-ui-confirm';
 import EditorPage from './pages/Editor';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -12,13 +13,15 @@ function App() {
   const darkMode = useDarkMode();
   return (
     <ThemeProvider theme={darkMode.theme}>
-      <Paper>
-        <MtNavBar onModeChange={darkMode.setIsDark} />
-        <Box sx={{ minHeight: '600px' }}>
-          <EditorPage />
-        </Box>
-        <MtFooter />
-      </Paper>
+      <ConfirmProvider>
+        <Paper>
+          <MtNavBar onModeChange={darkMode.setIsDark} />
+          <Box sx={{ minHeight: '600px' }}>
+            <EditorPage />
+          </Box>
+          <MtFooter />
+        </Paper>
+      </ConfirmProvider>
     </ThemeProvider>
   );
 }

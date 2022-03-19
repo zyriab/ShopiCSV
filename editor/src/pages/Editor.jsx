@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import store from 'store';
 import Papa from 'papaparse';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import { useConfirm } from 'material-ui-confirm';
 import { MtAlert } from '../components/MtAlert/MtAlert';
 import { MtAppBar } from '../components/MtAppBar/MtAppBar';
 import { MtEditorContent } from '../components/MtEditorContent/MtEditorContent';
@@ -16,6 +18,7 @@ const TYPE = {
 function Editor() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [hasClosed, setHasClosed] = useState(false);
   const [file, setFile] = useState(); // uploaded file or data of restored session (name, size, lastModified, lastSave?, content?)
   const fileRef = useRef(null); // used for direct update/access when saving
   const [displayCol, setDisplayCol] = useState();
@@ -25,11 +28,12 @@ function Editor() {
   const [filteredType, setFilteredType] = useState(TYPE.ALL);
   const parsedData = useRef([]); // stores the file's content, used for data manipulation (saving, downloading, etc)
   const renderedFields = useRef([]);
-  const alertRef = useRef(null);
+  const alertEl = useRef(null);
   const contentRef = useRef(null);
+  const confirmationDialog = useConfirm();
 
   function displayAlert(message, type = 'success') {
-    alertRef.current.show(message, type);
+    alertEl.current.show(message, type);
   }
 
   const hasEdited = useCallback(() => {
@@ -48,16 +52,43 @@ function Editor() {
     return [hasEdit, editedFieldsKid];
   }, []);
 
-  function handleCloseFile() {
-    // TODO: need prompt for confirmation
+  async function handleCloseFile(deleteFile = false) {
+    let isDeleting = false;
     setIsLoading(true);
+    if (deleteFile) {
+      try {
+        await confirmationDialog({
+          allowClose: false,
+          title: 'Permanently delete file?',
+          description:
+            'This will remove the file and previous versions from your storage space.',
+          confirmationText: 'Yes, delete',
+          cancellationText: 'No, keep it',
+          confirmationButtonProps: {
+            color: 'error',
+            disableElevation: true,
+            variant: 'contained',
+          },
+          cancellationButtonProps: {
+            disableElevation: true,
+            variant: 'contained',
+          },
+        });
+        isDeleting = true;
+      } catch {
+        isDeleting = false;
+      }
+    }
+
+    if (isDeleting) store.remove('fileData');
+
     contentRef.current.resetPagination();
-    store.remove('fileData');
     parsedData.current = [];
     fileRef.current = null;
     setFile(null);
     setFileData([]);
     setDisplayedData([]);
+    setHasClosed(true);
 
     setIsEditing(false);
     setIsLoading(false);
@@ -228,33 +259,53 @@ function Editor() {
 
   /* AUTO-OPEN */
   useEffect(() => {
-    function openFromMemory() {
+    async function openFromMemory() {
       if (store.get('fileData')) {
-        setIsLoading(true);
-        setIsEditing(false);
+        try {
+          await confirmationDialog({
+            allowClose: true,
+            title: 'Restore last session?',
+            description: `Do you want to restore your last session of ${formatDistanceToNow(
+              new Date(store.get('fileData').savedAt)
+            )} ago?`,
+            confirmationText: 'Yes',
+            cancellationText: 'No',
+            confirmationButtonProps: {
+              disableElevation: true,
+              variant: 'contained',
+            },
+            cancellationButtonProps: {
+              disableElevation: true,
+              variant: 'contained',
+            },
+          });
 
-        parsedData.current = [];
-        parsedData.current = store.get('fileData').content;
-        setFileData([...parsedData.current]);
-        setDisplayedData([...parsedData.current]);
+          setIsLoading(true);
+          setIsEditing(false);
 
-        fileRef.current = { ...store.get('fileData') };
-        setFile({ ...store.get('fileData') });
+          parsedData.current = [];
+          parsedData.current = store.get('fileData').content;
+          setFileData([...parsedData.current]);
+          setDisplayedData([...parsedData.current]);
 
-        displayAlert(
-          `Successfully restored your last session of ${
-            store.get('fileData').savedAt
-          } 🐘`,
-          'info'
-        );
+          fileRef.current = { ...store.get('fileData') };
+          setFile({ ...store.get('fileData') });
 
-        setIsLoading(false);
-        setIsEditing(true);
+          displayAlert(
+            `Successfully restored your last session of ${
+              store.get('fileData').savedAt
+            } 🐘`,
+            'info'
+          );
+
+          setIsLoading(false);
+          setIsEditing(true);
+        } catch {}
       }
     }
 
-    if (!isEditing) openFromMemory();
-  }, [isEditing]);
+    if (!isEditing && !hasClosed) openFromMemory();
+  }, [isEditing, hasClosed, confirmationDialog]);
 
   useEffect(() => {
     store.remove('columns');
@@ -270,7 +321,7 @@ function Editor() {
         onUpload={handleUpload}
         onSave={handleSave}
         onDownload={handleDownload}
-        onCancel={handleCloseFile}
+        onClose={handleCloseFile}
         isLoading={isLoading}
         isEditing={isEditing}
         filteredDataIds={setFilteredDataIds}
@@ -286,7 +337,7 @@ function Editor() {
         isLoading={isLoading}
         setIsLoading={setIsLoading}
       />
-      <MtAlert ref={alertRef} />
+      <MtAlert ref={alertEl} />
     </>
   );
 }

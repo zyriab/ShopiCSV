@@ -19,16 +19,13 @@ import Tooltip from '@mui/material/Tooltip';
 import { MtSearchField } from '../MtSearchField/MtSearchField';
 
 // TODO: APPBAR ->
-// 1. add filename ellipsis (+ tooltip when hovering)
-// 2. add tooltips on buttons
-// 3 align everything good (solo upload button, search bar)
-// 4. add filers "SMS_TEMPLATE", "EMAILS", etc
+// 1. add filers "SMS_TEMPLATE", "EMAILS", etc
 export const MtAppBar = (props) => {
   const {
     onDownload,
     onSave,
     onUpload,
-    onCancel,
+    onClose,
     isLoading,
     isEditing,
     loadValue = -1,
@@ -36,7 +33,7 @@ export const MtAppBar = (props) => {
     onDisplayChange,
     data,
     filteredDataIds,
-    filteredType, // TODO: add toggle filters : all, products, email, sms_template, etc
+    filteredType,
   } = props;
   const [displayFields, setDisplayFields] = useState(display);
   const [saveTime, setSaveTime] = useState(
@@ -64,7 +61,7 @@ export const MtAppBar = (props) => {
   }
 
   useEffect(() => {
-    if (saveDisplayInterval === null) {
+    if (saveDisplayInterval === null && isEditing) {
       setSaveDisplayInterval(
         setInterval(() => {
           setSaveTime(new Date(store.get('fileData').savedAt));
@@ -88,7 +85,7 @@ export const MtAppBar = (props) => {
           <Grid xs={5} sx={{ width: '100%' }} item>
             <MtSearchField data={data} filteredDataIds={filteredDataIds} />
           </Grid>
-          {store.get('fileData') ? (
+          {store.get('fileData') && isEditing ? (
             <Grid
               xs={5}
               alignItems="center"
@@ -144,7 +141,7 @@ export const MtAppBar = (props) => {
               <IconButton
                 sx={{ color: 'white' }}
                 disabled={isLoading || !isEditing}
-                onClick={onCancel}>
+                onClick={() => onClose(true)}>
                 <DeleteForeverIcon />
               </IconButton>
             </Tooltip>
