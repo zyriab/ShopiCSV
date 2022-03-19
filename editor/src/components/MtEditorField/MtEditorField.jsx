@@ -9,18 +9,11 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { MtCodeEditor } from '../MtCodeEditor/MtCodeEditor';
 
-// TODO: fields should all have the same height as the tallest, excluding code editor (add \n ?)
 export const MtEditorField = forwardRef((props, ref) => {
-  const {
-    code = false,
-    fullWidth,
-    label,
-    kid,
-    value,
-  } = props;
+  const { code = false, fullWidth, label, kid, value } = props;
   const [shouldUpdate, setShouldUpdate] = useState(true);
   const inputEl = useRef();
-  
+
   function getValue() {
     console.log('code: ', code);
     if (code) return inputEl.current.getValue();
@@ -36,6 +29,7 @@ export const MtEditorField = forwardRef((props, ref) => {
     getValue,
     layout,
     isCode: () => code,
+    getElement: () => inputEl.current,
   }));
 
   // re-rendering to make sure the ref is set
@@ -54,8 +48,6 @@ export const MtEditorField = forwardRef((props, ref) => {
       />
     </Box>
   ) : (
-    // TODO: when losing focus, cursor should stay in place, not reset position
-    // TODO: see if multiline=true fixes the problem :) (looks like yes)
     <TextField
       ref={inputEl}
       multiline={true}
@@ -64,6 +56,11 @@ export const MtEditorField = forwardRef((props, ref) => {
       kid={kid}
       fullWidth={fullWidth}
       defaultValue={value}
+      inputProps={{
+        style: {
+          alignSelf: 'start',
+        },
+      }}
     />
   );
 });

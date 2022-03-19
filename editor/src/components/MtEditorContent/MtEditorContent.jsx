@@ -1,4 +1,10 @@
-import React, { useState, useEffect, createRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  createRef,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import { usePagination } from '../../utils/usePagination';
 import Grid from '@mui/material/Grid';
 import Backdrop from '@mui/material/Backdrop';
@@ -9,8 +15,7 @@ import { MtBackToTopBtn } from '../MtBackToTopBtn/MtBackToTopBtn';
 import { MtEditorField } from '../MtEditorField/MtEditorField';
 
 // TODO: display the current fields page when changing rows display num
-// TODO: Reset to page 1 when uploading new file
-export function MtEditorContent(props) {
+export const MtEditorContent = forwardRef((props, ref) => {
   const {
     display,
     renderedFields,
@@ -21,10 +26,10 @@ export function MtEditorContent(props) {
     setIsLoading,
   } = props;
   const [isReady, setIsReady] = useState(false);
-
   const {
     previousPageNum,
     selectedPage,
+    resetPagination,
     maxElementsPerPage,
     handleElementsPerPageChange,
     pageContent,
@@ -34,6 +39,10 @@ export function MtEditorContent(props) {
     ChangePageButtons,
     changePageButtonsProps,
   } = usePagination(data.length, 'rowsNumber');
+
+  useImperativeHandle(ref, () => ({
+    resetPagination,
+  }));
 
   // TODO: OPTI: 'data' shallowly changes, making React call this effect a second time on page load
   useEffect(() => {
@@ -49,9 +58,10 @@ export function MtEditorContent(props) {
         'Translated content',
       ];
 
-      setIsLoading(true);
-      setIsReady(false);
-      function displayPage() {
+      async function displayPage() {
+        setIsReady(false);
+        setIsLoading(true);
+
         // if user has gone to another page, save previous page
         if (selectedPage !== previousPageNum.current) onSave();
 
@@ -124,12 +134,11 @@ export function MtEditorContent(props) {
                 renderedFields.current.push(createRef());
                 const key = `${index}-${x}`;
                 const isCode = (x === 5 || x === 6) && hasEditor;
-                // TODO: need to calculate the field height to make all the same
                 const fieldRef =
                   renderedFields.current[renderedFields.current.length - 1];
 
                 tmp.push(
-                  <Grid key={`grid-${x}`} xs={width} item>
+                  <Grid key={`grid-${x}`} xs={width} alignItems="stretch" item>
                     <MtEditorField
                       ref={fieldRef}
                       key={key}
@@ -141,6 +150,12 @@ export function MtEditorContent(props) {
                     />
                   </Grid>
                 );
+
+                // setTimeout here is because there is a small latency before the ref is set
+                setTimeout(() => {
+                  fieldRef.current.getElement().style.height = '100%';
+                  fieldRef.current.getElement().children[1].style.height = '100%';
+                }, 0);
               }
             }
           }
@@ -188,7 +203,6 @@ export function MtEditorContent(props) {
         <MtSpinner />
       </Backdrop>
       <MtBackToTopBtn />
-
       {pageContent.length > 0 && isReady ? (
         <Grid
           sx={{
@@ -223,7 +237,7 @@ export function MtEditorContent(props) {
               <Grid xs={1.5} item>
                 <GoToPageField {...goToPageFieldProps} />
               </Grid>
-              <Grid xs={4} item sx={{paddingTop: '1rem'}}>
+              <Grid xs={4} item sx={{ paddingTop: '1rem' }}>
                 <ChangePageButtons {...changePageButtonsProps} />
               </Grid>
             </Grid>
@@ -251,4 +265,4 @@ export function MtEditorContent(props) {
       )}
     </>
   );
-}
+});
