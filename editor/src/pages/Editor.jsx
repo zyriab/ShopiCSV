@@ -26,6 +26,7 @@ function Editor() {
   const parsedData = useRef([]); // stores the file's content, used for data manipulation (saving, downloading, etc)
   const renderedFields = useRef([]);
   const alertRef = useRef(null);
+  const contentRef = useRef(null);
 
   function displayAlert(message, type = 'success') {
     alertRef.current.show(message, type);
@@ -50,7 +51,7 @@ function Editor() {
   function handleCloseFile() {
     // TODO: need prompt for confirmation
     setIsLoading(true);
-
+    contentRef.current.resetPagination();
     store.remove('fileData');
     parsedData.current = [];
     fileRef.current = null;
@@ -105,6 +106,7 @@ function Editor() {
 
   async function handleUpload(e) {
     if (e?.target?.files) {
+      handleCloseFile();
       if (isEditing) handleSave(true, true);
       if (e.target.files[0].type !== 'text/csv') {
         displayAlert(
@@ -181,7 +183,7 @@ function Editor() {
     else setDisplayCol([2, 5, 6]);
   }, []);
 
-  // TODO: implement filterd types
+  // TODO: implement filtered types
   useEffect(() => {}, [filteredType]);
 
   useEffect(() => {
@@ -275,6 +277,7 @@ function Editor() {
         filteredType={setFilteredType}
       />
       <MtEditorContent
+        ref={contentRef}
         display={displayCol}
         data={displayedData}
         renderedFields={renderedFields}

@@ -16,7 +16,6 @@ import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import Button from '@mui/material/Button';
 
-// FIXME: need to double-check maxPageNum calculation because it's possible to have an empty page last
 export function usePagination(dataLength, maxElemStorageId) {
   const [selectedPage, setSelectedPage] = useState(1);
   const [currentPageNum, setCurrentPageNum] = useState(1);
@@ -24,7 +23,9 @@ export function usePagination(dataLength, maxElemStorageId) {
     store.get(`${maxElemStorageId}`) || 4
   );
   const [maxPageNum, setMaxPageNum] = useState(
-    Math.round((dataLength - 1) / maxElementsPerPage) || 1
+    maxElementsPerPage !== 0
+      ? Math.round((dataLength - 1) / maxElementsPerPage) || 1
+      : 1
   );
   const [pageContent, setPageContent] = useState([]);
   const [goToPageInputVal, setGoToPageInputVal] = useState('');
@@ -51,7 +52,9 @@ export function usePagination(dataLength, maxElemStorageId) {
   }
 
   function handleElementsPerPageChange(n) {
-    setMaxElementsPerPage(n);
+    const val = n === 0 ? dataLength : n;
+
+    setMaxElementsPerPage(val);
     store.set(maxElemStorageId, n);
   }
 
@@ -123,6 +126,10 @@ export function usePagination(dataLength, maxElemStorageId) {
     });
   }
 
+  const resetPagination = useCallback(() => {
+    goToPage(1);
+  }, [goToPage])
+
   /* KEY BINDINGS */
   const setupPagination = useCallback(() => {
     window.addEventListener('keydown', (e) => {
@@ -131,7 +138,7 @@ export function usePagination(dataLength, maxElemStorageId) {
         !isNaN(+goToPageInputVal) &&
         e.path[0].getAttribute('id') === 'go-to-page-field'
       ) {
-        // FIXME: called way to much and below functions breaks the binding
+        // FIXME: called way to much and below functions calls breaks the binding
         // (nothing happens and still called a lot, although less)
         // e.stopImmediatePropagation();
         // e.preventDefault();
@@ -172,7 +179,7 @@ export function usePagination(dataLength, maxElemStorageId) {
   }, [setupPagination, cancelDelayedCalls]);
 
   useEffect(() => {
-    let val = Math.round((dataLength-1) / maxElementsPerPage);
+    let val = maxElementsPerPage !== 0 ? Math.round((dataLength - 1) / maxElementsPerPage) : 1;
     if (val === 0) val = 1;
     setMaxPageNum(val);
   }, [dataLength, maxElementsPerPage]);
@@ -202,6 +209,7 @@ export function usePagination(dataLength, maxElemStorageId) {
   return {
     previousPageNum,
     selectedPage,
+    resetPagination,
     maxElementsPerPage,
     handleElementsPerPageChange,
     pageContent,
