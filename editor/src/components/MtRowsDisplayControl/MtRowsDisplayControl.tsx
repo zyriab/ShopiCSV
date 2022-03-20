@@ -44,6 +44,14 @@ export function MtRowsDisplayControl(props) {
           16
         </Button>
       </Grid>
+      <Grid item>
+        <Button
+          variant={maxRowDisplay === 0 ? 'outlined' : ''}
+          // FIXME: freezes on render
+          onClick={() => handleRowsDisplayChange(0)}> 
+          All
+        </Button>
+      </Grid>
     </Grid>
   );
 }
