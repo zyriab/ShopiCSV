@@ -20,7 +20,9 @@ export function usePagination(dataLength, maxElemStorageId) {
   const [selectedPage, setSelectedPage] = useState(1);
   const [currentPageNum, setCurrentPageNum] = useState(1);
   const [maxElementsPerPage, setMaxElementsPerPage] = useState(
-    store.get(`${maxElemStorageId}`) || 4
+    store.get(`${maxElemStorageId}`) === 0
+      ? dataLength
+      : store.get(`${maxElemStorageId}`) || 4
   );
   const [maxPageNum, setMaxPageNum] = useState(
     maxElementsPerPage !== 0
@@ -53,7 +55,10 @@ export function usePagination(dataLength, maxElemStorageId) {
 
   function handleElementsPerPageChange(n) {
     const val = n === 0 ? dataLength : n;
+    const firstDisplayedFieldIndex =
+      selectedPage * maxElementsPerPage - maxElementsPerPage;
 
+    goToPage(val === n ? Math.floor(firstDisplayedFieldIndex / n + 1) : 1);
     setMaxElementsPerPage(val);
     store.set(maxElemStorageId, n);
   }
@@ -128,7 +133,7 @@ export function usePagination(dataLength, maxElemStorageId) {
 
   const resetPagination = useCallback(() => {
     goToPage(1);
-  }, [goToPage])
+  }, [goToPage]);
 
   /* KEY BINDINGS */
   const setupPagination = useCallback(() => {
@@ -179,7 +184,10 @@ export function usePagination(dataLength, maxElemStorageId) {
   }, [setupPagination, cancelDelayedCalls]);
 
   useEffect(() => {
-    let val = maxElementsPerPage !== 0 ? Math.round((dataLength - 1) / maxElementsPerPage) : 1;
+    let val =
+      maxElementsPerPage !== 0
+        ? Math.round((dataLength - 1) / maxElementsPerPage)
+        : 1;
     if (val === 0) val = 1;
     setMaxPageNum(val);
   }, [dataLength, maxElementsPerPage]);
