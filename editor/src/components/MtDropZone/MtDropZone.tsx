@@ -3,39 +3,40 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import './MtDropZone.css';
 
-export function MtDropZone(props) {
-  const {
-    text = '',
-    acceptedFiles = '',
-    multiple = false,
-    type = 'file',
-    onChange,
-  } = props;
+interface AppProps {
+  text?: string;
+  acceptedFiles?: string;
+  multiple?: boolean;
+  type?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement> | {target: DataTransfer}) => Promise<void>;
+}
+
+export function MtDropZone(props: AppProps) {
   const [hasDrop, setHasDrop] = useState(false);
-  const inputEl = useRef(null);
-  const dropZoneEl = useRef(null);
+  const inputEl = useRef<HTMLInputElement>(null);
+  const dropZoneEl = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    dropZoneEl.current.addEventListener('click', () => {
-      inputEl.current.click();
+    dropZoneEl.current?.addEventListener('click', () => {
+      inputEl.current?.click();
     });
 
-    dropZoneEl.current.addEventListener('dragover', (e) => {
+    dropZoneEl.current?.addEventListener('dragover', (e) => {
       e.preventDefault();
       setHasDrop(true);
     });
 
     ['dragleave', 'dragend'].forEach((type) => {
-      dropZoneEl.current.addEventListener(type, (e) => {
+      dropZoneEl.current?.addEventListener(type, () => {
         setHasDrop(false);
       });
     });
 
-    dropZoneEl.current.addEventListener('drop', (e) => {
+    dropZoneEl.current?.addEventListener('drop', (e) => {
       e.preventDefault();
-      if (e.dataTransfer.files.length) {
-        inputEl.current.files = e.dataTransfer.files;
-        onChange({ target: e.dataTransfer });
+      if (e.dataTransfer?.files.length && inputEl.current) {
+        inputEl.current.files = e.dataTransfer?.files;
+        props.onChange({ target: e.dataTransfer });
       }
       setHasDrop(false);
     });
@@ -58,15 +59,15 @@ export function MtDropZone(props) {
           />
         </div>
         <div className="drop-zone__prompt">
-          {text || 'Drag and drop your file here or click'}
+          {props.text || 'Drag and drop your file here or click'}
         </div>
         <input
           className="drop-zone__input"
           ref={inputEl}
-          multiple={multiple}
-          onChange={onChange}
-          type={type}
-          accept={acceptedFiles}
+          multiple={props.multiple}
+          onChange={props.onChange}
+          type={props.type}
+          accept={props.acceptedFiles}
           style={{ display: 'none' }}
         />
       </div>
