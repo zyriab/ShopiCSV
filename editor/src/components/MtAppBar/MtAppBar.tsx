@@ -41,8 +41,8 @@ export const MtAppBar = (props: AppProps) => {
     new Date(store.get('fileData')?.savedAt || null)
   );
   const [saveDisplayInterval, setSaveDisplayInterval] = useState<NodeJS.Timer | null>(null);
-  const inputEl = useRef<HTMLInputElement | null>(null);
-  const fileNameEl = useRef(null);
+  const inputEl = useRef<HTMLInputElement>(null);
+  const fileNameEl = useRef<HTMLParagraphElement>(null);
 
   function handleDisplayFields(e: React.MouseEvent<HTMLElement, MouseEvent>, fields: number[]) {
     if (fields.length < displayFields.length) props.onSave();
