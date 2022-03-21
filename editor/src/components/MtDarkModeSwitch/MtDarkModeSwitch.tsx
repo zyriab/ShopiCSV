@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import store from 'store';
 import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
+
+interface AppProps {
+  onChange: (isDark: boolean) => void;
+}
 
 const StyledSwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -50,15 +54,17 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-export function MtDarkModeSwitch(props) {
-  const { onChange } = props;
+export function MtDarkModeSwitch(props: AppProps) {
   const [active, setActive] = useState(
     store.get('themeMode') === 'dark' || false
   );
 
-  function handleChange(e, bool) {
-    setActive(bool);
-    onChange(bool);
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+    isDark: boolean
+  ) {
+    setActive(isDark);
+    props.onChange(isDark);
   }
 
   return (
