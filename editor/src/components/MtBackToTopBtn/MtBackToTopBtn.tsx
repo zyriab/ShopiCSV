@@ -13,6 +13,7 @@ export function MtBackToTopBtn() {
     document.documentElement.scrollTop = 0;
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedDisplayFn = useCallback(debounce(displayFn, 200), []);
 
   function displayFn() {
