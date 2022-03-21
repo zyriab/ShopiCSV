@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { formatBytes } from '../../utils/formatBytes.utils';
 import store from 'store';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
@@ -18,39 +18,40 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Tooltip from '@mui/material/Tooltip';
 import { MtSearchField } from '../MtSearchField/MtSearchField';
 
+interface AppProps {
+  onDownload: () => void;
+  onSave: (displayMsg?: boolean, isAutosave?: boolean) => boolean;
+  onUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  onClose: (deleteFile?: boolean) => Promise<void>;
+  isLoading: boolean;
+  isEditing: boolean;
+  loadValue?: number;
+  display: number[];
+  onDisplayChange: (selectedColumns: number[]) => void;
+  data: string[][];
+  filteredDataIds: { data: string; id: number }; // FIXME: see if this can just be id
+  // filteredType,
+}
+
 // TODO: APPBAR ->
 // 1. add filers "SMS_TEMPLATE", "EMAILS", etc
-export const MtAppBar = (props) => {
-  const {
-    onDownload,
-    onSave,
-    onUpload,
-    onClose,
-    isLoading,
-    isEditing,
-    loadValue = -1,
-    display,
-    onDisplayChange,
-    data,
-    filteredDataIds,
-    filteredType,
-  } = props;
-  const [displayFields, setDisplayFields] = useState(display);
+export const MtAppBar = (props: AppProps) => {
+  const [displayFields, setDisplayFields] = useState(props.display);
   const [saveTime, setSaveTime] = useState(
     new Date(store.get('fileData')?.savedAt || null)
   );
-  const [saveDisplayInterval, setSaveDisplayInterval] = useState(null);
-  const inputEl = useRef(null);
+  const [saveDisplayInterval, setSaveDisplayInterval] = useState<NodeJS.Timer | null>(null);
+  const inputEl = useRef<HTMLInputElement | null>(null);
   const fileNameEl = useRef(null);
 
-  function handleDisplayFields(event, fields) {
-    if (fields.length < displayFields.length) onSave();
+  function handleDisplayFields(e: React.MouseEvent<HTMLElement, MouseEvent>, fields: number[]) {
+    if (fields.length < displayFields.length) props.onSave();
     setDisplayFields(fields);
-    onDisplayChange(fields);
+    props.onDisplayChange(fields);
   }
 
   function handleSave() {
-    const hasSaved = onSave(true);
+    const hasSaved = props.onSave(true);
     if (hasSaved) {
       if (saveDisplayInterval !== null) {
         clearInterval(saveDisplayInterval);
@@ -61,18 +62,18 @@ export const MtAppBar = (props) => {
   }
 
   useEffect(() => {
-    if (saveDisplayInterval === null && isEditing) {
+    if (saveDisplayInterval === null && props.isEditing) {
       setSaveDisplayInterval(
         setInterval(() => {
           setSaveTime(new Date(store.get('fileData').savedAt));
         }, 60000)
       );
     }
-  }, [saveDisplayInterval]);
+  }, [saveDisplayInterval, props.isEditing]);
 
   useEffect(() => {
-    setDisplayFields(display);
-  }, [display]);
+    setDisplayFields(props.display);
+  }, [props.display]);
 
   return (
     <AppBar
@@ -83,9 +84,9 @@ export const MtAppBar = (props) => {
       <Toolbar>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid xs={5} sx={{ width: '100%' }} item>
-            <MtSearchField data={data} filteredDataIds={filteredDataIds} />
+            <MtSearchField data={props.data} filteredDataIds={props.filteredDataIds} />
           </Grid>
-          {store.get('fileData') && isEditing ? (
+          {store.get('fileData') && props.isEditing ? (
             <Grid
               xs={5}
               alignItems="center"
@@ -114,7 +115,7 @@ export const MtAppBar = (props) => {
                     {`${formatBytes(store.get('fileData').size, 2)} | Rows: ${
                       store
                         .get('fileData')
-                        .content.filter((e) => e.data.length === 7).length - 1
+                        .content.filter((e: string[]) => e.length === 7).length - 1
                     }`}
                   </Typography>
                 </Stack>
@@ -140,22 +141,22 @@ export const MtAppBar = (props) => {
             <Tooltip title="Close & delete">
               <IconButton
                 sx={{ color: 'white' }}
-                disabled={isLoading || !isEditing}
-                onClick={() => onClose(true)}>
+                disabled={props.isLoading || !props.isEditing}
+                onClick={() => props.onClose(true)}>
                 <DeleteForeverIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Upload a file">
               <IconButton
                 sx={{ color: 'white' }}
-                disabled={isLoading}
-                onClick={() => inputEl.current.click()}>
+                disabled={props.isLoading}
+                onClick={() => inputEl.current?.click()}>
                 <UploadFileIcon />
               </IconButton>
             </Tooltip>
             <input
               ref={inputEl}
-              onChange={onUpload}
+              onChange={props.onUpload}
               type="file"
               accept="text/csv"
               style={{ display: 'none' }}
@@ -163,7 +164,7 @@ export const MtAppBar = (props) => {
             <Tooltip title="Save">
               <IconButton
                 sx={{ color: 'white' }}
-                disabled={isLoading || !isEditing}
+                disabled={props.isLoading || !props.isEditing}
                 onClick={handleSave}>
                 <SaveIcon />
               </IconButton>
@@ -171,8 +172,8 @@ export const MtAppBar = (props) => {
             <Tooltip title="Download">
               <IconButton
                 sx={{ color: 'white' }}
-                disabled={isLoading || !isEditing}
-                onClick={onDownload}>
+                disabled={props.isLoading || !props.isEditing}
+                onClick={props.onDownload}>
                 <DownloadIcon />
               </IconButton>
             </Tooltip>
@@ -209,10 +210,10 @@ export const MtAppBar = (props) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </Toolbar>
-      {isLoading && (
+      {props.isLoading && (
         <LinearProgress
-          variant={+loadValue >= 0 ? 'determinate' : 'indeterminate'}
-          value={+loadValue}
+          variant={props.loadValue ? 'determinate' : 'indeterminate'}
+          value={props.loadValue}
         />
       )}
     </AppBar>
