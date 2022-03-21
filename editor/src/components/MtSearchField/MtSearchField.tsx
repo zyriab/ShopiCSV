@@ -6,7 +6,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
-import { useTheme } from '@mui/material/styles';
 
 // TODO: implement async/loading to make the UX more seamless
 // TODO: display number of elements found
@@ -54,7 +53,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export function MtSearchField(props) {
   const { data, filteredDataIds } = props;
   const [inputValue, setInputValue] = useState('');
-  const theme = useTheme();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debSearch = useMemo(
