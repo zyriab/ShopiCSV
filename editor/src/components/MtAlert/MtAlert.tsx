@@ -1,25 +1,28 @@
-import { forwardRef, useState, useImperativeHandle } from 'react';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
+import React, { forwardRef, useState, useImperativeHandle } from 'react';
+import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
+import MuiAlert, { AlertColor, AlertProps } from '@mui/material/Alert';
 
-const Alert = forwardRef(function Alert(props, ref) {
+const Alert = forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 export const MtAlert = forwardRef((props, ref) => {
   const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState('');
-  const [severity, setSeverity] = useState('');
+  const [severity, setSeverity] = useState<AlertColor | undefined>();
   const [autoHideDuration, setAutoHideDuration] = useState(6000);
 
-  function handleClose(event, reason) {
+  function handleClose(
+    event?: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason
+  ) {
     if (reason === 'clickaway') {
       return;
     }
     setOpen(false);
   }
 
-  function show(message, type = 'success', duration = 6000) {
+  function show(message: string, type: AlertColor = 'success', duration = 6000) {
     setMsg(message);
     setSeverity(type);
     setAutoHideDuration(duration);
@@ -34,7 +37,7 @@ export const MtAlert = forwardRef((props, ref) => {
     <Snackbar
       open={open}
       autoHideDuration={autoHideDuration}
-      onClose={handleClose}>
+      onClose={(e, r) => handleClose}>
       <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
         {msg}
       </Alert>
