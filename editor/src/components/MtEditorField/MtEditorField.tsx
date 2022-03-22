@@ -1,4 +1,4 @@
-import {
+import React, {
   useRef,
   useState,
   useEffect,
@@ -7,29 +7,50 @@ import {
 } from 'react';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-import { MtCodeEditor } from '../MtCodeEditor/MtCodeEditor';
+import {
+  MtCodeEditor,
+  MtCodeEditorElement,
+} from '../MtCodeEditor/MtCodeEditor';
 
-export const MtEditorField = forwardRef((props, ref) => {
-  const { code = false, fullWidth, label, kid, value } = props;
+export type MtFieldElement = {
+  getKid: () => string;
+  getValue: () => string;
+  layout: () => void;
+  isCode: () => boolean;
+  getElement: () => HTMLInputElement | MtCodeEditorElement;
+};
+
+interface AppProps {
+  code?: boolean;
+  fullWidth: boolean;
+  label: string;
+  kid: string;
+  value: string;
+}
+
+export const MtEditorField = forwardRef<MtFieldElement, AppProps>((props: AppProps, ref) => {
   const [shouldUpdate, setShouldUpdate] = useState(true);
-  const inputEl = useRef();
+  const inputEl = useRef<HTMLInputElement>(null!);
+  const editorEl = useRef<MtCodeEditorElement>(null!);
 
   function getValue() {
-    console.log('code: ', code);
-    if (code) return inputEl.current.getValue();
-    return inputEl.current.children[1].children[0].value;
+    if (props.code) return editorEl.current.getValue();
+    return (inputEl.current.children[1].children[0] as HTMLInputElement).value;
   }
 
   function layout() {
-    if (code) inputEl.current.layout();
+    if (props.code) editorEl.current.layout();
   }
 
   useImperativeHandle(ref, () => ({
-    getKid: () => kid,
+    getKid: () => props.kid,
     getValue,
     layout,
-    isCode: () => code,
-    getElement: () => inputEl.current,
+    isCode: () => props.code || false,
+    getElement: () => {
+      if (props.code) return editorEl.current;
+      return inputEl.current;
+    },
   }));
 
   // re-rendering to make sure the ref is set
@@ -37,25 +58,26 @@ export const MtEditorField = forwardRef((props, ref) => {
     if (shouldUpdate) setShouldUpdate(false);
   }, [shouldUpdate]);
 
-  return code ? (
+  return props.code ? (
     <Box sx={{ height: '500px' }}>
       <MtCodeEditor
-        inputref={inputEl}
-        kid={kid}
+        inputref={editorEl}
+        kid={props.kid}
         language="liquid"
         height="500px"
-        value={value}
+        value={props.value}
       />
     </Box>
   ) : (
     <TextField
       ref={inputEl}
       multiline={true}
-      label={label}
+      label={props.label}
       variant="filled"
-      kid={kid}
-      fullWidth={fullWidth}
-      defaultValue={value}
+      // @ts-ignore
+      kid={props.kid}
+      fullWidth={props.fullWidth}
+      defaultValue={props.value}
       inputProps={{
         style: {
           alignSelf: 'start',
