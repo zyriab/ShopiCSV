@@ -1,52 +1,53 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import store from 'store';
+import store from 'store2';
 import Papa from 'papaparse';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import { useConfirm } from 'material-ui-confirm';
-import { MtAlert } from '../components/MtAlert/MtAlert';
+import { MtAlert, MtAlertElement } from '../components/MtAlert/MtAlert';
+import { AlertColor } from '@mui/material/Alert/Alert';
 import { MtAppBar } from '../components/MtAppBar/MtAppBar';
-import { MtEditorContent } from '../components/MtEditorContent/MtEditorContent';
+import { MtEditorContent, MtEditorContentElement } from '../components/MtEditorContent/MtEditorContent';
+import { MtFieldElement } from '../components/MtEditorField/MtEditorField';
 
-const TYPE = {
-  ALL: 'all',
-  PRODUCTS: 'products',
-  EMAILS: 'emails',
-  SMS: 'sms',
-  // TODO: check what needs to be here
-};
+// TODO: check what needs to be here
+// type filterType = 'All' | 'Products' | 'Emails' | 'SMS';
 
 function Editor() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [hasClosed, setHasClosed] = useState(false);
-  const [file, setFile] = useState(); // uploaded file or data of restored session (name, size, lastModified, lastSave?, content?)
-  const fileRef = useRef(null); // used for direct update/access when saving
-  const [displayCol, setDisplayCol] = useState();
-  const [fileData, setFileData] = useState([]);
-  const [displayedData, setDisplayedData] = useState([]); // used for rendering content
-  const [filteredDataIds, setFilteredDataIds] = useState([]);
-  const [filteredType, setFilteredType] = useState(TYPE.ALL);
-  const parsedData = useRef([]); // stores the file's content, used for data manipulation (saving, downloading, etc)
-  const renderedFields = useRef([]);
-  const alertEl = useRef(null);
-  const contentRef = useRef(null);
+  const [file, setFile] = useState<File | null>(null); // uploaded file or data of restored session (name, size, lastModified, lastSave?, content?)
+  const fileRef = useRef<File | null>(null); // used for direct update/access when saving
+  const [displayCol, setDisplayCol] = useState<number[]>([]);
+  const [fileData, setFileData] = useState<string[][]>([]);
+  const [displayedData, setDisplayedData] = useState<string[][]>([]); // used for rendering content
+  const [filteredDataIds, setFilteredDataIds] = useState<number[]>([]);
+  // const [filteredType, setFilteredType] = useState<filterType>('All');
+  const parsedData = useRef<string[][]>([]); // stores the file's content, used for data manipulation (saving, downloading, etc)
+  const renderedFields = useRef<React.RefObject<MtFieldElement>[]>([]);
+  const alertEl = useRef<MtAlertElement>(null!);
+  const contentRef = useRef<MtEditorContentElement>(null!);
   const confirmationDialog = useConfirm();
 
-  function displayAlert(message, type = 'success') {
+  function displayAlert(message: string, type: AlertColor = 'success') {
     alertEl.current.show(message, type);
   }
 
-  const hasEdited = useCallback(() => {
+  const hasEdited = useCallback((): [boolean, string[]] => {
     let hasEdit = false;
     const editedFieldsKid = [];
     for (let field of renderedFields.current) {
-      const kid = field.current.getKid();
-      const tmpKid = kid.split('-');
-      const fieldVal = field.current.getValue();
-      const savedVal = parsedData.current[tmpKid[0]].data[tmpKid[1]];
-      if (fieldVal !== savedVal) {
-        editedFieldsKid.push(kid);
-        hasEdit = true;
+      if(field.current) {
+        const kid = field.current.getKid();
+        const tmpKid = kid.split('-');
+        const fieldVal = field.current.getValue();
+        const savedVal = parsedData.current[parseFloat(tmpKid[0])][parseFloat(tmpKid[1])];
+        if (fieldVal !== savedVal) {
+          editedFieldsKid.push(kid);
+          hasEdit = true;
+        }
+      } else {
+        console.log('Error while checking for edits: field is null')
       }
     }
     return [hasEdit, editedFieldsKid];
@@ -100,22 +101,24 @@ function Editor() {
         setIsLoading(true);
         const [hasEdit, editedFieldsKid] = hasEdited();
         const editedFields = renderedFields.current.filter((f) =>
-          editedFieldsKid.includes(f.current.getKid())
+          f.current && editedFieldsKid.includes(f.current.getKid())
         );
 
         if (hasEdit) {
           for (let field of editedFields) {
-            const kid = field.current.getKid().split('-');
-            parsedData.current[kid[0]].data[kid[1]] = field.current.getValue();
+            if(field.current) {
+              const kid = field.current.getKid().split('-');
+              parsedData.current[parseFloat(kid[0])][parseFloat(kid[1])] = field.current.getValue() as string;
+            }
           }
 
           //setFileData([...parsedData.current]);
           store.remove('fileData');
           store.set('fileData', {
             content: parsedData.current,
-            name: fileRef.current.name,
-            size: fileRef.current.size,
-            lastModified: fileRef.current.lastModified,
+            name: fileRef.current?.name,
+            size: fileRef.current?.size,
+            lastModified: fileRef.current?.lastModified,
             savedAt: new Date().toLocaleString(),
           });
 
@@ -135,7 +138,7 @@ function Editor() {
     [hasEdited]
   );
 
-  async function handleUpload(e) {
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement> | {target: DataTransfer}) {
     if (e?.target?.files) {
       handleCloseFile();
       if (isEditing) handleSave(true, true);
@@ -154,11 +157,10 @@ function Editor() {
       parsedData.current = [];
       let index = 0;
 
-      Papa.parse(e.target.files[0], {
+      Papa.parse<File>(e.target.files[0], {
         worker: true,
-        comments: '#',
-
-        step: (row) => {
+        step: (row: any) => {
+          // console.log(row);
           if (index === 0 && row.data[0] !== 'Type') {
             displayAlert(
               'The uploaded file does not seem to be from Shopify',
@@ -168,7 +170,7 @@ function Editor() {
             return;
           }
           if (row.data.length > 7) row.data = row.data.splice(0, 7);
-          if (row.data.length === 7) parsedData.current.push(row);
+          if (row.data.length === 7) parsedData.current.push(row.data);
           index++;
         },
         complete: async () => {
@@ -178,9 +180,9 @@ function Editor() {
           store.remove('fileData');
           store.set('fileData', {
             content: parsedData.current,
-            name: fileRef.current.name,
-            size: fileRef.current.size,
-            lastModified: fileRef.current.lastModified,
+            name: fileRef.current?.name,
+            size: fileRef.current?.size,
+            lastModified: fileRef.current?.lastModified,
             savedAt: new Date().toLocaleString(),
           });
           setIsLoading(false);
@@ -193,15 +195,11 @@ function Editor() {
   function handleDownload() {
     if (parsedData.current) {
       handleSave();
-      let lines = [];
-      for (let l of parsedData.current) {
-        lines.push(l.data);
-      }
-      const data = Papa.unparse(lines);
+      const data = Papa.unparse(parsedData.current);
       const blob = new Blob([data], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.download = `ShopiCSV_${file.name}`;
+      link.download = `ShopiCSV_${file?.name}`;
       link.href = url;
       link.click();
       displayAlert('Yee haw! 🤠');
@@ -215,13 +213,13 @@ function Editor() {
   }, []);
 
   // TODO: implement filtered types
-  useEffect(() => {}, [filteredType]);
+  // useEffect(() => {}, [filteredType]);
 
   useEffect(() => {
     let arr = [];
     if (filteredDataIds.length > 0) {
       for (let e of filteredDataIds) {
-        arr.push(parsedData.current[e.id]);
+        arr.push(parsedData.current[e]);
       }
     } else {
       arr = [...parsedData.current];
@@ -325,7 +323,7 @@ function Editor() {
         isLoading={isLoading}
         isEditing={isEditing}
         filteredDataIds={setFilteredDataIds}
-        filteredType={setFilteredType}
+        // filteredType={setFilteredType}
       />
       <MtEditorContent
         ref={contentRef}
