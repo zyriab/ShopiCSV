@@ -16,7 +16,7 @@ import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import Button from '@mui/material/Button';
 
-export function usePagination(dataLength, maxElemStorageId) {
+export function usePagination(dataLength: number, maxElemStorageId: string) {
   const [selectedPage, setSelectedPage] = useState(1);
   const [currentPageNum, setCurrentPageNum] = useState(1);
   const [maxElementsPerPage, setMaxElementsPerPage] = useState(
@@ -29,14 +29,14 @@ export function usePagination(dataLength, maxElemStorageId) {
       ? Math.round((dataLength - 1) / maxElementsPerPage) || 1
       : 1
   );
-  const [pageContent, setPageContent] = useState([]);
+  const [pageContent, setPageContent] = useState<JSX.Element[]>([]);
   const [goToPageInputVal, setGoToPageInputVal] = useState('');
   const [goToPageHelpTxt, setGoToPageHelpTxt] = useState('');
-  const previousPageNum = useRef(null);
-  const navigationButtonsEl = useRef(null);
-  const goToPageInputEl = useCallback(
+  const previousPageNum = useRef<number>(null!);
+  const navigationButtonsEl = useRef<ChangePageBtnsRef>(null!);
+  const goToPageInputEl: React.RefCallback<HTMLDivElement> = useCallback(
     (e) => {
-      if (e !== null) {
+      if (e) {
         const input = e.children[1].children[0];
         input.addEventListener('blur', () => setGoToPageHelpTxt(''));
         input.addEventListener('focus', () => {
@@ -47,13 +47,15 @@ export function usePagination(dataLength, maxElemStorageId) {
     [goToPageInputVal]
   );
 
-  function handleGoToPageInputChange(e) {
+  function handleGoToPageInputChange(
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) {
     setGoToPageInputVal(e.target.value);
     if (e.target.value.length === 0) setGoToPageHelpTxt('');
     else setGoToPageHelpTxt('Press return');
   }
 
-  function handleElementsPerPageChange(n) {
+  function handleElementsPerPageChange(n: number) {
     const val = n === 0 ? dataLength : n;
     const firstDisplayedFieldIndex =
       selectedPage * maxElementsPerPage - maxElementsPerPage;
@@ -65,7 +67,7 @@ export function usePagination(dataLength, maxElemStorageId) {
 
   const goToPage = useCallback(
     (n) => {
-      let p;
+      let p: number;
       if (n > maxPageNum) p = maxPageNum;
       else if (n <= 0) p = 1;
       else p = n;
@@ -85,7 +87,7 @@ export function usePagination(dataLength, maxElemStorageId) {
     [maxPageNum]
   );
 
-  function changeDisplayedPage(n) {
+  function changeDisplayedPage(n: number) {
     let p;
     if (n > maxPageNum) p = maxPageNum;
     else if (n <= 0) p = 1;
@@ -141,7 +143,7 @@ export function usePagination(dataLength, maxElemStorageId) {
       if (
         e.code === 'Enter' &&
         !isNaN(+goToPageInputVal) &&
-        e.path[0].getAttribute('id') === 'go-to-page-field'
+        document.activeElement?.getAttribute('id') === 'go-to-page-field'
       ) {
         // FIXME: called way to much and below functions calls breaks the binding
         // (nothing happens and still called a lot, although less)
@@ -153,8 +155,8 @@ export function usePagination(dataLength, maxElemStorageId) {
         goToPage(n);
       } else if (
         (e.code === 'ArrowLeft' || e.code === 'ArrowRight') &&
-        e.path[0].nodeName !== 'INPUT' &&
-        e.path[0].nodeName !== 'TEXTAREA'
+        document.activeElement?.nodeName !== 'INPUT' &&
+        document.activeElement?.nodeName !== 'TEXTAREA'
       ) {
         e.stopImmediatePropagation();
         e.preventDefault();
@@ -229,56 +231,82 @@ export function usePagination(dataLength, maxElemStorageId) {
   };
 }
 
-const ChangePageButtons = forwardRef((props, ref) => {
-  const { currentPageNum, maxPageNum, goNextPage, goPrevPage } = props;
-  const leftButtonEl = useRef(null);
-  const rightButtonEl = useRef(null);
+interface ChangePageBtnsProps {
+  currentPageNum: number;
+  maxPageNum: number;
+  goNextPage: () => void;
+  goPrevPage: () => void;
+}
 
-  useImperativeHandle(ref, () => ({
-    next: () => rightButtonEl.current.click(),
-    previous: () => leftButtonEl.current.click(),
-  }));
+type ChangePageBtnsRef = {
+  next: () => void;
+  previous: () => void;
+};
 
-  return (
-    <Grid
-      spacing={2}
-      container
-      item
-      alignItems="center"
-      justifyContent="center">
-      <Grid item>
-        <Button ref={leftButtonEl} variant="contained" onClick={goPrevPage}>
-          <ArrowBackRoundedIcon />
-        </Button>
+const ChangePageButtons = forwardRef<ChangePageBtnsRef, ChangePageBtnsProps>(
+  (props: ChangePageBtnsProps, ref) => {
+    const leftButtonEl = useRef<HTMLButtonElement>(null!);
+    const rightButtonEl = useRef<HTMLButtonElement>(null!);
+
+    useImperativeHandle(ref, () => ({
+      next: () => rightButtonEl.current.click(),
+      previous: () => leftButtonEl.current.click(),
+    }));
+
+    return (
+      <Grid
+        spacing={2}
+        container
+        item
+        alignItems="center"
+        justifyContent="center">
+        <Grid item>
+          <Button
+            ref={leftButtonEl}
+            variant="contained"
+            onClick={props.goPrevPage}>
+            <ArrowBackRoundedIcon />
+          </Button>
+        </Grid>
+        <Grid item>
+          <Typography variant="subtitle1" component="div">
+            {`${props.currentPageNum} / ${props.maxPageNum}`}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Button
+            ref={rightButtonEl}
+            variant="contained"
+            onClick={props.goNextPage}>
+            <ArrowForwardRoundedIcon />
+          </Button>
+        </Grid>
       </Grid>
-      <Grid item>
-        <Typography variant="subtitle1" component="div">
-          {`${currentPageNum} / ${maxPageNum}`}
-        </Typography>
-      </Grid>
-      <Grid item>
-        <Button ref={rightButtonEl} variant="contained" onClick={goNextPage}>
-          <ArrowForwardRoundedIcon />
-        </Button>
-      </Grid>
-    </Grid>
-  );
-});
+    );
+  }
+);
 
-function GoToPageField(props) {
-  const { helperText, value, onChange, targetRef } = props;
+interface GoToPageFieldProps {
+  helperText: string;
+  value: string;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
+  targetRef: React.RefCallback<HTMLDivElement>;
+}
 
+function GoToPageField(props: GoToPageFieldProps) {
   return (
     <TextField
-      ref={targetRef}
+      ref={props.targetRef}
       id="go-to-page-field"
       variant="standard"
       type="number"
       label="Go to page"
       sx={{ minHeight: '4.5rem' }}
-      helperText={helperText}
-      value={value}
-      onChange={onChange}
+      helperText={props.helperText}
+      value={props.value}
+      onChange={props.onChange}
     />
   );
 }
