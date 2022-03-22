@@ -15,10 +15,15 @@ export function MtDropZone(props: AppProps) {
   const [hasDrop, setHasDrop] = useState(false);
   const inputEl = useRef<HTMLInputElement>(null);
   const dropZoneEl = useRef<HTMLDivElement>(null);
+  const isHandling = useRef(false);
 
   useEffect(() => {
     dropZoneEl.current?.addEventListener('click', () => {
-      inputEl.current?.click();
+      if(!isHandling.current) {
+        isHandling.current = true;
+        inputEl.current?.click(); // FIXME: Event is being fired but this line has no effect anymore
+      }
+      isHandling.current = false;
     });
 
     dropZoneEl.current?.addEventListener('dragover', (e) => {
@@ -34,10 +39,14 @@ export function MtDropZone(props: AppProps) {
 
     dropZoneEl.current?.addEventListener('drop', (e) => {
       e.preventDefault();
-      if (e.dataTransfer?.files.length && inputEl.current) {
-        inputEl.current.files = e.dataTransfer?.files;
-        props.onChange({ target: e.dataTransfer });
+      if(!isHandling.current) {
+        isHandling.current = true;
+        if (e.dataTransfer?.files.length && inputEl.current) {
+          inputEl.current.files = e.dataTransfer?.files;
+          props.onChange({ target: e.dataTransfer });
+        }
       }
+      isHandling.current = false;
       setHasDrop(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
