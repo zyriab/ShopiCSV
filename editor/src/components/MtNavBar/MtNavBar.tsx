@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import store from 'store';
+import store from 'store2';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -22,7 +22,7 @@ interface AppProps {
 }
 
 export function MtNavBar(props: AppProps) {
-  const [isDark, setIsDark] = useState(
+  const [, setIsDark] = useState(
     store.get('themeMode') === 'dark' || false
   );
 
