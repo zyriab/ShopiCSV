@@ -21,7 +21,9 @@ import { MtSearchField } from '../MtSearchField/MtSearchField';
 interface AppProps {
   onDownload: () => void;
   onSave: (displayMsg?: boolean, isAutosave?: boolean) => boolean;
-  onUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  onUpload: (
+    e: React.ChangeEvent<HTMLInputElement> | { target: DataTransfer }
+  ) => Promise<void>;
   onClose: (deleteFile?: boolean) => Promise<void>;
   isLoading: boolean;
   isEditing: boolean;
