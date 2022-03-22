@@ -166,7 +166,7 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
 
                   // setTimeout here is because there is a small latency before the ref is set
                   setTimeout(() => {
-                    if (!fieldRef.current?.isCode()) {
+                    if (fieldRef.current && !fieldRef.current?.isCode()) {
                       const el =
                         fieldRef.current?.getElement() as HTMLInputElement;
                       el.style.height = '100%';
