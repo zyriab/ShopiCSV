@@ -61,15 +61,18 @@ export function MtSearchField(props: AppProps) {
   const searchInput = useCallback(
     (value: string) => {
       if (value.trim() !== '') {
+        const ids = [];
         for (let d of props.data) {
           let i: number;
           // TODO: set index based on selected filter ? (something like that?)
           i = d.findIndex((e) => e[5].trim().includes(value.trim()));
-          if (i !== -1) props.filteredDataIds.push(i);
+          if (i !== -1) ids.push(i);
         }
+
+        props.filteredDataIds(ids);
       }
     },
-    [props.data, props.filteredDataIds]
+    [props]
   );
 
   const debSearch = useMemo(
