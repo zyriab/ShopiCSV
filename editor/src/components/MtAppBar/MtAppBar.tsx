@@ -31,7 +31,7 @@ interface AppProps {
   display: number[];
   onDisplayChange: (selectedColumns: number[]) => void;
   data: string[][];
-  filteredDataIds: { data: string; id: number }; // FIXME: see if this can just be id
+  filteredDataIds: number[];
   // filteredType,
 }
 
