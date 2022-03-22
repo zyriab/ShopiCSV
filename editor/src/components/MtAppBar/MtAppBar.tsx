@@ -42,11 +42,15 @@ export const MtAppBar = (props: AppProps) => {
   const [saveTime, setSaveTime] = useState(
     new Date(store.get('fileData')?.savedAt || null)
   );
-  const [saveDisplayInterval, setSaveDisplayInterval] = useState<NodeJS.Timer | null>(null);
+  const [saveDisplayInterval, setSaveDisplayInterval] =
+    useState<NodeJS.Timer | null>(null);
   const inputEl = useRef<HTMLInputElement>(null);
   const fileNameEl = useRef<HTMLParagraphElement>(null);
 
-  function handleDisplayFields(e: React.MouseEvent<HTMLElement, MouseEvent>, fields: number[]) {
+  function handleDisplayFields(
+    e: React.MouseEvent<HTMLElement, MouseEvent>,
+    fields: number[]
+  ) {
     if (fields.length < displayFields.length) props.onSave();
     setDisplayFields(fields);
     props.onDisplayChange(fields);
@@ -64,7 +68,11 @@ export const MtAppBar = (props: AppProps) => {
   }
 
   useEffect(() => {
-    if (saveDisplayInterval === null && props.isEditing) {
+    if (
+      saveDisplayInterval === null &&
+      props.isEditing &&
+      store.get('fileData').savedAt
+    ) {
       setSaveDisplayInterval(
         setInterval(() => {
           setSaveTime(new Date(store.get('fileData').savedAt));
@@ -86,7 +94,10 @@ export const MtAppBar = (props: AppProps) => {
       <Toolbar>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid xs={5} sx={{ width: '100%' }} item>
-            <MtSearchField data={props.data} filteredDataIds={props.filteredDataIds} />
+            <MtSearchField
+              data={props.data}
+              filteredDataIds={props.filteredDataIds}
+            />
           </Grid>
           {store.get('fileData') && props.isEditing ? (
             <Grid
@@ -117,7 +128,8 @@ export const MtAppBar = (props: AppProps) => {
                     {`${formatBytes(store.get('fileData').size, 2)} | Rows: ${
                       store
                         .get('fileData')
-                        .content.filter((e: string[]) => e.length === 7).length - 1
+                        .content.filter((e: string[]) => e.length === 7)
+                        .length - 1
                     }`}
                   </Typography>
                 </Stack>
@@ -141,20 +153,24 @@ export const MtAppBar = (props: AppProps) => {
           )}
           <Grid xs={'auto'} item>
             <Tooltip title="Close & delete">
-              <IconButton
-                sx={{ color: 'white' }}
-                disabled={props.isLoading || !props.isEditing}
-                onClick={() => props.onClose(true)}>
-                <DeleteForeverIcon />
-              </IconButton>
+              <span>
+                <IconButton
+                  sx={{ color: 'white' }}
+                  disabled={props.isLoading || !props.isEditing}
+                  onClick={() => props.onClose(true)}>
+                  <DeleteForeverIcon />
+                </IconButton>
+              </span>
             </Tooltip>
             <Tooltip title="Upload a file">
-              <IconButton
-                sx={{ color: 'white' }}
-                disabled={props.isLoading}
-                onClick={() => inputEl.current?.click()}>
-                <UploadFileIcon />
-              </IconButton>
+              <span>
+                <IconButton
+                  sx={{ color: 'white' }}
+                  disabled={props.isLoading}
+                  onClick={() => inputEl.current?.click()}>
+                  <UploadFileIcon />
+                </IconButton>
+              </span>
             </Tooltip>
             <input
               ref={inputEl}
@@ -164,20 +180,24 @@ export const MtAppBar = (props: AppProps) => {
               style={{ display: 'none' }}
             />
             <Tooltip title="Save">
-              <IconButton
-                sx={{ color: 'white' }}
-                disabled={props.isLoading || !props.isEditing}
-                onClick={handleSave}>
-                <SaveIcon />
-              </IconButton>
+              <span>
+                <IconButton
+                  sx={{ color: 'white' }}
+                  disabled={props.isLoading || !props.isEditing}
+                  onClick={handleSave}>
+                  <SaveIcon />
+                </IconButton>
+              </span>
             </Tooltip>
             <Tooltip title="Download">
-              <IconButton
-                sx={{ color: 'white' }}
-                disabled={props.isLoading || !props.isEditing}
-                onClick={props.onDownload}>
-                <DownloadIcon />
-              </IconButton>
+              <span>
+                <IconButton
+                  sx={{ color: 'white' }}
+                  disabled={props.isLoading || !props.isEditing}
+                  onClick={props.onDownload}>
+                  <DownloadIcon />
+                </IconButton>
+              </span>
             </Tooltip>
           </Grid>
         </Grid>
