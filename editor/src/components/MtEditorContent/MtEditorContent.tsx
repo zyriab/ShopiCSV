@@ -26,8 +26,12 @@ interface AppProps {
   renderedFields: React.MutableRefObject<React.RefObject<MtFieldElement>[]>;
 }
 
+export type MtEditorContentElement = {
+  resetPagination: () => void;
+};
+
 // TODO: display the current fields page when changing rows display num
-export const MtEditorContent = forwardRef((props: AppProps, ref) => {
+export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>((props: AppProps, ref) => {
   const [isReady, setIsReady] = useState(false);
   const {
     previousPageNum,
