@@ -52,7 +52,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 interface AppProps {
   data: string[][];
-  filteredDataIds: number[];
+  filteredDataIds: (n: number[]) => void;
 }
 
 export function MtSearchField(props: AppProps) {
