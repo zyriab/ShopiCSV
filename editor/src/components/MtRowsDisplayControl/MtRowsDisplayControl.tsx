@@ -3,14 +3,17 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
-export function MtRowsDisplayControl(props) {
-  const { maxRowDisplay, handleRowsDisplayChange } = props;
+interface AppProps {
+  maxRowDisplay: number;
+  handleRowsDisplayChange: (n: number) => void;
+}
 
+export function MtRowsDisplayControl(props: AppProps) {
   return (
     <Grid xs container item alignItems="center">
       <Grid item>
         <Typography
-          variant="paragraph"
+          paragraph
           component="p"
           sx={{ paddingBottom: '.3rem', marginRight: '.5rem' }}>
           Display rows per:
@@ -18,37 +21,37 @@ export function MtRowsDisplayControl(props) {
       </Grid>
       <Grid item>
         <Button
-          variant={maxRowDisplay === 2 ? 'outlined' : ''}
-          onClick={() => handleRowsDisplayChange(2)}>
+          variant={props.maxRowDisplay === 2 ? 'outlined' : 'text'}
+          onClick={() => props.handleRowsDisplayChange(2)}>
           2
         </Button>
       </Grid>
       <Grid item>
         <Button
-          variant={maxRowDisplay === 4 ? 'outlined' : ''}
-          onClick={() => handleRowsDisplayChange(4)}>
+          variant={props.maxRowDisplay === 4 ? 'outlined' : 'text'}
+          onClick={() => props.handleRowsDisplayChange(4)}>
           4
         </Button>
       </Grid>
       <Grid item>
         <Button
-          variant={maxRowDisplay === 8 ? 'outlined' : ''}
-          onClick={() => handleRowsDisplayChange(8)}>
+          variant={props.maxRowDisplay === 8 ? 'outlined' : 'text'}
+          onClick={() => props.handleRowsDisplayChange(8)}>
           8
         </Button>
       </Grid>
       <Grid item>
         <Button
-          variant={maxRowDisplay === 16 ? 'outlined' : ''}
-          onClick={() => handleRowsDisplayChange(16)}>
+          variant={props.maxRowDisplay === 16 ? 'outlined' : 'text'}
+          onClick={() => props.handleRowsDisplayChange(16)}>
           16
         </Button>
       </Grid>
       <Grid item>
         <Button
-          variant={maxRowDisplay === 0 ? 'outlined' : ''}
+          variant={props.maxRowDisplay === 0 ? 'outlined' : 'text'}
           // FIXME: freezes on render
-          onClick={() => handleRowsDisplayChange(0)}> 
+          onClick={() => props.handleRowsDisplayChange(0)}>
           All
         </Button>
       </Grid>
