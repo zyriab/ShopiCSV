@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import store from 'store';
+import store from 'store2';
 import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 

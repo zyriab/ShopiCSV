@@ -6,7 +6,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react';
-import store from 'store';
+import store from 'store2';
 import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
 import Grid from '@mui/material/Grid';

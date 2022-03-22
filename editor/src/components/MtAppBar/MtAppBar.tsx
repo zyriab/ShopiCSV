@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { formatBytes } from '../../utils/formatBytes.utils';
-import store from 'store';
+import store from 'store2';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';

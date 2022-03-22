@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from 'react';
 import { createTheme } from '@mui/material/styles';
-import store from 'store';
+import store from 'store2';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { darkTheme, lightTheme } from '../themes/themes';
 
