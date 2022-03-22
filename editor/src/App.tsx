@@ -1,3 +1,4 @@
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { ConfirmProvider } from 'material-ui-confirm';
 import EditorPage from './pages/Editor';
