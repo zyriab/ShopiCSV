@@ -12,19 +12,22 @@ import { MtRowsDisplayControl } from '../MtRowsDisplayControl/MtRowsDisplayContr
 import { MtSpinner } from '../MtSpinner/MtSpinner';
 import { MtDropZone } from '../MtDropZone/MtDropZone';
 import { MtBackToTopBtn } from '../MtBackToTopBtn/MtBackToTopBtn';
-import { MtEditorField } from '../MtEditorField/MtEditorField';
+import { MtEditorField, MtFieldElement } from '../MtEditorField/MtEditorField';
+
+interface AppProps {
+  onSave: (displayMsg?: boolean, isAutosave?: boolean) => boolean;
+  onUpload: (
+    e: React.ChangeEvent<HTMLInputElement> | { target: DataTransfer }
+  ) => Promise<void>;
+  setIsLoading: (loading: boolean) => void;
+  isLoading: boolean;
+  display: number[];
+  data: string[][];
+  renderedFields: React.MutableRefObject<React.RefObject<MtFieldElement>[]>;
+}
 
 // TODO: display the current fields page when changing rows display num
-export const MtEditorContent = forwardRef((props, ref) => {
-  const {
-    display,
-    renderedFields,
-    onSave,
-    data,
-    onUpload,
-    isLoading,
-    setIsLoading,
-  } = props;
+export const MtEditorContent = forwardRef((props: AppProps, ref) => {
   const [isReady, setIsReady] = useState(false);
   const {
     previousPageNum,
@@ -38,7 +41,7 @@ export const MtEditorContent = forwardRef((props, ref) => {
     goToPageFieldProps,
     ChangePageButtons,
     changePageButtonsProps,
-  } = usePagination(data.length, 'rowsNumber');
+  } = usePagination(props.data.length, 'rowsNumber');
 
   useImperativeHandle(ref, () => ({
     resetPagination,
@@ -46,8 +49,8 @@ export const MtEditorContent = forwardRef((props, ref) => {
 
   // TODO: OPTI: 'data' shallowly changes, making React call this effect a second time on page load
   useEffect(() => {
-    if (data.length === 0) setPageContent([]);
-    if (data.length > 0 && !isLoading) {
+    if (props.data.length === 0) setPageContent([]);
+    if (props.data.length > 0 && !props.isLoading) {
       const fieldNames = [
         'Type',
         'Identification',
@@ -60,33 +63,27 @@ export const MtEditorContent = forwardRef((props, ref) => {
 
       async function displayPage() {
         setIsReady(false);
-        setIsLoading(true);
+        props.setIsLoading(true);
 
         // if user has gone to another page, save previous page
-        if (selectedPage !== previousPageNum.current) onSave();
+        if (selectedPage !== previousPageNum.current) props.onSave();
 
-        const content = [];
-        renderedFields.current = [];
+        const content: JSX.Element[] = [];
+        props.renderedFields.current = [];
 
-        function setRow(i) {
-          function hasHTMLInRow(row) {
+        function setRow(i: number) {
+          function hasHTMLInRow(row: string[]) {
             return (
               new RegExp(
                 '<(br|basefont|hr|input|source|frame|param|area|meta|!--|col|link|option|base|img|wbr|!DOCTYPE).*?>|<(a|abbr|acronym|address|applet|article|aside|audio|b|bdi|bdo|big|blockquote|body|button|canvas|caption|center|cite|code|colgroup|command|datalist|dd|del|details|dfn|dialog|dir|div|dl|dt|em|embed|fieldset|figcaption|figure|font|footer|form|frameset|head|header|hgroup|h1|h2|h3|h4|h5|h6|html|i|iframe|ins|kbd|keygen|label|legend|li|map|mark|menu|meter|nav|noframes|noscript|object|ol|optgroup|output|p|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|span|strike|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|tt|u|ul|var|video).*?<\\/\\2>'
-              ).test(row?.data[5]) ||
+              ).test(row[5]) ||
               new RegExp(
                 '<(br|basefont|hr|input|source|frame|param|area|meta|!--|col|link|option|base|img|wbr|!DOCTYPE).*?>|<(a|abbr|acronym|address|applet|article|aside|audio|b|bdi|bdo|big|blockquote|body|button|canvas|caption|center|cite|code|colgroup|command|datalist|dd|del|details|dfn|dialog|dir|div|dl|dt|em|embed|fieldset|figcaption|figure|font|footer|form|frameset|head|header|hgroup|h1|h2|h3|h4|h5|h6|html|i|iframe|ins|kbd|keygen|label|legend|li|map|mark|menu|meter|nav|noframes|noscript|object|ol|optgroup|output|p|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|span|strike|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|tt|u|ul|var|video).*?<\\/\\2>'
-              ).test(row?.data[6]) ||
-              row?.data[0].includes('SMS_TEMPLATE') ||
-              row?.data[2].includes('BODY_HTML') ||
+              ).test(row[6]) ||
+              row[0].includes('SMS_TEMPLATE') ||
+              row[2].includes('BODY_HTML') ||
               false
             );
-          }
-
-          function getNumOfLines(str) {
-            if (str && typeof str === 'string') {
-              return (str.match(/\n/g) || '').length + 1;
-            }
           }
 
           // i.e: (2 x 5) - (5 - [0, 1, 2, 3, 4])
@@ -94,48 +91,52 @@ export const MtEditorContent = forwardRef((props, ref) => {
             selectedPage * maxElementsPerPage - (maxElementsPerPage - (i + 1))
           );
 
-          if (index >= data.length) return;
+          if (index >= props.data.length) return;
 
-          const row = data[index];
+          let row = props.data[index];
           const tmp = [];
 
           // had a bug once, data.length was 9 with empty indexes :/
-          if (row?.data.length > 7) row.data = row.data.splice(0, 7);
+          if (row.length > 7) row = row.splice(0, 7);
 
-          if (row?.data.length === 7) {
+          if (row.length === 7) {
             const hasEditor = hasHTMLInRow(row);
 
             for (let x = 0; x < 7; x++) {
               let width =
-                !display.includes(5) && !display.includes(6) ? true : 1;
-              if (display.length !== 7 && (x === 5 || x === 6)) {
+                !props.display.includes(5) && !props.display.includes(6)
+                  ? true
+                  : 1;
+              if (props.display.length !== 7 && (x === 5 || x === 6)) {
                 // code editor does not resize well with xs={true}
                 if (hasEditor) {
                   if (
-                    (!display.includes(5) && display.includes(6)) ||
-                    (display.includes(5) && !display.includes(6))
+                    (!props.display.includes(5) && props.display.includes(6)) ||
+                    (props.display.includes(5) && !props.display.includes(6))
                   ) {
                     // other fields are of size 1 if [5]/[6] is present
                     // Here we substract the number of displayed fields from the number of columns (7)
                     // -1 is because [5]/[6] is not of size 1 and we want to make this calculation
                     // based on the OTHER fields ;)
                     // i.e: 7 col - (3-1) fields = size of 5 (+2 fields of size 1 = 7 columns taken 🤓)
-                    width = 7 - (display.length - 1);
+                    width = 7 - (props.display.length - 1);
                   } else {
-                    if (display.length === 2) width = 3.5;
-                    else if (display.length === 4) width = 2.5;
-                    else if (display.length === 6) width = 1.5;
-                    else width = Math.ceil(7 / display.length);
+                    if (props.display.length === 2) width = 3.5;
+                    else if (props.display.length === 4) width = 2.5;
+                    else if (props.display.length === 6) width = 1.5;
+                    else width = Math.ceil(7 / props.display.length);
                   }
                 } else width = true;
               }
 
-              if (display.includes(x)) {
-                renderedFields.current.push(createRef());
+              if (props.display.includes(x)) {
+                props.renderedFields.current.push(createRef<MtFieldElement>());
                 const key = `${index}-${x}`;
                 const isCode = (x === 5 || x === 6) && hasEditor;
-                const fieldRef =
-                  renderedFields.current[renderedFields.current.length - 1];
+                const fieldRef: React.RefObject<MtFieldElement> =
+                  props.renderedFields.current[
+                    props.renderedFields.current.length - 1
+                  ];
 
                 tmp.push(
                   <Grid key={`grid-${x}`} xs={width} alignItems="stretch" item>
@@ -146,15 +147,21 @@ export const MtEditorContent = forwardRef((props, ref) => {
                       code={isCode}
                       label={fieldNames[x]}
                       fullWidth={width === true}
-                      value={row.data[x]}
+                      value={row[x]}
                     />
                   </Grid>
                 );
 
                 // setTimeout here is because there is a small latency before the ref is set
                 setTimeout(() => {
-                  fieldRef.current.getElement().style.height = '100%';
-                  fieldRef.current.getElement().children[1].style.height = '100%';
+                  if (fieldRef?.current) {
+                    const el =
+                      fieldRef.current.getElement() as HTMLInputElement;
+                    el.style.height = '100%';
+                    (el.children[1] as HTMLInputElement).style.height = '100%';
+                  } else {
+                    console.log('fields not set, could not resize them');
+                  }
                 }, 0);
               }
             }
@@ -177,29 +184,24 @@ export const MtEditorContent = forwardRef((props, ref) => {
         }
 
         setPageContent(content);
-        setIsLoading(false);
+        props.setIsLoading(false);
         setIsReady(true);
       }
       displayPage();
     }
   }, [
     maxElementsPerPage,
-    selectedPage,
-    display,
-    renderedFields,
-    isLoading,
-    setIsLoading,
-    setPageContent,
-    onSave,
     previousPageNum,
-    data,
+    props,
+    selectedPage,
+    setPageContent,
   ]);
 
   return (
     <>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isLoading}>
+        open={props.isLoading}>
         <MtSpinner />
       </Backdrop>
       <MtBackToTopBtn />
@@ -258,7 +260,7 @@ export const MtEditorContent = forwardRef((props, ref) => {
             <MtDropZone
               text="Drag and drop your CSV file or click"
               acceptedFiles="text/csv"
-              onChange={onUpload}
+              onChange={props.onUpload}
             />
           </Grid>
         </Grid>
