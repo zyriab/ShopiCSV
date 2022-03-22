@@ -14,7 +14,7 @@ import {
 
 export type MtFieldElement = {
   getKid: () => string;
-  getValue: () => string;
+  getValue: () => string | undefined;
   layout: () => void;
   isCode: () => boolean;
   getElement: () => HTMLInputElement | MtCodeEditorElement;
