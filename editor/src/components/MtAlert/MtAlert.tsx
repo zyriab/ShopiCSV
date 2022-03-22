@@ -6,7 +6,15 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export const MtAlert = forwardRef((props, ref) => {
+export type MtAlertElement = {
+  show: (
+    message: string,
+    type?: AlertColor,
+    duration?: number,
+  ) => void;
+};
+
+export const MtAlert = forwardRef<MtAlertElement, null>((props, ref) => {
   const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState('');
   const [severity, setSeverity] = useState<AlertColor | undefined>();
