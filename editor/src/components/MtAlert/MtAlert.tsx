@@ -7,14 +7,12 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
 });
 
 export type MtAlertElement = {
-  show: (
-    message: string,
-    type?: AlertColor,
-    duration?: number,
-  ) => void;
+  show: (message: string, type?: AlertColor, duration?: number) => void;
 };
 
-export const MtAlert = forwardRef<MtAlertElement, null>((props, ref) => {
+interface AppProps {}
+
+export const MtAlert = forwardRef<MtAlertElement, AppProps>((props, ref) => {
   const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState('');
   const [severity, setSeverity] = useState<AlertColor | undefined>();
@@ -30,7 +28,11 @@ export const MtAlert = forwardRef<MtAlertElement, null>((props, ref) => {
     setOpen(false);
   }
 
-  function show(message: string, type: AlertColor = 'success', duration = 6000) {
+  function show(
+    message: string,
+    type: AlertColor = 'success',
+    duration = 6000
+  ) {
     setMsg(message);
     setSeverity(type);
     setAutoHideDuration(duration);
