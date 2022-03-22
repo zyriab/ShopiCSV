@@ -7,11 +7,26 @@ import React, {
   useCallback,
 } from 'react';
 import { withSize } from 'react-sizeme';
-import MonacoEditor from '@uiw/react-monacoeditor';
+import MonacoEditor, { RefEditorInstance } from '@uiw/react-monacoeditor';
+import editor from 'monaco-editor';
 
-const options = {
+export type MtCodeEditorElement = {
+  layout: () => void;
+  getValue: () => string | undefined;
+  getKid: () => string;
+};
+interface AppProps {
+  inputref: React.MutableRefObject<MtCodeEditorElement>;
+  kid: string;
+  size: { width: number };
+  language: string;
+  height: string;
+  value: string;
+}
+
+const defaultOptions: editor.editor.IStandaloneEditorConstructionOptions = {
   theme: 'vs-dark',
-  acceptSuggestionOnCommitCharacter: 'off',
+  acceptSuggestionOnCommitCharacter: false,
   acceptSuggestionOnEnter: 'off',
   codeLens: false,
   contextmenu: false,
@@ -21,33 +36,36 @@ const options = {
 };
 
 export const MtCodeEditor = withSize({ monitorWidth: true })(
-  forwardRef((props, ref) => {
-    const { inputref, kid } = props;
-    const { width } = props.size;
-    const editorEl = useRef(null);
-    const isMounted = useRef(null);
+  forwardRef((props: AppProps, ref) => {
+    const editorEl = useRef<RefEditorInstance>(null!);
+    const isMounted = useRef<boolean>(null!);
     const [shouldUpdate, setShouldUpdate] = useState(true);
 
     const layout = useCallback(() => {
       if (isMounted.current)
-        editorEl.current.editor?.layout({ width: +width, height: 500 });
-    }, [width]);
+        editorEl.current.editor?.layout({
+          width: +props.size.width,
+          height: parseFloat(props.height),
+        });
+    }, [props.size.width, props.height]);
 
     function getValue() {
       if (isMounted.current) {
-        return editorEl.current.editor.getValue();
+        return editorEl.current.editor?.getValue();
       }
     }
 
-    useImperativeHandle(inputref, () => ({
+    useImperativeHandle(props.inputref, () => ({
       layout,
       getValue,
-      getKid: () => kid,
+      getKid: () => props.kid,
     }));
 
     useEffect(() => {
       isMounted.current = true;
-      return () => (isMounted.current = false);
+      return () => {
+        isMounted.current = false;
+      };
     }, []);
 
     // re-rendering to make sure the ref is set
@@ -63,12 +81,6 @@ export const MtCodeEditor = withSize({ monitorWidth: true })(
       window.addEventListener('resize', layout);
     }, [layout]);
 
-    return (
-      <MonacoEditor
-        ref={editorEl}
-        options={props.options || options}
-        {...props}
-      />
-    );
+    return <MonacoEditor ref={editorEl} options={defaultOptions} {...props} />;
   })
 );
