@@ -34,6 +34,7 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
   const [goToPageHelpTxt, setGoToPageHelpTxt] = useState('');
   const previousPageNum = useRef<number>(null!);
   const navigationButtonsEl = useRef<ChangePageBtnsRef>(null!);
+  const isHandling = useRef(false);
   const goToPageInputEl: React.RefCallback<HTMLDivElement> = useCallback(
     (e) => {
       if (e) {
@@ -140,29 +141,29 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
   /* KEY BINDINGS */
   const setupPagination = useCallback(() => {
     window.addEventListener('keydown', (e) => {
-      if (
-        e.code === 'Enter' &&
-        !isNaN(+goToPageInputVal) &&
-        document.activeElement?.getAttribute('id') === 'go-to-page-field'
-      ) {
-        // FIXME: called way to much and below functions calls breaks the binding
-        // (nothing happens and still called a lot, although less)
-        // e.stopImmediatePropagation();
-        // e.preventDefault();
-        let n = +goToPageInputVal;
-        if (+goToPageInputVal > maxPageNum) n = maxPageNum;
-        else if (+goToPageInputVal <= 0) n = 1;
-        goToPage(n);
-      } else if (
-        (e.code === 'ArrowLeft' || e.code === 'ArrowRight') &&
-        document.activeElement?.nodeName !== 'INPUT' &&
-        document.activeElement?.nodeName !== 'TEXTAREA'
-      ) {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        if (e.code === 'ArrowLeft') navigationButtonsEl.current?.previous();
-        else if (e.code === 'ArrowRight') navigationButtonsEl.current?.next();
+      if (!isHandling.current) {
+        isHandling.current = true;
+        if (
+          e.code === 'Enter' &&
+          !isNaN(+goToPageInputVal) &&
+          document.activeElement?.getAttribute('id') === 'go-to-page-field'
+        ) {
+          let n = +goToPageInputVal;
+          if (+goToPageInputVal > maxPageNum) n = maxPageNum;
+          else if (+goToPageInputVal <= 0) n = 1;
+          goToPage(n);
+        } else if (
+          (e.code === 'ArrowLeft' || e.code === 'ArrowRight') &&
+          document.activeElement?.nodeName !== 'INPUT' &&
+          document.activeElement?.nodeName !== 'TEXTAREA'
+        ) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+          if (e.code === 'ArrowLeft') navigationButtonsEl.current?.previous();
+          else if (e.code === 'ArrowRight') navigationButtonsEl.current?.next();
+        }
       }
+      isHandling.current = false;
     });
   }, [goToPage, goToPageInputVal, maxPageNum]);
 
