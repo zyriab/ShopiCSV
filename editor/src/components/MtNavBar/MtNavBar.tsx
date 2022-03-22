@@ -1,15 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import store from 'store';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Slide from '@mui/material/Slide';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { MtDarkModeSwitch } from '../MtDarkModeSwitch/MtDarkModeSwitch';
 
-function HideOnScroll({ children }) {
+function HideOnScroll({ children }: { children: React.ReactElement }) {
   const trigger = useScrollTrigger();
   return (
     <Slide appear={false} direction="down" in={!trigger}>
@@ -18,15 +17,18 @@ function HideOnScroll({ children }) {
   );
 }
 
-export function MtNavBar(props) {
-  const { onModeChange } = props;
+interface AppProps {
+  onModeChange: (isDark: boolean) => void;
+}
+
+export function MtNavBar(props: AppProps) {
   const [isDark, setIsDark] = useState(
     store.get('themeMode') === 'dark' || false
   );
 
-  function handleActivateDarkMode(dark) {
+  function handleActivateDarkMode(dark: boolean) {
     setIsDark(dark);
-    onModeChange(dark);
+    props.onModeChange(dark);
     if (dark) store.set('themeMode', 'dark');
     else store.set('themeMode', 'light');
   }
@@ -34,7 +36,10 @@ export function MtNavBar(props) {
   return (
     <>
       <HideOnScroll>
-        <AppBar enableColorOnDark color="primary" sx={{ zIndex: (theme) => theme.zIndex.drawer + 2 }}>
+        <AppBar
+          enableColorOnDark
+          color="primary"
+          sx={{ zIndex: (theme) => theme.zIndex.drawer + 2 }}>
           <Toolbar>
             <Grid container direction="row" alignItems="center">
               <Grid xs={1.5} item>
