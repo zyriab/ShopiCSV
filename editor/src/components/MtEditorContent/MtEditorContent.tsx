@@ -5,6 +5,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react';
+import { rowData } from '../../definitions/definitions';
 import { usePagination } from '../../utils/usePagination';
 import Grid from '@mui/material/Grid';
 import Backdrop from '@mui/material/Backdrop';
@@ -22,7 +23,7 @@ interface AppProps {
   setIsLoading: (loading: boolean) => void;
   isLoading: boolean;
   display: number[];
-  data: string[][];
+  data: rowData[];
   renderedFields: React.MutableRefObject<React.RefObject<MtFieldElement>[]>;
 }
 
@@ -102,10 +103,10 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
             const tmp = [];
 
             // had a bug once, data.length was 9 with empty indexes :/
-            if (row.length > 7) row = row.splice(0, 7);
+            if (row.data.length > 7) row.data = row.data.splice(0, 7);
 
-            if (row.length === 7) {
-              const hasEditor = hasHTMLInRow(row);
+            if (row.data.length === 7) {
+              const hasEditor = hasHTMLInRow(row.data);
 
               for (let x = 0; x < 7; x++) {
                 let width =
@@ -139,7 +140,9 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
                   props.renderedFields.current.push(
                     createRef<MtFieldElement>()
                   );
-                  const key = `${index}-${x}`;
+                  // FIXME: this creates bug when filtering content
+                  // index should always be the same, based on the full data array, event when filtering
+                  const key = `${row.id}-${x}`;
                   const isCode = (x === 5 || x === 6) && hasEditor;
                   const fieldRef: React.RefObject<MtFieldElement> =
                     props.renderedFields.current[
@@ -159,7 +162,7 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
                         code={isCode}
                         label={fieldNames[x]}
                         fullWidth={width === true}
-                        value={row[x]}
+                        value={row.data[x]}
                       />
                     </Grid>
                   );
