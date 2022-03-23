@@ -3,26 +3,28 @@ import debounce from 'lodash.debounce';
 
 export function useSearch(data: string[][] | string[], searchIndex = 0) {
   const [inputValue, setInputValue] = useState('');
-  const [result, setResult] = useState<string[]>([])
   const [resultIds, setResultIds] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const searchInput = useCallback(
     (value: string) => {
-      if(value.trim() !== ''){
-        const ids = [];
-        let i: number;
-        if (data)
-          for (let d of data) {
-            if (Array.isArray(d))
-              i = d.findIndex((e: any) => e[searchIndex].trim().includes(value.trim()));
-            else i = d === value.trim() ? (data as string[]).indexOf(d) : -1;
-            if (i !== -1) {
-              ids.push(i);
-              setResult(current => [...current, value.trim()])
-            }
+      setIsLoading(true);
+      let ids: number[] = [];
+      if (value.trim() !== '') {
+        if (Array.isArray(data[0])) {
+          ids = data.map((e, i) =>
+            e[searchIndex].trim().includes(value.trim()) ? i : -1
+          );
+        } else {
+          for (const d of data) {
+            ids.push(d === value.trim() ? (data as string[]).indexOf(d) : -1);
           }
-        setResultIds(ids);
-      }
+        }
+        ids = ids.filter((i) => i !== -1);
+      } else ids = [];
+
+      setResultIds(ids);
+      setIsLoading(false);
     },
     [data, searchIndex]
   );
@@ -42,6 +44,7 @@ export function useSearch(data: string[][] | string[], searchIndex = 0) {
 
   function handleClear() {
     setInputValue('');
+    setResultIds([]);
   }
 
   useEffect(() => {
@@ -51,8 +54,8 @@ export function useSearch(data: string[][] | string[], searchIndex = 0) {
 
   return {
     inputValue,
-    result,
     resultIds,
+    isLoading,
     handleChange,
     handleClear,
   };
