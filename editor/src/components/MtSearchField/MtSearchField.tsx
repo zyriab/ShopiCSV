@@ -1,14 +1,12 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import debounce from 'lodash.debounce';
+import React, { useEffect } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
+import { useSearch } from '../../utils/useSearch';
 
-// TODO: implement async/loading to make the UX more seamless
-// TODO: display number of elements found
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -56,42 +54,13 @@ interface AppProps {
 }
 
 export function MtSearchField(props: AppProps) {
-  const [inputValue, setInputValue] = useState('');
+  // TODO: implement async/loading to make the UX more seamless
+  // TODO: display number of elements found
+  // TODO: set index based on selected filter ? (something like that?)
+  const search = useSearch(props.data, 5);
+  const { inputValue, resultIds, handleChange, handleClear } = search;
 
-  const searchInput = useCallback(
-    (value: string) => {
-      if (value.trim() !== '') {
-        const ids = [];
-        for (let d of props.data) {
-          let i: number;
-          // TODO: set index based on selected filter ? (something like that?)
-          i = d.findIndex((e) => e[5].trim().includes(value.trim()));
-          if (i !== -1) ids.push(i);
-        }
-
-        props.filteredDataIds(ids);
-      }
-    },
-    [props]
-  );
-
-  const debSearch = useMemo(
-    () => debounce(searchInput, 600),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [props.filteredDataIds, props.data, searchInput]
-  );
-
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
-    setInputValue(e.target.value);
-    debSearch(e.target.value);
-  }
-
-  useEffect(() => {
-    return () => debSearch.cancel();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => props.filteredDataIds(resultIds), [props, resultIds]);
 
   return (
     <Search>
@@ -108,7 +77,7 @@ export function MtSearchField(props: AppProps) {
               sx={{
                 visibility: inputValue.length === 0 ? 'hidden' : 'visible',
               }}
-              onClick={() => setInputValue('')}>
+              onClick={handleClear}>
               <ClearIcon sx={{ color: 'white' }} />
             </IconButton>
           </InputAdornment>
