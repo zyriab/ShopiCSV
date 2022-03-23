@@ -58,8 +58,6 @@ interface AppProps {
 }
 
 export function MtSearchField(props: AppProps) {
-  // TODO: implement async/loading to make the UX more seamless
-  // TODO: display number of elements found
   // TODO: set index based on selected filter ? (something like that?)
   const search = useSearch(props.data, 5);
   const { inputValue, resultIds, isLoading, handleChange, handleClear } =
