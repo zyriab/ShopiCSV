@@ -7,7 +7,6 @@ interface AppProps {
   text?: string;
   acceptedFiles?: string;
   multiple?: boolean;
-  type?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement> | {target: DataTransfer}) => Promise<void>;
 }
 
@@ -21,7 +20,7 @@ export function MtDropZone(props: AppProps) {
     dropZoneEl.current?.addEventListener('click', () => {
       if(!isHandling.current) {
         isHandling.current = true;
-        inputEl.current?.click(); // FIXME: Event is being fired but this line has no effect anymore
+        inputEl.current?.click();
       }
       isHandling.current = false;
     });
@@ -73,9 +72,10 @@ export function MtDropZone(props: AppProps) {
         <input
           className="drop-zone__input"
           ref={inputEl}
-          multiple={props.multiple}
+          multiple={props.multiple || false}
           onChange={props.onChange}
-          type={props.type}
+          // onClick={(e) => e.currentTarget.va}
+          type="file"
           accept={props.acceptedFiles}
           style={{ display: 'none' }}
         />
