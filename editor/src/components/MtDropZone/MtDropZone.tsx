@@ -74,7 +74,6 @@ export function MtDropZone(props: AppProps) {
           ref={inputEl}
           multiple={props.multiple || false}
           onChange={props.onChange}
-          // onClick={(e) => e.currentTarget.va}
           type="file"
           accept={props.acceptedFiles}
           style={{ display: 'none' }}
