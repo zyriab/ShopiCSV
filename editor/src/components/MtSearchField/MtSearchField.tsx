@@ -1,13 +1,16 @@
 import React, { useEffect } from 'react';
 import { styled, alpha } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useSearch } from '../../utils/useSearch';
 import { rowData } from '../../definitions/definitions';
-
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -59,7 +62,8 @@ export function MtSearchField(props: AppProps) {
   // TODO: display number of elements found
   // TODO: set index based on selected filter ? (something like that?)
   const search = useSearch(props.data, 5);
-  const { inputValue, resultIds, handleChange, handleClear } = search;
+  const { inputValue, resultIds, isLoading, handleChange, handleClear } =
+    search;
 
   useEffect(() => props.filteredDataIds(resultIds), [props, resultIds]);
 
@@ -69,19 +73,46 @@ export function MtSearchField(props: AppProps) {
         <SearchIcon />
       </SearchIconWrapper>
       <StyledInputBase
-        placeholder="Search…"
+        placeholder="Search…" // TODO: i18n
         value={inputValue}
         onChange={handleChange}
         endAdornment={
-          <InputAdornment position="end">
-            <IconButton
-              sx={{
-                visibility: inputValue.length === 0 ? 'hidden' : 'visible',
-              }}
-              onClick={handleClear}>
-              <ClearIcon sx={{ color: 'white' }} />
-            </IconButton>
-          </InputAdornment>
+          <Grid container alignItems="center" justifyContent="end">
+            <Grid item>
+              <Box
+                sx={{
+                  visibility: inputValue.length === 0 ? 'hidden' : 'visible',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  width: '1.5rem',
+                  height: '1.2rem',
+                  padding: '0.2rem 1rem',
+                  backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                  borderRadius: '40px',
+                }}>
+                {isLoading ? (
+                  <CircularProgress size="1.2rem" sx={{color: 'white'}} />
+                ) : (
+                  <Typography variant="subtitle2">
+                    {resultIds.length - 1}
+                  </Typography>
+                )}
+              </Box>
+            </Grid>
+            <Grid item>
+              <InputAdornment position="end">
+                <IconButton
+                  sx={{
+                    visibility: inputValue.length === 0 ? 'hidden' : 'visible',
+                  }}
+                  onClick={handleClear}>
+                  <ClearIcon sx={{ color: 'white' }} />
+                </IconButton>
+              </InputAdornment>
+            </Grid>
+          </Grid>
         }
       />
     </Search>
