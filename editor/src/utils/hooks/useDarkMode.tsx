@@ -2,7 +2,7 @@ import {useEffect, useMemo, useState} from 'react';
 import { createTheme } from '@mui/material/styles';
 import store from 'store2';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { darkTheme, lightTheme } from '../themes/themes';
+import { darkTheme, lightTheme } from '../../themes/themes';
 
 // FIXME: sometimes store.get doesn't get it right (too soon?)
 export function useDarkMode() {
