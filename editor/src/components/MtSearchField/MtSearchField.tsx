@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useSearch } from '../../utils/useSearch';
+import { useSearch } from '../../utils/hooks/useSearch';
 import { rowData } from '../../definitions/definitions';
 
 const Search = styled('div')(({ theme }) => ({
@@ -94,7 +94,7 @@ export function MtSearchField(props: AppProps) {
                   <CircularProgress size="1.2rem" sx={{color: 'white'}} />
                 ) : (
                   <Typography variant="subtitle2">
-                    {resultIds.length - 1}
+                    {resultIds.length - 2}
                   </Typography>
                 )}
               </Box>
