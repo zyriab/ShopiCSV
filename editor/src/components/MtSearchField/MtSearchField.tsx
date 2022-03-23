@@ -6,6 +6,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useSearch } from '../../utils/useSearch';
+import { rowData } from '../../definitions/definitions';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -49,7 +50,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 interface AppProps {
-  data: string[][];
+  data: rowData[];
   filteredDataIds: (n: number[]) => void;
 }
 

@@ -1,0 +1,1 @@
+export type rowData = { data: string[]; id: number };

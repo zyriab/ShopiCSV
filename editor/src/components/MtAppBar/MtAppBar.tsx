@@ -17,6 +17,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Tooltip from '@mui/material/Tooltip';
 import { MtSearchField } from '../MtSearchField/MtSearchField';
+import { rowData } from '../../definitions/definitions';
 
 interface AppProps {
   onDownload: () => void;
@@ -30,7 +31,7 @@ interface AppProps {
   loadValue?: number;
   display: number[];
   onDisplayChange: (selectedColumns: number[]) => void;
-  data: string[][];
+  data: rowData[];
   filteredDataIds: (n: number[]) => void;
   // filteredType,
 }
