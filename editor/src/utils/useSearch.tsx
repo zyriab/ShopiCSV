@@ -9,7 +9,6 @@ export function useSearch(data: rowData[] | string[], searchIndex = 0) {
 
   const searchInput = useCallback(
     (value: string) => {
-      console.log(data);
       setIsLoading(true);
       let ids: number[] = [];
       let i: number;
@@ -17,17 +16,38 @@ export function useSearch(data: rowData[] | string[], searchIndex = 0) {
         if ((data[0] as rowData)?.data) {
           ids = (data as rowData[])
             .filter((e: rowData) =>
-              e.data[searchIndex].trim().includes(value.trim())
+              e.data[searchIndex]
+                .trim()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/\p{Diacritic}/gu, '')
+                .includes(
+                  value
+                    .trim()
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/\p{Diacritic}/gu, '')
+                )
             )
             .map((e: rowData) => e.id);
         } else {
           for (const d of data) {
-            i = d === value.trim() ? (data as string[]).indexOf(d) : -1;
+            i =
+              (d as string)
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/\p{Diacritic}/gu, '') ===
+              value
+                .trim()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/\p{Diacritic}/gu, '')
+                ? (data as string[]).indexOf(d as string)
+                : -1;
             if (i !== -1) ids.push(i);
           }
         }
       }
-
       setResultIds(ids);
       setIsLoading(false);
     },
