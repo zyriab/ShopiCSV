@@ -129,7 +129,7 @@ export const MtAppBar = (props: AppProps) => {
                     {`${formatBytes(store.get('fileData').size, 2)} | Rows: ${
                       store
                         .get('fileData')
-                        .content.filter((e: string[]) => e.length === 7)
+                        .content.filter((e: rowData) => e.data.length === 7)
                         .length - 1
                     }`}
                   </Typography>
