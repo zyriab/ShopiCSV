@@ -47,7 +47,7 @@ export const MtAlert = forwardRef<MtAlertElement, AppProps>((props, ref) => {
     <Snackbar
       open={open}
       autoHideDuration={autoHideDuration}
-      onClose={(e, r) => handleClose}>
+      onClose={handleClose}>
       <Alert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
         {msg}
       </Alert>
