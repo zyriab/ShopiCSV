@@ -11,6 +11,7 @@ export function useSearch(data: rowData[] | string[], searchIndex = 0) {
 
   const searchInput = useCallback(
     async (value: string) => {
+      // FIXME: method object of searchStrArray is empty on compilation (TS only)
       const searchStrArray = createWorker<typeof SearchStrArrayWorker>();
       const ids = await searchStrArray.searchStrArray(
         value,
