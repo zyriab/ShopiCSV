@@ -205,7 +205,8 @@ function Editor() {
   function handleDownload() {
     if (parsedData.current) {
       handleSave();
-      const data = Papa.unparse(parsedData.current);
+      const lines = parsedData.current.map(e => e.data);
+      const data = Papa.unparse(lines);
       const blob = new Blob([data], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
