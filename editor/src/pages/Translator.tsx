@@ -103,7 +103,6 @@ function Editor() {
   const handleSave = useCallback(
     (displayMsg = false, isAutosave = false) => {
       if (parsedData.current.length > 0 && renderedFields.current) {
-        console.log('saving...');
         setIsLoading(true);
         const [hasEdit, editedFieldsKid] = hasEdited();
         const editedFields = renderedFields.current.filter(
@@ -114,7 +113,6 @@ function Editor() {
           for (let field of editedFields) {
             if (field.current) {
               const kid = field.current.getKid().split('-');
-              console.log(field.current.getKid());
               parsedData.current[parseFloat(kid[0])].data[parseFloat(kid[1])] =
                 field.current.getValue() as string;
             }
@@ -235,6 +233,7 @@ function Editor() {
       }
     } else {
       arr = [...parsedData.current];
+      contentRef.current.resetPagination();
     }
     setDisplayedData(arr);
   }, [filteredDataIds]);
