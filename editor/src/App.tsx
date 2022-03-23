@@ -4,7 +4,7 @@ import { ConfirmProvider } from 'material-ui-confirm';
 import TranslatorPage from './pages/Translator';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import { useDarkMode } from './utils/useDarkMode';
+import { useDarkMode } from './utils/hooks/useDarkMode';
 import { MtNavBar } from './components/MtNavBar/MtNavBar';
 import { MtFooter } from './components/MtFooter/MtFooter';
 

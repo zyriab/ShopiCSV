@@ -6,7 +6,7 @@ import React, {
   useImperativeHandle,
 } from 'react';
 import { rowData } from '../../definitions/definitions';
-import { usePagination } from '../../utils/usePagination';
+import { usePagination } from '../../utils/hooks/usePagination';
 import Grid from '@mui/material/Grid';
 import Backdrop from '@mui/material/Backdrop';
 import { MtRowsDisplayControl } from '../MtRowsDisplayControl/MtRowsDisplayControl';
