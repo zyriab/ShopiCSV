@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { ConfirmProvider } from 'material-ui-confirm';
-import EditorPage from './pages/Editor';
+import TranslatorPage from './pages/Translator';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import { useDarkMode } from './utils/useDarkMode';
@@ -18,7 +18,7 @@ function App() {
         <Paper>
           <MtNavBar onModeChange={darkMode.setIsDark} />
           <Box sx={{ minHeight: '600px' }}>
-            <EditorPage />
+            <TranslatorPage />
           </Box>
           <MtFooter />
         </Paper>
