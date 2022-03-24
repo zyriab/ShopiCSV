@@ -31,7 +31,6 @@ export type MtEditorContentElement = {
   resetPagination: () => void;
 };
 
-// TODO: display the current fields page when changing rows display num
 export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
   (props: AppProps, ref) => {
     const [isReady, setIsReady] = useState(false);
@@ -78,6 +77,7 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
           props.renderedFields.current = [];
 
           function setRow(i: number) {
+            // TODO: also check for CSS
             function hasHTMLInRow(row: string[]) {
               return (
                 new RegExp(
@@ -140,8 +140,7 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
                   props.renderedFields.current.push(
                     createRef<MtFieldElement>()
                   );
-                  // FIXME: this creates bug when filtering content
-                  // index should always be the same, based on the full data array, event when filtering
+
                   const key = `${row.id}-${x}`;
                   const isCode = (x === 5 || x === 6) && hasEditor;
                   const fieldRef: React.RefObject<MtFieldElement> =
@@ -155,6 +154,7 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
                       xs={width}
                       alignItems="stretch"
                       item>
+                        {/* TODO: add CSS support */}
                       <MtEditorField
                         ref={fieldRef}
                         key={key}
