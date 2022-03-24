@@ -18,7 +18,6 @@ export function useSearch(data: rowData[] | string[], searchIndex = 0) {
       });
 
       worker.addEventListener('message', (event) => {
-        console.log(event.data);
         setIsLoading(false);
         setResultIds(event.data);
       });
