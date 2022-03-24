@@ -6,6 +6,7 @@ import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 
+// TODO: i18n
 export function MtFooter() {
   const theme = useTheme();
   return (

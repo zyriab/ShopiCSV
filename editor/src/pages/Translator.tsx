@@ -14,6 +14,7 @@ import { MtFieldElement } from '../components/MtEditorField/MtEditorField';
 import { rowData } from '../definitions/definitions';
 
 // TODO: check what needs to be here
+// use object with description (see .txt)
 // type filterType = 'All' | 'Products' | 'Emails' | 'SMS';
 
 function Editor() {
@@ -63,6 +64,7 @@ function Editor() {
     setIsLoading(true);
     if (deleteFile) {
       try {
+        // TODO: i18n
         await confirmationDialog({
           allowClose: false,
           title: 'Permanently delete file?',
@@ -129,10 +131,12 @@ function Editor() {
           });
 
           if (displayMsg) {
+            // TODO: i18n
             displayAlert('Successfully saved in local storage 💾');
           }
         } else {
           if (displayMsg && !isAutosave) {
+            // TODO: i18n
             displayAlert('Already up to date 👍', 'info');
           }
         }
@@ -151,6 +155,7 @@ function Editor() {
       handleCloseFile();
       if (isEditing) handleSave(true, true);
       if (e.target.files[0].type !== 'text/csv') {
+        // TODO: i18n
         displayAlert(
           'File rejected. You may only upload .CSV files 🧐',
           'error'
@@ -169,6 +174,7 @@ function Editor() {
         worker: true,
         step: (row: any) => {
           if (index === 0 && row.data[0] !== 'Type') {
+            // TODO: i18n
             displayAlert(
               'The uploaded file does not correspond to a translation CSV',
               'error'
@@ -184,6 +190,7 @@ function Editor() {
           index++;
         },
         complete: async () => {
+          // TODO: i18n
           displayAlert('Successfully parsed document 🤓');
           setDisplayedData([...parsedData.current]);
           setFileData([...parsedData.current]);
@@ -205,7 +212,7 @@ function Editor() {
   function handleDownload() {
     if (parsedData.current) {
       handleSave();
-      const lines = parsedData.current.map(e => e.data);
+      const lines = parsedData.current.map((e) => e.data);
       const data = Papa.unparse(lines);
       const blob = new Blob([data], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
@@ -213,6 +220,7 @@ function Editor() {
       link.download = `ShopiCSV_${file?.name}`;
       link.href = url;
       link.click();
+      // TODO: i18n
       displayAlert('Yee haw! 🤠');
       handleCloseFile();
     }
@@ -272,6 +280,7 @@ function Editor() {
     async function openFromMemory() {
       if (store.get('fileData')) {
         try {
+          // TODO: i18n
           await confirmationDialog({
             allowClose: true,
             title: 'Restore last session?',
@@ -301,6 +310,7 @@ function Editor() {
           fileRef.current = { ...store.get('fileData') };
           setFile({ ...store.get('fileData') });
 
+          // TODO: i18n
           displayAlert(
             `Successfully restored your last session of ${
               store.get('fileData').savedAt

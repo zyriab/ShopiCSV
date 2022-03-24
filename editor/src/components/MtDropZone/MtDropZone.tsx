@@ -67,6 +67,7 @@ export function MtDropZone(props: AppProps) {
           />
         </div>
         <div className="drop-zone__prompt">
+          {/* TODO: i18n */}
           {props.text || 'Drag and drop your file here or click'}
         </div>
         <input

@@ -137,13 +137,14 @@ export const MtAppBar = (props: AppProps) => {
               </Grid>
               <Grid item>
                 <Stack>
-                  {/* TODO: Work on i18n of dates (ago -> il y a) */}
+                  {/* TODO: i18n */}
                   <Typography variant="subtitle1" component="p">
                     {`Modified ${formatDistanceToNow(
                       new Date(store.get('fileData').lastModified)
                     )} ago`}
                   </Typography>
                   <Typography variant="subtitle1" component="p">
+                    {/* TODO: i18n */}
                     {`Saved ${formatDistanceToNow(saveTime)} ago`}
                   </Typography>
                 </Stack>
@@ -153,6 +154,7 @@ export const MtAppBar = (props: AppProps) => {
             <Grid xs={4} item />
           )}
           <Grid xs={'auto'} item>
+            {/* TODO: i18n */}
             <Tooltip title="Close & delete">
               <span>
                 <IconButton
@@ -163,6 +165,7 @@ export const MtAppBar = (props: AppProps) => {
                 </IconButton>
               </span>
             </Tooltip>
+            {/* TODO: i18n */}
             <Tooltip title="Upload a file">
               <span>
                 <IconButton
@@ -180,6 +183,7 @@ export const MtAppBar = (props: AppProps) => {
               accept="text/csv"
               style={{ display: 'none' }}
             />
+            {/* TODO: i18n */}
             <Tooltip title="Save">
               <span>
                 <IconButton
@@ -190,6 +194,7 @@ export const MtAppBar = (props: AppProps) => {
                 </IconButton>
               </span>
             </Tooltip>
+            {/* TODO: i18n */}
             <Tooltip title="Download">
               <span>
                 <IconButton
@@ -204,12 +209,13 @@ export const MtAppBar = (props: AppProps) => {
         </Grid>
       </Toolbar>
       <Toolbar>
+        {/* TODO: i18n aria-labels */}
         <ToggleButtonGroup
           fullWidth
           size="small"
           value={displayFields}
           onChange={handleDisplayFields}
-          aria-label="Fields to display">
+          aria-label="Fields to display"> 
           <ToggleButton value={0} aria-label="Type">
             Type
           </ToggleButton>

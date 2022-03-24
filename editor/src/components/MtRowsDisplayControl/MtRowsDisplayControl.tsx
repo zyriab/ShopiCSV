@@ -16,6 +16,7 @@ export function MtRowsDisplayControl(props: AppProps) {
           paragraph
           component="p"
           sx={{ paddingBottom: '.3rem', marginRight: '.5rem' }}>
+          {/* TODO: i18n */}
           Display rows per:
         </Typography>
       </Grid>
