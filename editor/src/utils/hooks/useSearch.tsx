@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import createWorker from 'workerize-loader!../workers/searchStrArray.worker'; // eslint-disable-line import/no-webpack-loader-syntax
-import * as SearchStrArrayWorker from '../workers/searchStrArray.worker';
+import Worker from 'worker-loader!../workers/searchStrArray.worker'; // eslint-disable-line import/no-webpack-loader-syntax
 import { rowData } from '../../definitions/definitions';
 import debounce from 'lodash.debounce';
 
@@ -11,15 +10,18 @@ export function useSearch(data: rowData[] | string[], searchIndex = 0) {
 
   const searchInput = useCallback(
     async (value: string) => {
-      // FIXME: method object of searchStrArray is empty on compilation (TS only)
-      const searchStrArray = createWorker<typeof SearchStrArrayWorker>();
-      const ids = await searchStrArray.searchStrArray(
-        value,
-        data,
-        searchIndex
-      );
-      setIsLoading(false);
-      setResultIds(ids);
+      const worker = new Worker();
+      worker.postMessage({
+        searchValue: value,
+        data: data,
+        searchIndex: searchIndex,
+      });
+
+      worker.addEventListener('message', (event) => {
+        console.log(event.data);
+        setIsLoading(false);
+        setResultIds(event.data);
+      });
     },
     [data, searchIndex]
   );
