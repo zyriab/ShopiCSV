@@ -9,7 +9,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useSearch } from '../../utils/hooks/useSearch';
-import { rowData } from '../../definitions/definitions';
+import { RowData } from '../../definitions/definitions';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -50,7 +50,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 interface AppProps {
-  data: rowData[];
+  data: RowData[];
   filteredDataIds: (n: number[]) => void;
 }
 

@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import Worker from 'worker-loader!../workers/searchStrArray.worker'; // eslint-disable-line import/no-webpack-loader-syntax
-import { rowData } from '../../definitions/definitions';
+import { RowData } from '../../definitions/definitions';
 import debounce from 'lodash.debounce';
 
-export function useSearch(data: rowData[] | string[], searchIndex = 0) {
+export function useSearch(data: RowData[] | string[], searchIndex = 0) {
   const [inputValue, setInputValue] = useState('');
   const [resultIds, setResultIds] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);

@@ -1,16 +1,16 @@
-import { rowData } from '../definitions/definitions';
+import { RowData } from '../definitions/definitions';
 
 export function searchStrArray(
   searchValue: string,
-  data: string[] | rowData[],
+  data: string[] | RowData[],
   searchIndex: number
 ) {
   let ids: number[] = [];
   let i: number;
   if (searchValue.trim() !== '') {
-    if ((data[0] as rowData)?.data) {
-      ids = (data as rowData[])
-        .filter((e: rowData) =>
+    if ((data[0] as RowData)?.data) {
+      ids = (data as RowData[])
+        .filter((e: RowData) =>
           e.data[searchIndex]
             .trim()
             .toLowerCase()
@@ -24,7 +24,7 @@ export function searchStrArray(
                 .replace(/\p{Diacritic}/gu, '')
             )
         )
-        .map((e: rowData) => e.id);
+        .map((e: RowData) => e.id);
     } else {
       for (const d of data) {
         i =

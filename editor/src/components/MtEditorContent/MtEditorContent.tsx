@@ -5,7 +5,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react';
-import { rowData } from '../../definitions/definitions';
+import { RowData } from '../../definitions/definitions';
 import { usePagination } from '../../utils/hooks/usePagination';
 import Grid from '@mui/material/Grid';
 import Backdrop from '@mui/material/Backdrop';
@@ -23,7 +23,7 @@ interface AppProps {
   setIsLoading: (loading: boolean) => void;
   isLoading: boolean;
   display: number[];
-  data: rowData[];
+  data: RowData[];
   renderedFields: React.MutableRefObject<React.RefObject<MtFieldElement>[]>;
 }
 
@@ -104,7 +104,6 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
 
             // had a bug once, data.length was 9 with empty indexes :/
             if (row.data.length > 7) row.data = row.data.splice(0, 7);
-
             if (row.data.length === 7) {
               const hasEditor = hasHTMLInRow(row.data);
 
@@ -154,7 +153,7 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
                       xs={width}
                       alignItems="stretch"
                       item>
-                        {/* TODO: add CSS support */}
+                      {/* TODO: add CSS support */}
                       <MtEditorField
                         ref={fieldRef}
                         key={key}
