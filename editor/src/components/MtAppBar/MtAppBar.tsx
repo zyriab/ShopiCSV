@@ -37,6 +37,7 @@ interface AppProps {
   display: number[];
   onDisplayChange: (selectedColumns: number[]) => void;
   data: RowData[];
+  numOfDisplayedFields: number;
   filteredDataIds: (n: number[]) => void;
   filteredDataTypes: (t: TranslatableResourceType[]) => void;
 }
@@ -114,10 +115,14 @@ export const MtAppBar = (props: AppProps) => {
               <MtSearchField
                 data={props.data}
                 filteredDataIds={props.filteredDataIds}
+                numOfDisplayedFields={props.numOfDisplayedFields}
               />
               {props.data && (
-                <Box sx={{marginLeft: '4%'}}>
-                  <MtFieldsFilter availableFilters={availableFilters} filteredDataTypes={props.filteredDataTypes}/>
+                <Box sx={{ marginLeft: '4%' }}>
+                  <MtFieldsFilter
+                    availableFilters={availableFilters}
+                    filteredDataTypes={props.filteredDataTypes}
+                  />
                 </Box>
               )}
             </Stack>

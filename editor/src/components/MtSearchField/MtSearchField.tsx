@@ -52,6 +52,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 interface AppProps {
   data: RowData[];
   filteredDataIds: (n: number[]) => void;
+  numOfDisplayedFields: number;
 }
 
 export function MtSearchField(props: AppProps) {
@@ -90,7 +91,8 @@ export function MtSearchField(props: AppProps) {
                 <CircularProgress size="1.2rem" sx={{ color: 'white' }} />
               ) : (
                 <Typography variant="subtitle2">
-                  {resultIds.length > 0 ? resultIds.length - 1 : 0}
+                  {/* {resultIds.length > 0 ? resultIds.length - 1 : 0} */}
+                  {props.numOfDisplayedFields}
                 </Typography>
               )}
             </Box>

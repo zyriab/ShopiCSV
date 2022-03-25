@@ -26,6 +26,7 @@ export default function Translator() {
   const [filteredDataTypes, setFilteredTypes] = useState<
     TranslatableResourceType[]
   >([]);
+  const [numOfDisplayedFields, setNumOfDisplayedFields] = useState(0);
   const parsedData = useRef<RowData[]>([]); // stores the file's content, used for data manipulation (saving, downloading, etc)
   const renderedFields = useRef<React.RefObject<MtFieldElement>[]>([]);
   const alertEl = useRef<MtAlertElement>(null!);
@@ -250,6 +251,7 @@ export default function Translator() {
       arr.unshift({id: 0, data: []})
     }
 
+    setNumOfDisplayedFields(arr.length-1);
     setDisplayedData(arr);
   }, [filteredDataIds, filteredDataTypes]);
 
@@ -350,6 +352,7 @@ export default function Translator() {
         onClose={handleCloseFile}
         isLoading={isLoading}
         isEditing={isEditing}
+        numOfDisplayedFields={numOfDisplayedFields}
         filteredDataIds={setFilteredDataIds}
         filteredDataTypes={setFilteredTypes}
       />
