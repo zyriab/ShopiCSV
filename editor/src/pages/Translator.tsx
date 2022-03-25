@@ -248,10 +248,10 @@ export default function Translator() {
       );
       // Adding a dummy row here because the first one w/o filter is the "Type", "Identification", etc
       // and is being ignored when rendering
-      arr.unshift({id: 0, data: []})
+      arr.unshift({ id: 0, data: [] });
     }
 
-    setNumOfDisplayedFields(arr.length-1);
+    setNumOfDisplayedFields(arr.length > 0 ? arr.length - 1 : 0);
     setDisplayedData(arr);
   }, [filteredDataIds, filteredDataTypes]);
 

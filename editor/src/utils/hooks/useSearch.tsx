@@ -18,8 +18,9 @@ export function useSearch(data: RowData[] | string[], searchIndex = 0) {
       });
 
       worker.addEventListener('message', (event) => {
-        setIsLoading(false);
         setResultIds(event.data);
+        // Needed because there's a small latency before the correct numOfDisplayedFields reaches the search input
+        setTimeout(() => setIsLoading(false), 500);
       });
     },
     [data, searchIndex]
