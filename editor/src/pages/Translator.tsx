@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import store from 'store2';
 import Papa from 'papaparse';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import { RowData, TranslatableResourceType } from '../definitions/definitions';
 import { useConfirm } from 'material-ui-confirm';
 import { MtAlert, MtAlertElement } from '../components/MtAlert/MtAlert';
 import { AlertColor } from '@mui/material/Alert/Alert';
@@ -11,24 +12,21 @@ import {
   MtEditorContentElement,
 } from '../components/MtEditorContent/MtEditorContent';
 import { MtFieldElement } from '../components/MtEditorField/MtEditorField';
-import { rowData } from '../definitions/definitions';
 
-// TODO: check what needs to be here
-// use object with description (see .txt)
-// type filterType = 'All' | 'Products' | 'Emails' | 'SMS';
-
-function Editor() {
+export default function Translator() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [hasClosed, setHasClosed] = useState(false);
   const [file, setFile] = useState<File | null>(null); // uploaded file or data of restored session (name, size, lastModified, lastSave?, content?)
   const fileRef = useRef<File | null>(null); // used for direct update/access when saving
   const [displayCol, setDisplayCol] = useState<number[]>([]);
-  const [fileData, setFileData] = useState<rowData[]>([]);
-  const [displayedData, setDisplayedData] = useState<rowData[]>([]); // used for rendering content
+  const [fileData, setFileData] = useState<RowData[]>([]);
+  const [displayedData, setDisplayedData] = useState<RowData[]>([]); // used for rendering content
   const [filteredDataIds, setFilteredDataIds] = useState<number[]>([]);
-  // const [filteredType, setFilteredType] = useState<filterType>('All');
-  const parsedData = useRef<rowData[]>([]); // stores the file's content, used for data manipulation (saving, downloading, etc)
+  const [filteredDataTypes, setFilteredTypes] = useState<
+    TranslatableResourceType[]
+  >([]);
+  const parsedData = useRef<RowData[]>([]); // stores the file's content, used for data manipulation (saving, downloading, etc)
   const renderedFields = useRef<React.RefObject<MtFieldElement>[]>([]);
   const alertEl = useRef<MtAlertElement>(null!);
   const contentRef = useRef<MtEditorContentElement>(null!);
@@ -183,7 +181,7 @@ function Editor() {
             return;
           }
 
-          const dt: rowData = { data: row.data, id: index };
+          const dt: RowData = { data: row.data, id: index };
 
           if (row.data.length > 7) row.data = row.data.splice(0, 7);
           if (row.data.length === 7) parsedData.current.push(dt);
@@ -231,21 +229,29 @@ function Editor() {
     else setDisplayCol([2, 5, 6]);
   }, []);
 
-  // TODO: implement filtered types
-  // useEffect(() => {}, [filteredType]);
-
+  /* FILTERING */
   useEffect(() => {
     let arr = [];
-    if (filteredDataIds.length > 0) {
-      for (let e of filteredDataIds) {
-        arr.push(parsedData.current[e]);
-      }
-    } else {
+    if (filteredDataIds.length > 0)
+      arr = parsedData.current.filter((e) => filteredDataIds.includes(e.id));
+    else {
       arr = [...parsedData.current];
       contentRef.current.resetPagination();
     }
+
+    if (filteredDataTypes.length > 0) {
+      arr = arr.filter((e) =>
+        filteredDataTypes.includes(
+          e.data[0].toUpperCase() as TranslatableResourceType
+        )
+      );
+      // Adding a dummy row here because the first one w/o filter is the "Type", "Identification", etc
+      // and is being ignored when rendering
+      arr.unshift({id: 0, data: []})
+    }
+
     setDisplayedData(arr);
-  }, [filteredDataIds]);
+  }, [filteredDataIds, filteredDataTypes]);
 
   /* KEY BINDINGS */
   useEffect(() => {
@@ -345,7 +351,7 @@ function Editor() {
         isLoading={isLoading}
         isEditing={isEditing}
         filteredDataIds={setFilteredDataIds}
-        // filteredType={setFilteredType}
+        filteredDataTypes={setFilteredTypes}
       />
       <MtEditorContent
         ref={contentRef}
@@ -361,5 +367,3 @@ function Editor() {
     </>
   );
 }
-
-export default Editor;
