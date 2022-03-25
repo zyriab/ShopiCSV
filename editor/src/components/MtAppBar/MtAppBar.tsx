@@ -1,9 +1,14 @@
 import React, { useRef, useState, useEffect } from 'react';
+import {
+  RowData,
+  TranslatableResourceType,
+} from '../../definitions/definitions';
 import { formatBytes } from '../../utils/formatBytes.utils';
 import store from 'store2';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -17,7 +22,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Tooltip from '@mui/material/Tooltip';
 import { MtSearchField } from '../MtSearchField/MtSearchField';
-import { rowData } from '../../definitions/definitions';
+import { MtFieldsFilter } from '../MtFieldsFilter/MtFieldsFilter';
 
 interface AppProps {
   onDownload: () => void;
@@ -31,15 +36,16 @@ interface AppProps {
   loadValue?: number;
   display: number[];
   onDisplayChange: (selectedColumns: number[]) => void;
-  data: rowData[];
+  data: RowData[];
   filteredDataIds: (n: number[]) => void;
-  // filteredType,
+  filteredDataTypes: (t: TranslatableResourceType[]) => void;
 }
 
-// TODO: APPBAR ->
-// 1. add filers "SMS_TEMPLATE", "EMAILS", etc
 export const MtAppBar = (props: AppProps) => {
   const [displayFields, setDisplayFields] = useState(props.display);
+  const [availableFilters, setAvailableFilters] = useState<
+    TranslatableResourceType[]
+  >([]);
   const [saveTime, setSaveTime] = useState(
     new Date(store.get('fileData')?.savedAt || null)
   );
@@ -86,6 +92,15 @@ export const MtAppBar = (props: AppProps) => {
     setDisplayFields(props.display);
   }, [props.display]);
 
+  useEffect(() => {
+    if (props.data)
+      setAvailableFilters([
+        ...new Set(
+          props.data.map((e) => e.data[0] as TranslatableResourceType)
+        ),
+      ] as TranslatableResourceType[]);
+  }, [props.data]);
+
   return (
     <AppBar
       sx={{ zIndex: (theme) => theme.zIndex.drawer + 2 }}
@@ -95,10 +110,17 @@ export const MtAppBar = (props: AppProps) => {
       <Toolbar>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid xs={5} sx={{ width: '100%' }} item>
-            <MtSearchField
-              data={props.data}
-              filteredDataIds={props.filteredDataIds}
-            />
+            <Stack spacing={1}>
+              <MtSearchField
+                data={props.data}
+                filteredDataIds={props.filteredDataIds}
+              />
+              {props.data && (
+                <Box sx={{marginLeft: '4%'}}>
+                  <MtFieldsFilter availableFilters={availableFilters} filteredDataTypes={props.filteredDataTypes}/>
+                </Box>
+              )}
+            </Stack>
           </Grid>
           {store.get('fileData') && props.isEditing ? (
             <Grid
@@ -129,7 +151,7 @@ export const MtAppBar = (props: AppProps) => {
                     {`${formatBytes(store.get('fileData').size, 2)} | Rows: ${
                       store
                         .get('fileData')
-                        .content.filter((e: rowData) => e.data.length === 7)
+                        .content.filter((e: RowData) => e.data.length === 7)
                         .length - 1
                     }`}
                   </Typography>
@@ -215,7 +237,7 @@ export const MtAppBar = (props: AppProps) => {
           size="small"
           value={displayFields}
           onChange={handleDisplayFields}
-          aria-label="Fields to display"> 
+          aria-label="Fields to display">
           <ToggleButton value={0} aria-label="Type">
             Type
           </ToggleButton>
