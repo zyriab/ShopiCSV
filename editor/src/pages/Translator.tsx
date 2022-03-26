@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import store from 'store2';
 import Papa from 'papaparse';
-import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import { getLocale } from '../utils/getLocale.utils';
+import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { RowData, TranslatableResourceType } from '../definitions/definitions';
 import { useConfirm } from 'material-ui-confirm';
@@ -32,8 +33,9 @@ export default function Translator() {
   const renderedFields = useRef<React.RefObject<MtFieldElement>[]>([]);
   const alertEl = useRef<MtAlertElement>(null!);
   const contentRef = useRef<MtEditorContentElement>(null!);
+  const hasRefusedRestore = useRef(false);
   const confirmationDialog = useConfirm();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   function displayAlert(message: string, type: AlertColor = 'success') {
     alertEl.current.show(message, type);
@@ -274,14 +276,14 @@ export default function Translator() {
   /* AUTO-OPEN */
   useEffect(() => {
     async function openFromMemory() {
-      if (store.get('fileData')) {
+      if (store.get('fileData') && !hasRefusedRestore.current) {
         try {
           await confirmationDialog({
             allowClose: true,
             title: t('RestoreSessionDialog.title'),
             description: t('RestoreSessionDialog.description', {
               date: formatDistanceToNow(
-                new Date(store.get('fileData').savedAt) // TODO: add date-fns localization
+                new Date(store.get('fileData').savedAt), {locale: getLocale(i18n.resolvedLanguage)}
               ),
             }),
             confirmationText: t('General.yesUpper'),
@@ -309,19 +311,21 @@ export default function Translator() {
 
           displayAlert(
             `${t('RestoreSessionDialog.alertMsg', {
-              date: store.get('fileData').savedAt, // TODO: add date-fns localization
+              date: store.get('fileData').savedAt,
             })} 🐘`,
             'info'
           );
 
           setIsLoading(false);
           setIsEditing(true);
-        } catch {}
+        } catch {
+          hasRefusedRestore.current = true;
+        }
       }
     }
 
     if (!isEditing && !hasClosed) openFromMemory();
-  }, [isEditing, hasClosed, confirmationDialog, t]);
+  }, [isEditing, hasClosed, confirmationDialog, t, i18n.resolvedLanguage]);
 
   useEffect(() => {
     store.remove('columns');

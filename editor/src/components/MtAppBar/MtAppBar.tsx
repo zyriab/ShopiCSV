@@ -4,9 +4,10 @@ import {
   RowData,
   TranslatableResourceType,
 } from '../../definitions/definitions';
+import { formatDistanceToNow } from 'date-fns';
 import { formatBytes } from '../../utils/formatBytes.utils';
+import { getLocale } from '../../utils/getLocale.utils';
 import store from 'store2';
-import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -55,7 +56,7 @@ export const MtAppBar = (props: AppProps) => {
     useState<NodeJS.Timer | null>(null);
   const inputEl = useRef<HTMLInputElement>(null);
   const fileNameEl = useRef<HTMLParagraphElement>(null);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   function handleDisplayFields(
     e: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -169,13 +170,16 @@ export const MtAppBar = (props: AppProps) => {
                   <Typography variant="subtitle1" component="p">
                     {t('AppBar.lastModifDate', {
                       date: formatDistanceToNow(
-                        new Date(store.get('fileData').lastModified) // TODO: add date-fns localization
+                        new Date(store.get('fileData').lastModified),
+                        { locale: getLocale(i18n.resolvedLanguage)}
                       ),
                     })}
                   </Typography>
                   <Typography variant="subtitle1" component="p">
                     {t('AppBar.lastSaveDate', {
-                      date: formatDistanceToNow(saveTime), //// TODO: add date-fns localization
+                      date: formatDistanceToNow(saveTime, {
+                        locale: getLocale(i18n.resolvedLanguage),
+                      }),
                     })}
                   </Typography>
                 </Stack>
