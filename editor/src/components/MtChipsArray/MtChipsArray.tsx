@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { FilterType } from '../../definitions/definitions';
 import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
-import Paper from '@mui/material/Paper';
 import FilterListIcon from '@mui/icons-material/FilterList';
 
 interface AppProps {
@@ -11,13 +10,32 @@ interface AppProps {
   onDelete: (deleted: FilterType[]) => void;
 }
 
+const ChipsContainer = styled('ul')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  flexWrap: 'wrap',
+  listStyle: 'none',
+  padding: 3,
+  marginTop: 0,
+  marginBottom: 0,
+  marginRight: theme.spacing(40),
+  marginLeft: 0,
+  width: '100%',
+  backgroundColor: theme.palette.background.paper,
+  borderRadius: '4px',
+  [theme.breakpoints.up('md')]: {
+    marginLeft: theme.spacing(3),
+    width: '32.6vw',
+  },
+}));
+
 const ListItem = styled('li')(({ theme }) => ({
   margin: theme.spacing(0.5),
 }));
 
 export function MtFilterChipsArray(props: AppProps) {
   const [chipData, setChipData] = React.useState<FilterType[]>([]);
-  const refEl = useRef<HTMLUListElement>(null!);
+  const refEl = useRef<HTMLUListElement>(null);
 
   function handleClick() {
     props.onSelected(refEl.current);
@@ -35,20 +53,7 @@ export function MtFilterChipsArray(props: AppProps) {
   }, [props.data]);
 
   return (
-    <Paper
-      ref={refEl}
-      onClick={handleClick}
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-        width: '32.5vw',
-        marginLeft: '4%',
-        listStyle: 'none',
-        p: 0.5,
-        m: 0,
-      }}
-      component="ul">
+    <ChipsContainer ref={refEl} onClick={handleClick}>
       {chipData.length > 0 ? (
         chipData.map((data) => {
           return (
@@ -67,6 +72,6 @@ export function MtFilterChipsArray(props: AppProps) {
           <Chip icon={<FilterListIcon />} label="Filter content" size="small" />
         </ListItem>
       )}
-    </Paper>
+    </ChipsContainer>
   );
 }
