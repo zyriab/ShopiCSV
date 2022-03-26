@@ -79,28 +79,24 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
           function setRow(i: number) {
             function hasHTMLInRow(row: string[]) {
               const regex =
-                /<(br|basefont|hr|input|source|frame|param|area|meta|!--|col|link|option|base|img|wbr|!DOCTYPE).*?>|<(a|abbr|acronym|address|applet|article|aside|audio|b|bdi|bdo|big|blockquote|body|button|canvas|caption|center|cite|code|colgroup|command|datalist|dd|del|details|dfn|dialog|dir|div|dl|dt|em|embed|fieldset|figcaption|figure|font|footer|form|frameset|head|header|hgroup|h1|h2|h3|h4|h5|h6|html|i|iframe|ins|kbd|keygen|label|legend|li|map|mark|menu|meter|nav|noframes|noscript|object|ol|optgroup|output|p|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|span|strike|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|tt|u|ul|var|video).*?<\/\\2>/;
+                /<(br|basefont|hr|input|source|frame|param|area|meta|!--|col|link|option|base|img|wbr|!DOCTYPE|a|abbr|acronym|address|applet|article|aside|audio|b|bdi|bdo|big|blockquote|body|button|canvas|caption|center|cite|code|colgroup|command|datalist|dd|del|details|dfn|dialog|dir|div|dl|dt|em|embed|fieldset|figcaption|figure|font|footer|form|frameset|head|header|hgroup|h1|h2|h3|h4|h5|h6|html|i|iframe|ins|kbd|keygen|label|legend|li|map|mark|menu|meter|nav|noframes|noscript|object|ol|optgroup|output|p|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|span|strike|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|tt|u|ul|var|video).*?>|<(a|abbr|acronym|address|applet|article|aside|audio|b|bdi|bdo|big|blockquote|body|button|canvas|caption|center|cite|code|colgroup|command|datalist|dd|del|details|dfn|dialog|dir|div|dl|dt|em|embed|fieldset|figcaption|figure|font|footer|form|frameset|head|header|hgroup|h1|h2|h3|h4|h5|h6|html|i|iframe|ins|kbd|keygen|label|legend|li|map|mark|menu|meter|nav|noframes|noscript|object|ol|optgroup|output|p|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|span|strike|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|tt|u|ul|var|video).*?<\/\\2>/;
               return (
                 regex.test(row[5]) ||
                 regex.test(row[6]) ||
                 row[0].includes('SMS_TEMPLATE') ||
-                row[2].includes('BODY_HTML') ||
-                false
+                row[2].includes('BODY_HTML')
               );
             }
 
             function hasCSSInRow(row: string[]) {
-              const regex = /((?:^\s*)([\w#.@*,:\-.:>,*\s]+)\s*{(?:[\s]*)((?:[A-Za-z\- \s]+[:]\s*['"0-9\w .,/()\-!%]+;?)*)*\s*}(?:\s*))/mgi;
-              return (
-                regex.test(row[5]) ||
-                regex.test(row[6]) ||
-                false
-              );
+              const regex =
+                /((?:^\s*)([\w#.@*,:\-.:>,*\s]+)\s*{(?:[\s]*)((?:[A-Za-z\- \s]+[:]\s*['"0-9\w .,/()\-!%]+;?)*)*\s*}(?:\s*))/gim;
+              return regex.test(row[5]) || regex.test(row[6]);
             }
 
             function getLanguage(row: string[]) {
-              if(hasHTMLInRow(row)) return 'liquid';
-              else if(hasCSSInRow(row)) return 'css';
+              if (hasHTMLInRow(row)) return 'liquid';
+              else if (hasCSSInRow(row)) return 'css';
               return 'none';
             }
 
@@ -166,7 +162,6 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
                       xs={width}
                       alignItems="stretch"
                       item>
-                      {/* TODO: add CSS support */}
                       <MtEditorField
                         ref={fieldRef}
                         key={key}
