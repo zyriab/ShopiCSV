@@ -6,6 +6,8 @@ export const MtLogoutBtn = () => {
   const { logout } = useAuth0();
   return (
     <Button
+      variant="contained"
+      color="error"
       onClick={() =>
         logout({
           returnTo: window.location.origin,

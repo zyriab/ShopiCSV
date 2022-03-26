@@ -6,6 +6,8 @@ export const MtLoginBtn = () => {
   const { loginWithPopup } = useAuth0();
   return (
     <Button
+      variant="contained"
+      color="success"
       onClick={() => loginWithPopup()}>
       Log In
     </Button>
