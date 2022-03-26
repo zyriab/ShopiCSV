@@ -1,0 +1,72 @@
+{
+  "General": {
+    "yesUpper": "Oui",
+    "yesLower": "oui",
+    "noUpper": "Non",
+    "noLower": "non",
+    "search": "Rechercher..."
+  },
+  "AppBar": {
+    "lastModifDate": "Modifié il y a {{date}}",
+    "lastSaveDate": "Sauvegardé il y a {{date}}",
+    "closeToolTip": "Fermer le fichier",
+    "uploadToolTip": "Télécharger un fichier",
+    "saveToolTip": "Sauvegarder",
+    "downloadToolTip": "Télécharger",
+    "ariaToggleGroup": "Champs à afficher"
+  },
+  "RestoreSessionDialog": {
+    "title": "Restaurer la dernière session ?",
+    "description": "Voulez-vous restaurer votre dernière session d'il y a {{date}} ?",
+    "alertMsg": "Restauré votre dernière session du {{date}} avec succès"
+  },
+  "Upload": {
+    "success": "Document transcrit avec succès",
+    "error": "Le fichié téléchargé ne correspond pas à un CSV de traduction",
+    "wrongType": "Fichié rejeté. Seuls les fichier .CSV sont autorisés"
+  },
+  "Save": {
+    "success": "Sauvegardé",
+    "upToDate": "Déjà à jour"
+  },
+  "CloseFileDialog": {
+    "title": "Supprimer le fichier pour toujours ?",
+    "description": "Cela retirera le fichier and versions précédentes de votre espace de stockage.",
+    "yes": "Oui, supprimer",
+    "no": "Non, garder le fichier"
+  },
+  "RowDisplayControl": {
+    "displayPer": "Afficher les rangées par :"
+  },
+  "FilterDialog": {
+    "title": "Choisissez le contenu à filtrer",
+    "searchPlaceholder": "Filtrer les champs",
+    "noOptionsText": "Aucun filtre disponible"
+  },
+  "EmptyFilterChip": {
+    "label": "Filtrer le contenu"
+  },
+  "DropZone": {
+    "message": "Glissez et déposez votre fichier ici ou cliquez"
+  },
+  "FilterType": {
+    "COLLECTION": "Une collection de produit.",
+    "DELIVERY_METHOD_DEFINITION": "La définition de méthode de livraison. Par exemple, \"Standard\", ou \"Expédié\".",
+    "EMAIL_TEMPLATE": "Un modèle d'e-mail.",
+    "SMS_TEMPLATE": "Un modèle de SMS.",
+    "LINK": "Un lien pour dirigé les utilisateurs.",
+    "METAFIELD": "Un métachamp.",
+    "ONLINE_STORE_ARTICLE": "Un article de boutique en ligne.",
+    "ONLINE_STORE_BLOG": "Un blog de boutique en ligne.",
+    "ONLINE_STORE_MENU": "Une catégorie de liens.",
+    "ONLINE_STORE_PAGE": "Une page de boutique en ligne.",
+    "ONLINE_STORE_THEME": "Un thème de boutique en ligne.",
+    "PACKING_SLIP_TEMPLATE": "Un modèle de bordereau d'emballage.",
+    "PAYMENT_GATEWAY": "Une passerelle de paiement.",
+    "PRODUCT": "Un article de boutique en ligne.",
+    "PRODUCT_OPTION": "Le nom d'une propriété d'article personnalisée. Par exemple, \"Taille\", \"Couleur\", ou \"Matière\".",
+    "PRODUCT_VARIANT": "Une variante d'article de boutique en ligne.",
+    "SHOP": "Une boutique.",
+    "SHOP_POLICY": "Une politique de boutique."
+  }
+}

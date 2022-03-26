@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { styled, alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import InputBase from '@mui/material/InputBase';
@@ -57,10 +58,10 @@ interface AppProps {
 }
 
 export function MtSearchField(props: AppProps) {
-  // TODO: set index based on selected filter ? (something like that?)
   const search = useSearch(props.data, 5);
   const { inputValue, resultIds, isLoading, handleChange, handleClear } =
     search;
+  const { t } = useTranslation();
 
   useEffect(() => props.filteredDataIds(resultIds), [props, resultIds]);
 
@@ -70,7 +71,7 @@ export function MtSearchField(props: AppProps) {
         <SearchIcon />
       </SearchIconWrapper>
       <StyledInputBase
-        placeholder="Search…" // TODO: i18n
+        placeholder={t('General.search')}
         value={inputValue}
         onChange={handleChange}
         endAdornment={

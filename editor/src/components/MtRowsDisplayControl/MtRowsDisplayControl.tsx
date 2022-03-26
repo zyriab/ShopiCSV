@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -9,6 +10,7 @@ interface AppProps {
 }
 
 export function MtRowsDisplayControl(props: AppProps) {
+  const { t } = useTranslation();
   return (
     <Grid xs container item alignItems="center">
       <Grid item>
@@ -16,8 +18,7 @@ export function MtRowsDisplayControl(props: AppProps) {
           paragraph
           component="p"
           sx={{ paddingBottom: '.3rem', marginRight: '.5rem' }}>
-          {/* TODO: i18n */}
-          Display rows per:
+          {t('RowDisplayControl.displayPer')}
         </Typography>
       </Grid>
       <Grid item>

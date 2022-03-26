@@ -1,0 +1,72 @@
+{
+  "General": {
+    "yesUpper": "Yes",
+    "yesLower": "yes",
+    "noUpper": "No",
+    "noLower": "no",
+    "search": "Search..."
+  },
+  "AppBar": {
+    "lastModifDate": "Modified {{date}} ago",
+    "lastSaveDate": "Saved {{date}} ago",
+    "closeToolTip": "Close file",
+    "uploadToolTip": "Upload a file",
+    "saveToolTip": "Save",
+    "downloadToolTip": "Download",
+    "ariaToggleGroup": "Fields to display"
+  },
+  "RestoreSessionDialog": {
+    "title": "Restore last session?",
+    "description": "Do you want to restore your last session of {{date}} ago?",
+    "alertMsg": "Successfully restored your last session of {{date}}"
+  },
+  "Upload": {
+    "success": "Successfully parsed document",
+    "error": "The uploaded file does not correspond to a translation CSV",
+    "wrongType": "File rejected. You may only upload .CSV files"
+  },
+  "Save": {
+    "success": "Successfully saved",
+    "upToDate": "Already up to date"
+  },
+  "CloseFileDialog": {
+    "title": "Permanently delete file?",
+    "description": "This will remove the file and previous versions from your storage space.",
+    "yes": "Yes, delete",
+    "no": "No, keep it"
+  },
+  "RowDisplayControl": {
+    "displayPer": "Display rows per:"
+  },
+  "FilterDialog": {
+    "title": "Choose which content you wish to filter",
+    "searchPlaceholder": "Filter fields",
+    "noOptionsText": "No filters available"
+  },
+  "EmptyFilterChip": {
+    "label": "Filter content"
+  },
+  "DropZone": {
+    "message": "Drag and drop your file here or click"
+  },
+  "FilterType": {
+    "COLLECTION": "A product collection.",
+    "DELIVERY_METHOD_DEFINITION": "The delivery method definition. For example, \"Standard\", or \"Expedited\".",
+    "EMAIL_TEMPLATE": "An email template.",
+    "SMS_TEMPLATE": "An SMS template.",
+    "LINK": "A link to direct users.",
+    "METAFIELD": "A Metafield.",
+    "ONLINE_STORE_ARTICLE": "An online store article.",
+    "ONLINE_STORE_BLOG": "An online store blog.",
+    "ONLINE_STORE_MENU": "A category of links.",
+    "ONLINE_STORE_PAGE": "An online store page.",
+    "ONLINE_STORE_THEME": "An online store theme.",
+    "PACKING_SLIP_TEMPLATE": "A packing slip template.",
+    "PAYMENT_GATEWAY": "A payment gateway.",
+    "PRODUCT": "An online store product.",
+    "PRODUCT_OPTION": "An online store custom product property name. For example, \"Size\", \"Color\", or \"Material\".",
+    "PRODUCT_VARIANT": "An online store product variant.",
+    "SHOP": "A shop.",
+    "SHOP_POLICY": "A shop policy."
+  }
+}

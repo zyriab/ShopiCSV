@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import store from 'store2';
 import Papa from 'papaparse';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import { useTranslation } from 'react-i18next';
 import { RowData, TranslatableResourceType } from '../definitions/definitions';
 import { useConfirm } from 'material-ui-confirm';
 import { MtAlert, MtAlertElement } from '../components/MtAlert/MtAlert';
@@ -32,6 +33,7 @@ export default function Translator() {
   const alertEl = useRef<MtAlertElement>(null!);
   const contentRef = useRef<MtEditorContentElement>(null!);
   const confirmationDialog = useConfirm();
+  const { t } = useTranslation();
 
   function displayAlert(message: string, type: AlertColor = 'success') {
     alertEl.current.show(message, type);
@@ -63,14 +65,12 @@ export default function Translator() {
     setIsLoading(true);
     if (deleteFile) {
       try {
-        // TODO: i18n
         await confirmationDialog({
           allowClose: false,
-          title: 'Permanently delete file?',
-          description:
-            'This will remove the file and previous versions from your storage space.',
-          confirmationText: 'Yes, delete',
-          cancellationText: 'No, keep it',
+          title: t('CloseFileDialog.title'),
+          description: t('CloseFileDialog.description'),
+          confirmationText: t('CloseFileDialog.yes'),
+          cancellationText: t('CloseFileDialog.no'),
           confirmationButtonProps: {
             color: 'error',
             disableElevation: true,
@@ -130,13 +130,11 @@ export default function Translator() {
           });
 
           if (displayMsg) {
-            // TODO: i18n
-            displayAlert('Successfully saved in local storage 💾');
+            displayAlert(`${t('Save.success')} 💾`);
           }
         } else {
           if (displayMsg && !isAutosave) {
-            // TODO: i18n
-            displayAlert('Already up to date 👍', 'info');
+            displayAlert(`${t('Save.upToDate')} 👍`, 'info');
           }
         }
         setIsLoading(false);
@@ -144,7 +142,7 @@ export default function Translator() {
       }
       return false;
     },
-    [hasEdited]
+    [hasEdited, t]
   );
 
   async function handleUpload(
@@ -154,11 +152,7 @@ export default function Translator() {
       handleCloseFile();
       if (isEditing) handleSave(true, true);
       if (e.target.files[0].type !== 'text/csv') {
-        // TODO: i18n
-        displayAlert(
-          'File rejected. You may only upload .CSV files 🧐',
-          'error'
-        );
+        displayAlert(`${t('Upload.wrongType')} 🧐`, 'error');
         return;
       }
 
@@ -173,11 +167,7 @@ export default function Translator() {
         worker: true,
         step: (row: any) => {
           if (index === 0 && row.data[0] !== 'Type') {
-            // TODO: i18n
-            displayAlert(
-              'The uploaded file does not correspond to a translation CSV',
-              'error'
-            );
+            displayAlert(t('Upload.error'), 'error');
             setIsLoading(false);
             return;
           }
@@ -189,8 +179,7 @@ export default function Translator() {
           index++;
         },
         complete: async () => {
-          // TODO: i18n
-          displayAlert('Successfully parsed document 🤓');
+          displayAlert(`${t('Upload.success')} 🤓`);
           setDisplayedData([...parsedData.current]);
           setFileData([...parsedData.current]);
           store.remove('fileData');
@@ -219,7 +208,6 @@ export default function Translator() {
       link.download = `ShopiCSV_${file?.name}`;
       link.href = url;
       link.click();
-      // TODO: i18n
       displayAlert('Yee haw! 🤠');
       handleCloseFile();
     }
@@ -288,15 +276,16 @@ export default function Translator() {
     async function openFromMemory() {
       if (store.get('fileData')) {
         try {
-          // TODO: i18n
           await confirmationDialog({
             allowClose: true,
-            title: 'Restore last session?',
-            description: `Do you want to restore your last session of ${formatDistanceToNow(
-              new Date(store.get('fileData').savedAt)
-            )} ago?`,
-            confirmationText: 'Yes',
-            cancellationText: 'No',
+            title: t('RestoreSessionDialog.title'),
+            description: t('RestoreSessionDialog.description', {
+              date: formatDistanceToNow(
+                new Date(store.get('fileData').savedAt) // TODO: add date-fns localization
+              ),
+            }),
+            confirmationText: t('General.yesUpper'),
+            cancellationText: t('General.noUpper'),
             confirmationButtonProps: {
               disableElevation: true,
               variant: 'contained',
@@ -318,11 +307,10 @@ export default function Translator() {
           fileRef.current = { ...store.get('fileData') };
           setFile({ ...store.get('fileData') });
 
-          // TODO: i18n
           displayAlert(
-            `Successfully restored your last session of ${
-              store.get('fileData').savedAt
-            } 🐘`,
+            `${t('RestoreSessionDialog.alertMsg', {
+              date: store.get('fileData').savedAt, // TODO: add date-fns localization
+            })} 🐘`,
             'info'
           );
 
@@ -333,7 +321,7 @@ export default function Translator() {
     }
 
     if (!isEditing && !hasClosed) openFromMemory();
-  }, [isEditing, hasClosed, confirmationDialog]);
+  }, [isEditing, hasClosed, confirmationDialog, t]);
 
   useEffect(() => {
     store.remove('columns');

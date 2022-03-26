@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import './MtDropZone.css';
@@ -7,7 +8,9 @@ interface AppProps {
   text?: string;
   acceptedFiles?: string;
   multiple?: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement> | {target: DataTransfer}) => Promise<void>;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement> | { target: DataTransfer }
+  ) => Promise<void>;
 }
 
 export function MtDropZone(props: AppProps) {
@@ -15,10 +18,11 @@ export function MtDropZone(props: AppProps) {
   const inputEl = useRef<HTMLInputElement>(null);
   const dropZoneEl = useRef<HTMLDivElement>(null);
   const isHandling = useRef(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     dropZoneEl.current?.addEventListener('click', () => {
-      if(!isHandling.current) {
+      if (!isHandling.current) {
         isHandling.current = true;
         inputEl.current?.click();
       }
@@ -38,7 +42,7 @@ export function MtDropZone(props: AppProps) {
 
     dropZoneEl.current?.addEventListener('drop', (e) => {
       e.preventDefault();
-      if(!isHandling.current) {
+      if (!isHandling.current) {
         isHandling.current = true;
         if (e.dataTransfer?.files.length && inputEl.current) {
           inputEl.current.files = e.dataTransfer?.files;
@@ -67,8 +71,7 @@ export function MtDropZone(props: AppProps) {
           />
         </div>
         <div className="drop-zone__prompt">
-          {/* TODO: i18n */}
-          {props.text || 'Drag and drop your file here or click'}
+          {props.text || t('DropZone.message')}
         </div>
         <input
           className="drop-zone__input"

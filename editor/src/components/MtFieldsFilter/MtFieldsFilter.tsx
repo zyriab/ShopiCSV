@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   FilterType,
   TranslatableResourceType,
@@ -15,6 +16,82 @@ export function MtFieldsFilter(props: AppProps) {
   const [filters, setFilters] = useState<FilterType[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<FilterType[]>([]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const { t } = useTranslation();
+
+  const filtersData: FilterType[] = [
+    {
+      type: 'COLLECTION',
+      description: t('FilterType.COLLECTION'),
+    },
+    {
+      type: 'DELIVERY_METHOD_DEFINITION',
+      description: t('FilterType.DELIVERY_METHOD_DEFINITION'),
+    },
+    {
+      type: 'EMAIL_TEMPLATE',
+      description: t('FilterType.EMAIL_TEMPLATE'),
+    },
+    {
+      type: 'SMS_TEMPLATE',
+      description: t('FilterType.SMS_TEMPLATE'),
+    },
+    {
+      type: 'LINK',
+      description: t('FilterType.LINK'),
+    },
+    {
+      type: 'METAFIELD',
+      description: t('FilterType.METAFIELD'),
+    },
+    {
+      type: 'ONLINE_STORE_ARTICLE',
+      description: t('FilterType.ONLINE_STORE_ARTICLE'),
+    },
+    {
+      type: 'ONLINE_STORE_BLOG',
+      description: t('FilterType.ONLINE_STORE_BLOG'),
+    },
+    {
+      type: 'ONLINE_STORE_MENU',
+      description: t('FilterType.ONLINE_STORE_MENU'),
+    },
+    {
+      type: 'ONLINE_STORE_PAGE',
+      description: t('FilterType.ONLINE_STORE_PAGE'),
+    },
+    {
+      type: 'ONLINE_STORE_THEME',
+      description: t('FilterType.ONLINE_STORE_THEME'),
+    },
+    {
+      type: 'PACKING_SLIP_TEMPLATE',
+      description: t('FilterType.PACKING_SLIP_TEMPLATE'),
+    },
+    {
+      type: 'PAYMENT_GATEWAY',
+      description: t('FilterType.PAYMENT_GATEWAY'),
+    },
+    {
+      type: 'PRODUCT',
+      description: t('FilterType.PRODUCT'),
+    },
+    {
+      type: 'PRODUCT_OPTION',
+      description: t('FilterType.PRODUCT_OPTION'),
+    },
+    {
+      type: 'PRODUCT_VARIANT',
+      description: t('FilterType.PRODUCT_VARIANT'),
+    },
+    {
+      type: 'SHOP',
+      description: t('FilterType.SHOP'),
+    },
+    {
+      type: 'SHOP_POLICY',
+      description: t('FilterType.SHOP_POLICY'),
+    },
+  ];
 
   function handleClick(el: any) {
     setAnchorEl(el);
@@ -30,13 +107,14 @@ export function MtFieldsFilter(props: AppProps) {
       props.availableFilters.includes(e.type)
     );
     setFilters([...new Set(tmp)]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.availableFilters]);
 
   useEffect(() => {
     if (selectedFilters.length > 0)
       props.filteredDataTypes(selectedFilters.map((e) => e.type));
     else props.filteredDataTypes([]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFilters, props.filteredDataTypes]);
 
   return (
@@ -55,81 +133,3 @@ export function MtFieldsFilter(props: AppProps) {
     </>
   );
 }
-
-// TODO: i18n
-const filtersData: FilterType[] = [
-  {
-    type: 'COLLECTION',
-    description: 'A product collection.',
-  },
-  {
-    type: 'DELIVERY_METHOD_DEFINITION',
-    description:
-      'The delivery method definition. For example, "Standard", or "Expedited".',
-  },
-  {
-    type: 'EMAIL_TEMPLATE',
-    description: 'An email template.',
-  },
-  {
-    type: 'SMS_TEMPLATE',
-    description: 'An SMS template.',
-  },
-  {
-    type: 'LINK',
-    description: 'A link to direct users.',
-  },
-  {
-    type: 'METAFIELD',
-    description: 'A Metafield.',
-  },
-  {
-    type: 'ONLINE_STORE_ARTICLE',
-    description: 'An online store article.',
-  },
-  {
-    type: 'ONLINE_STORE_BLOG',
-    description: 'An online store blog.',
-  },
-  {
-    type: 'ONLINE_STORE_MENU',
-    description: 'A category of links.',
-  },
-  {
-    type: 'ONLINE_STORE_PAGE',
-    description: 'An online store page.',
-  },
-  {
-    type: 'ONLINE_STORE_THEME',
-    description: 'An online store theme.',
-  },
-  {
-    type: 'PACKING_SLIP_TEMPLATE',
-    description: 'A packing slip template.',
-  },
-  {
-    type: 'PAYMENT_GATEWAY',
-    description: 'A payment gateway.',
-  },
-  {
-    type: 'PRODUCT',
-    description: 'An online store product.',
-  },
-  {
-    type: 'PRODUCT_OPTION',
-    description:
-      'An online store custom product property name. For example, "Size", "Color", or "Material".',
-  },
-  {
-    type: 'PRODUCT_VARIANT',
-    description: 'An online store product variant.',
-  },
-  {
-    type: 'SHOP',
-    description: 'A shop.',
-  },
-  {
-    type: 'SHOP_POLICY',
-    description: 'A shop policy.',
-  },
-];

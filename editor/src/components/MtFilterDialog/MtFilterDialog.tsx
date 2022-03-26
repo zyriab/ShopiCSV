@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FilterType } from '../../definitions/definitions';
 import { useTheme, styled } from '@mui/material/styles';
 import Popper from '@mui/material/Popper';
@@ -33,7 +34,10 @@ const StyledAutocompletePopper = styled('div')(({ theme }) => ({
     fontSize: 13,
   },
   [`& .${autocompleteClasses.listbox}`]: {
-    backgroundColor: theme.palette.mode === 'light' ? '#fff' : theme.palette.background.default,
+    backgroundColor:
+      theme.palette.mode === 'light'
+        ? '#fff'
+        : theme.palette.background.default,
     padding: 0,
     [`& .${autocompleteClasses.option}`]: {
       minHeight: 'auto',
@@ -101,8 +105,8 @@ function PopperComponent(props: PopperComponentProps) {
 // FIXME: search should be all uppercase or transform content in lowercase
 export function MtFilterDialog(props: AppProps) {
   const [pendingValue, setPendingValue] = useState<FilterType[]>([]);
-
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const handleClose = () => {
     props.onClose(pendingValue);
@@ -121,8 +125,7 @@ export function MtFilterDialog(props: AppProps) {
       open={open}
       anchorEl={props.anchorEl}
       placement="bottom-start"
-      sx={{width: '33vw'}}
-      >
+      sx={{ width: '33vw' }}>
       <ClickAwayListener onClickAway={handleClose}>
         <div>
           <Box
@@ -130,8 +133,7 @@ export function MtFilterDialog(props: AppProps) {
               padding: '8px 10px',
               fontWeight: 600,
             }}>
-            {/* TODO: i18n */}
-            Choose which content you wish to filter
+            {t('FilterDialog.title')}
           </Box>
           <Autocomplete
             open
@@ -158,8 +160,7 @@ export function MtFilterDialog(props: AppProps) {
             disableCloseOnSelect
             PopperComponent={PopperComponent}
             renderTags={() => null}
-            // TODO: i18n
-            noOptionsText="No filters available"
+            noOptionsText={t('FilterDialog.noOptionsText')}
             renderOption={(props, option, { selected }) => (
               <li {...props}>
                 <Box
@@ -213,8 +214,7 @@ export function MtFilterDialog(props: AppProps) {
                   ...params.inputProps,
                 }}
                 autoFocus
-                // TODO: i18n
-                placeholder="Filter fields"
+                placeholder={t('FilterDialog.searchPlaceholder')}
               />
             )}
           />

@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   RowData,
   TranslatableResourceType,
@@ -54,6 +55,7 @@ export const MtAppBar = (props: AppProps) => {
     useState<NodeJS.Timer | null>(null);
   const inputEl = useRef<HTMLInputElement>(null);
   const fileNameEl = useRef<HTMLParagraphElement>(null);
+  const { t } = useTranslation();
 
   function handleDisplayFields(
     e: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -164,15 +166,17 @@ export const MtAppBar = (props: AppProps) => {
               </Grid>
               <Grid item>
                 <Stack>
-                  {/* TODO: i18n */}
                   <Typography variant="subtitle1" component="p">
-                    {`Modified ${formatDistanceToNow(
-                      new Date(store.get('fileData').lastModified)
-                    )} ago`}
+                    {t('AppBar.lastModifDate', {
+                      date: formatDistanceToNow(
+                        new Date(store.get('fileData').lastModified) // TODO: add date-fns localization
+                      ),
+                    })}
                   </Typography>
                   <Typography variant="subtitle1" component="p">
-                    {/* TODO: i18n */}
-                    {`Saved ${formatDistanceToNow(saveTime)} ago`}
+                    {t('AppBar.lastSaveDate', {
+                      date: formatDistanceToNow(saveTime), //// TODO: add date-fns localization
+                    })}
                   </Typography>
                 </Stack>
               </Grid>
@@ -181,8 +185,7 @@ export const MtAppBar = (props: AppProps) => {
             <Grid xs={4} item />
           )}
           <Grid xs={'auto'} item>
-            {/* TODO: i18n */}
-            <Tooltip title="Close & delete">
+            <Tooltip title={t('AppBar.closeToolTip')}>
               <span>
                 <IconButton
                   sx={{ color: 'white' }}
@@ -192,8 +195,7 @@ export const MtAppBar = (props: AppProps) => {
                 </IconButton>
               </span>
             </Tooltip>
-            {/* TODO: i18n */}
-            <Tooltip title="Upload a file">
+            <Tooltip title={t('AppBar.uploadToolTip')}>
               <span>
                 <IconButton
                   sx={{ color: 'white' }}
@@ -210,8 +212,7 @@ export const MtAppBar = (props: AppProps) => {
               accept="text/csv"
               style={{ display: 'none' }}
             />
-            {/* TODO: i18n */}
-            <Tooltip title="Save">
+            <Tooltip title={t('AppBar.saveToolTip')}>
               <span>
                 <IconButton
                   sx={{ color: 'white' }}
@@ -221,8 +222,7 @@ export const MtAppBar = (props: AppProps) => {
                 </IconButton>
               </span>
             </Tooltip>
-            {/* TODO: i18n */}
-            <Tooltip title="Download">
+            <Tooltip title={t('AppBar.downloadToolTip')}>
               <span>
                 <IconButton
                   sx={{ color: 'white' }}
@@ -236,13 +236,12 @@ export const MtAppBar = (props: AppProps) => {
         </Grid>
       </Toolbar>
       <Toolbar>
-        {/* TODO: i18n aria-labels */}
         <ToggleButtonGroup
           fullWidth
           size="small"
           value={displayFields}
           onChange={handleDisplayFields}
-          aria-label="Fields to display">
+          aria-label={t('AppBar.ariaToggleGroup')}>
           <ToggleButton value={0} aria-label="Type">
             Type
           </ToggleButton>

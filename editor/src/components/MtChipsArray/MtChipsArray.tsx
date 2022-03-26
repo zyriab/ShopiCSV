@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FilterType } from '../../definitions/definitions';
 import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
@@ -36,6 +37,7 @@ const ListItem = styled('li')(({ theme }) => ({
 export function MtFilterChipsArray(props: AppProps) {
   const [chipData, setChipData] = React.useState<FilterType[]>([]);
   const refEl = useRef<HTMLUListElement>(null);
+  const { t } = useTranslation();
 
   function handleClick() {
     props.onSelected(refEl.current);
@@ -67,9 +69,12 @@ export function MtFilterChipsArray(props: AppProps) {
           );
         })
       ) : (
-        // TODO: i18n
         <ListItem>
-          <Chip icon={<FilterListIcon />} label="Filter content" size="small" />
+          <Chip
+            icon={<FilterListIcon />}
+            label={t('EmptyFilterChip.label')}
+            size="small"
+          />
         </ListItem>
       )}
     </ChipsContainer>
