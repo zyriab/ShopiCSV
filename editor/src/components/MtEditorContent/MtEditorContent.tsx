@@ -77,19 +77,31 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
           props.renderedFields.current = [];
 
           function setRow(i: number) {
-            // TODO: also check for CSS
             function hasHTMLInRow(row: string[]) {
+              const regex =
+                /<(br|basefont|hr|input|source|frame|param|area|meta|!--|col|link|option|base|img|wbr|!DOCTYPE).*?>|<(a|abbr|acronym|address|applet|article|aside|audio|b|bdi|bdo|big|blockquote|body|button|canvas|caption|center|cite|code|colgroup|command|datalist|dd|del|details|dfn|dialog|dir|div|dl|dt|em|embed|fieldset|figcaption|figure|font|footer|form|frameset|head|header|hgroup|h1|h2|h3|h4|h5|h6|html|i|iframe|ins|kbd|keygen|label|legend|li|map|mark|menu|meter|nav|noframes|noscript|object|ol|optgroup|output|p|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|span|strike|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|tt|u|ul|var|video).*?<\/\\2>/;
               return (
-                new RegExp(
-                  '<(br|basefont|hr|input|source|frame|param|area|meta|!--|col|link|option|base|img|wbr|!DOCTYPE).*?>|<(a|abbr|acronym|address|applet|article|aside|audio|b|bdi|bdo|big|blockquote|body|button|canvas|caption|center|cite|code|colgroup|command|datalist|dd|del|details|dfn|dialog|dir|div|dl|dt|em|embed|fieldset|figcaption|figure|font|footer|form|frameset|head|header|hgroup|h1|h2|h3|h4|h5|h6|html|i|iframe|ins|kbd|keygen|label|legend|li|map|mark|menu|meter|nav|noframes|noscript|object|ol|optgroup|output|p|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|span|strike|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|tt|u|ul|var|video).*?<\\/\\2>'
-                ).test(row[5]) ||
-                new RegExp(
-                  '<(br|basefont|hr|input|source|frame|param|area|meta|!--|col|link|option|base|img|wbr|!DOCTYPE).*?>|<(a|abbr|acronym|address|applet|article|aside|audio|b|bdi|bdo|big|blockquote|body|button|canvas|caption|center|cite|code|colgroup|command|datalist|dd|del|details|dfn|dialog|dir|div|dl|dt|em|embed|fieldset|figcaption|figure|font|footer|form|frameset|head|header|hgroup|h1|h2|h3|h4|h5|h6|html|i|iframe|ins|kbd|keygen|label|legend|li|map|mark|menu|meter|nav|noframes|noscript|object|ol|optgroup|output|p|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|span|strike|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|tt|u|ul|var|video).*?<\\/\\2>'
-                ).test(row[6]) ||
+                regex.test(row[5]) ||
+                regex.test(row[6]) ||
                 row[0].includes('SMS_TEMPLATE') ||
                 row[2].includes('BODY_HTML') ||
                 false
               );
+            }
+
+            function hasCSSInRow(row: string[]) {
+              const regex = /((?:^\s*)([\w#.@*,:\-.:>,*\s]+)\s*{(?:[\s]*)((?:[A-Za-z\- \s]+[:]\s*['"0-9\w .,/()\-!%]+;?)*)*\s*}(?:\s*))/mgi;
+              return (
+                regex.test(row[5]) ||
+                regex.test(row[6]) ||
+                false
+              );
+            }
+
+            function getLanguage(row: string[]) {
+              if(hasHTMLInRow(row)) return 'liquid';
+              else if(hasCSSInRow(row)) return 'css';
+              return 'none';
             }
 
             // i.e: (2 x 5) - (5 - [0, 1, 2, 3, 4])
@@ -105,7 +117,8 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
             // had a bug once, data.length was 9 with empty indexes :/
             if (row.data.length > 7) row.data = row.data.splice(0, 7);
             if (row.data.length === 7) {
-              const hasEditor = hasHTMLInRow(row.data);
+              const language = getLanguage(row.data);
+              const hasEditor = language !== 'none';
 
               for (let x = 0; x < 7; x++) {
                 let width =
@@ -159,6 +172,7 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
                         key={key}
                         kid={key}
                         code={isCode}
+                        language={language}
                         label={fieldNames[x]}
                         fullWidth={width === true}
                         value={row.data[x]}
