@@ -102,7 +102,6 @@ function PopperComponent(props: PopperComponentProps) {
   return <StyledAutocompletePopper {...other} />;
 }
 
-// FIXME: search should be all uppercase or transform content in lowercase
 export function MtFilterDialog(props: AppProps) {
   const [pendingValue, setPendingValue] = useState<FilterType[]>([]);
   const theme = useTheme();
