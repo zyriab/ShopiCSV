@@ -8,6 +8,8 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { MtDarkModeSwitch } from '../MtDarkModeSwitch/MtDarkModeSwitch';
 
+import { MtLanguageSelector } from '../MtLanguageSelector/MtLanguageSelector';
+
 function HideOnScroll({ children }: { children: React.ReactElement }) {
   const trigger = useScrollTrigger();
   return (
@@ -47,6 +49,9 @@ export function MtNavBar(props: AppProps) {
               </Grid>
               <Grid item>
                 <MtDarkModeSwitch onChange={handleActivateDarkMode} />
+              </Grid>
+              <Grid item>
+                <MtLanguageSelector />
               </Grid>
             </Grid>
           </Toolbar>
