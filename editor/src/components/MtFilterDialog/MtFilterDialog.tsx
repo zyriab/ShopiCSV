@@ -33,7 +33,7 @@ const StyledAutocompletePopper = styled('div')(({ theme }) => ({
     fontSize: 13,
   },
   [`& .${autocompleteClasses.listbox}`]: {
-    backgroundColor: theme.palette.mode === 'light' ? '#fff' : '#1c2128',
+    backgroundColor: theme.palette.mode === 'light' ? '#fff' : theme.palette.background.default,
     padding: 0,
     [`& .${autocompleteClasses.option}`]: {
       minHeight: 'auto',
@@ -61,11 +61,10 @@ const StyledPopper = styled(Popper)(({ theme }) => ({
     theme.palette.mode === 'light' ? 'rgba(149, 157, 165, 0.2)' : 'rgb(1, 4, 9)'
   }`,
   borderRadius: 6,
-  width: 300,
   zIndex: theme.zIndex.modal,
   fontSize: 13,
   color: theme.palette.mode === 'light' ? '#24292e' : '#c9d1d9',
-  backgroundColor: theme.palette.mode === 'light' ? '#fff' : '#1c2128',
+  backgroundColor: theme.palette.background.default, //theme.palette.mode === 'light' ? '#fff' : '#1c2128',
 }));
 
 const StyledInput = styled(InputBase)(({ theme }) => ({
@@ -99,6 +98,7 @@ function PopperComponent(props: PopperComponentProps) {
   return <StyledAutocompletePopper {...other} />;
 }
 
+// FIXME: search should be all uppercase or transform content in lowercase
 export function MtFilterDialog(props: AppProps) {
   const [pendingValue, setPendingValue] = useState<FilterType[]>([]);
 
@@ -120,14 +120,13 @@ export function MtFilterDialog(props: AppProps) {
       id={id}
       open={open}
       anchorEl={props.anchorEl}
-      placement="bottom-start">
+      placement="bottom-start"
+      sx={{width: '33vw'}}
+      >
       <ClickAwayListener onClickAway={handleClose}>
         <div>
           <Box
             sx={{
-              borderBottom: `1px solid ${
-                theme.palette.mode === 'light' ? '#eaecef' : '#30363d'
-              }`,
               padding: '8px 10px',
               fontWeight: 600,
             }}>
@@ -209,7 +208,10 @@ export function MtFilterDialog(props: AppProps) {
             renderInput={(params) => (
               <StyledInput
                 ref={params.InputProps.ref}
-                inputProps={params.inputProps}
+                inputProps={{
+                  style: { textTransform: 'uppercase' },
+                  ...params.inputProps,
+                }}
                 autoFocus
                 // TODO: i18n
                 placeholder="Filter fields"
