@@ -33,7 +33,6 @@ export default function Translator() {
   const renderedFields = useRef<React.RefObject<MtFieldElement>[]>([]);
   const alertEl = useRef<MtAlertElement>(null!);
   const contentRef = useRef<MtEditorContentElement>(null!);
-  const hasRefusedRestore = useRef(false);
   const confirmationDialog = useConfirm();
   const { t, i18n } = useTranslation();
 
@@ -276,7 +275,7 @@ export default function Translator() {
   /* AUTO-OPEN */
   useEffect(() => {
     async function openFromMemory() {
-      if (store.get('fileData') && !hasRefusedRestore.current) {
+      if (store.get('fileData')) {
         try {
           await confirmationDialog({
             allowClose: true,
@@ -319,7 +318,7 @@ export default function Translator() {
           setIsLoading(false);
           setIsEditing(true);
         } catch {
-          hasRefusedRestore.current = true;
+          store.remove('fileData');
         }
       }
     }
