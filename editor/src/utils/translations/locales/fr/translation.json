@@ -54,7 +54,7 @@
     "DELIVERY_METHOD_DEFINITION": "La définition de méthode de livraison. Par exemple, \"Standard\", ou \"Expédié\".",
     "EMAIL_TEMPLATE": "Un modèle d'e-mail.",
     "SMS_TEMPLATE": "Un modèle de SMS.",
-    "LINK": "Un lien pour dirigé les utilisateurs.",
+    "LINK": "Un lien pour diriger les utilisateurs.",
     "METAFIELD": "Un métachamp.",
     "ONLINE_STORE_ARTICLE": "Un article de boutique en ligne.",
     "ONLINE_STORE_BLOG": "Un blog de boutique en ligne.",
