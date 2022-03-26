@@ -22,6 +22,7 @@ export type MtFieldElement = {
 
 interface AppProps {
   code?: boolean;
+  language: string;
   fullWidth: boolean;
   label: string;
   kid: string;
@@ -63,7 +64,7 @@ export const MtEditorField = forwardRef<MtFieldElement, AppProps>((props: AppPro
       <MtCodeEditor
         inputref={editorEl}
         kid={props.kid}
-        language="liquid"
+        language={props.language}
         height="500px"
         value={props.value}
       />
