@@ -280,7 +280,6 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
             alignItems="stretch">
             <Grid xs={6} sx={{ marginTop: '15vh' }} item>
               <MtDropZone
-                text="Drag and drop your CSV file or click"
                 acceptedFiles="text/csv"
                 onChange={props.onUpload}
               />
