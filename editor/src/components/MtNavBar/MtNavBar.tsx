@@ -22,9 +22,7 @@ interface AppProps {
 }
 
 export function MtNavBar(props: AppProps) {
-  const [, setIsDark] = useState(
-    store.get('themeMode') === 'dark' || false
-  );
+  const [, setIsDark] = useState(store.get('themeMode') === 'dark' || false);
 
   function handleActivateDarkMode(dark: boolean) {
     setIsDark(dark);

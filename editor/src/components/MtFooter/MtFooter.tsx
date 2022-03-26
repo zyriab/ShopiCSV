@@ -99,7 +99,7 @@ export function MtFooter() {
                   />
                 </Link>
               </Paper>
-                Metaoist Dsgn © {new Date().getFullYear()}
+              Metaoist Dsgn © {new Date().getFullYear()}
             </Stack>
           </Box>
         </Container>

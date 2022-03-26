@@ -20,7 +20,7 @@ export type TranslatableResourceType =
   | 'SHOP'
   | 'SHOP_POLICY';
 
-  export interface FilterType {
-    type: TranslatableResourceType;
-    description?: string;
-  }
+export interface FilterType {
+  type: TranslatableResourceType;
+  description?: string;
+}
