@@ -1,0 +1,30 @@
+name: 'Test staging'
+
+on:
+  pull_request:
+    branches:
+      - staging
+
+jobs:
+  test_code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checking out code'
+        uses: actions/checkout@v2
+      - name: 'Setting up Nodejs environment'
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: 'Installing dependencies'
+        env:
+          CI: true
+        run: npm ci
+      - name: 'Checking TS'
+        run: npm run check
+      - name: 'Linting code'
+        run: npm run lint
+      - name: 'Running tests'
+        env:
+          NAMESPACE: ${{ secrets.NAMESPACE }}
+          AES_KEY: ${{ secrets.AES_KEY }}
+        run: npm test
