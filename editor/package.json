@@ -39,6 +39,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "tsc",
+    "check": "tsc --noEmit",
+    "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
