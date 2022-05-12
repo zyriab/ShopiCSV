@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import store from 'store2';
 import Papa from 'papaparse';
-import { getLocale } from '../utils/getLocale.utils';
+import {  getDateLocale } from '../utils/tools/getDateLocale.utils';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { RowData, TranslatableResourceType } from '../definitions/definitions';
@@ -282,7 +282,7 @@ export default function Translator() {
             title: t('RestoreSessionDialog.title'),
             description: t('RestoreSessionDialog.description', {
               date: formatDistanceToNow(
-                new Date(store.get('fileData').savedAt), {locale: getLocale(i18n.resolvedLanguage)}
+                new Date(store.get('fileData').savedAt), {locale: getDateLocale()}
               ),
             }),
             confirmationText: t('General.yesUpper'),
