@@ -5,8 +5,8 @@ import {
   TranslatableResourceType,
 } from '../../definitions/definitions';
 import { formatDistanceToNow } from 'date-fns';
-import { formatBytes } from '../../utils/formatBytes.utils';
-import { getLocale } from '../../utils/getLocale.utils';
+import { formatBytes } from '../../utils/tools/formatBytes.utils';
+import { getDateLocale } from '../../utils/tools/getDateLocale.utils';
 import store from 'store2';
 import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';
@@ -171,14 +171,14 @@ export const MtAppBar = (props: AppProps) => {
                     {t('AppBar.lastModifDate', {
                       date: formatDistanceToNow(
                         new Date(store.get('fileData').lastModified),
-                        { locale: getLocale(i18n.resolvedLanguage)}
+                        { locale: getDateLocale()}
                       ),
                     })}
                   </Typography>
                   <Typography variant="subtitle1" component="p">
                     {t('AppBar.lastSaveDate', {
                       date: formatDistanceToNow(saveTime, {
-                        locale: getLocale(i18n.resolvedLanguage),
+                        locale: getDateLocale(),
                       }),
                     })}
                   </Typography>
