@@ -1,17 +1,17 @@
 import React from 'react';
 import { AppProvider as PolarisProvider } from '@shopify/polaris';
-import '@shopify/polaris/build/esm/styles.css';
 import { ThemeProvider } from '@mui/material/styles';
 import { ConfirmProvider } from 'material-ui-confirm';
 import { MtRouter } from './components/MtRouter/MtRouter';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
+import { getPolarisLocale } from './utils/tools/getPolarisLocale.utils';
 import { useDarkMode } from './utils/hooks/useDarkMode';
 import { MtNavBar } from './components/MtNavBar/MtNavBar';
 import { MtFooter } from './components/MtFooter/MtFooter';
 
 import './App.css';
-import { getPolarisLocale } from './utils/tools/getPolarisLocale.utils';
+import '@shopify/polaris/build/esm/styles.css';
 
 function App() {
   const darkMode = useDarkMode();
