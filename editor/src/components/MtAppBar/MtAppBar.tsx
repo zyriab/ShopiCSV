@@ -56,7 +56,7 @@ export const MtAppBar = (props: AppProps) => {
     useState<NodeJS.Timer | null>(null);
   const inputEl = useRef<HTMLInputElement>(null);
   const fileNameEl = useRef<HTMLParagraphElement>(null);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   function handleDisplayFields(
     e: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -215,6 +215,7 @@ export const MtAppBar = (props: AppProps) => {
               type="file"
               accept="text/csv"
               style={{ display: 'none' }}
+              title="file upload"
             />
             <Tooltip title={t('AppBar.saveToolTip')}>
               <span>
