@@ -4,8 +4,6 @@ import en from '@shopify/polaris/locales/en.json';
 
 export function getPolarisLocale() {
     switch (i18next.resolvedLanguage) {
-        case 'en-US':
-            return en;
         case 'fr':
             return fr;
         default:
