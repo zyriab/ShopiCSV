@@ -145,7 +145,7 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
         isHandling.current = true;
         if (
           e.code === 'Enter' &&
-          !isNaN(+goToPageInputVal) &&
+          !Number.isNaN(+goToPageInputVal) &&
           document.activeElement?.getAttribute('id') === 'go-to-page-field'
         ) {
           let n = +goToPageInputVal;
