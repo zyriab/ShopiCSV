@@ -4,7 +4,9 @@
     "yesLower": "oui",
     "noUpper": "Non",
     "noLower": "non",
-    "search": "Rechercher..."
+    "search": "Rechercher...",
+    "login": "Connexion",
+    "logout": "Déconnexion"
   },
   "AppBar": {
     "lastModifDate": "Modifié il y a {{date}}",

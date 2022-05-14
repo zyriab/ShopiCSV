@@ -4,7 +4,9 @@
     "yesLower": "yes",
     "noUpper": "No",
     "noLower": "no",
-    "search": "Search..."
+    "search": "Search...",
+    "login": "Log in",
+    "logout": "Log out"
   },
   "AppBar": {
     "lastModifDate": "Modified {{date}} ago",
