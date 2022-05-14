@@ -13,7 +13,7 @@ export const AuthProvider = (props: AppProps) => {
 
   const navigate = useNavigate();
 
-  const onRedirectCallback = (appState: AppState) => {
+  const onRedirectCallback = (appState?: AppState) => {
     navigate(appState?.returnTo || window.location.pathname);
   };
 
