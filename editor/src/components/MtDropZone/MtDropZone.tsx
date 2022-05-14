@@ -1,88 +1,28 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { DropZone } from '@shopify/polaris';
 
-import './MtDropZone.css';
-
-interface AppProps {
-  text?: string;
-  acceptedFiles?: string;
-  multiple?: boolean;
-  onChange: (
-    e: React.ChangeEvent<HTMLInputElement> | { target: DataTransfer }
+interface MtDropZoneProps {
+  onUpload: (
+    files: File[],
+    acceptedFiles: File[],
+    rejectedFiles: File[]
   ) => Promise<void>;
 }
 
-export function MtDropZone(props: AppProps) {
-  const [hasDrop, setHasDrop] = useState(false);
-  const inputEl = useRef<HTMLInputElement>(null);
-  const dropZoneEl = useRef<HTMLDivElement>(null);
-  const isHandling = useRef(false);
+export function MtDropZone(props: MtDropZoneProps) {
   const { t } = useTranslation();
 
-  useEffect(() => {
-    dropZoneEl.current?.addEventListener('click', () => {
-      if (!isHandling.current) {
-        isHandling.current = true;
-        inputEl.current?.click();
-      }
-      isHandling.current = false;
-    });
-
-    dropZoneEl.current?.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      setHasDrop(true);
-    });
-
-    ['dragleave', 'dragend'].forEach((type) => {
-      dropZoneEl.current?.addEventListener(type, () => {
-        setHasDrop(false);
-      });
-    });
-
-    dropZoneEl.current?.addEventListener('drop', (e) => {
-      e.preventDefault();
-      if (!isHandling.current) {
-        isHandling.current = true;
-        if (e.dataTransfer?.files.length && inputEl.current) {
-          inputEl.current.files = e.dataTransfer?.files;
-          props.onChange({ target: e.dataTransfer });
-        }
-      }
-      isHandling.current = false;
-      setHasDrop(false);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
-    <>
-      <div
-        ref={dropZoneEl}
-        className={`drop-zone${hasDrop ? ' drop-zone--over' : ''}`}>
-        <div>
-          <AddCircleOutlineIcon
-            sx={{
-              fontSize: '3rem!important',
-              verticalAlign: 'top!important',
-              marginBottom: '1.5rem',
-              color: '#1976d2',
-            }}
-          />
-        </div>
-        <div className="drop-zone__prompt">
-          {props.text || t('DropZone.message')}
-        </div>
-        <input
-          className="drop-zone__input"
-          ref={inputEl}
-          multiple={props.multiple || false}
-          onChange={props.onChange}
-          type="file"
-          accept={props.acceptedFiles}
-          style={{ display: 'none' }}
-        />
-      </div>
-    </>
+    <DropZone
+      dropOnPage
+      accept="text/csv"
+      overlayText={t('DropZone.message')}
+      allowMultiple={false}
+      onDrop={(files, accepted, rejected) =>
+        props.onUpload(files, accepted, rejected)
+      }>
+      <DropZone.FileUpload actionTitle={t('DropZone.message')} />
+    </DropZone>
   );
 }
