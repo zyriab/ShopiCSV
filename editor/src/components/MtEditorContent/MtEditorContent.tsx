@@ -5,20 +5,23 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react';
-import { RowData } from '../../definitions/definitions';
+import { RowData } from '../../definitions/custom';
 import { usePagination } from '../../utils/hooks/usePagination';
+import { useTranslation } from 'react-i18next';
 import Grid from '@mui/material/Grid';
 import Backdrop from '@mui/material/Backdrop';
 import { MtRowsDisplayControl } from '../MtRowsDisplayControl/MtRowsDisplayControl';
 import { MtSpinner } from '../MtSpinner/MtSpinner';
-import { MtDropZone } from '../MtDropZone/MtDropZone';
 import { MtBackToTopBtn } from '../MtBackToTopBtn/MtBackToTopBtn';
 import { MtEditorField, MtFieldElement } from '../MtEditorField/MtEditorField';
+import { MtDropZone } from '../MtDropZone/MtDropZone';
 
 interface AppProps {
   onSave: (displayMsg?: boolean, isAutosave?: boolean) => boolean;
   onUpload: (
-    e: React.ChangeEvent<HTMLInputElement> | { target: DataTransfer }
+    files: File[],
+    acceptedFiles: File[],
+    rejectedFiles: File[]
   ) => Promise<void>;
   setIsLoading: (loading: boolean) => void;
   isLoading: boolean;
@@ -34,6 +37,7 @@ export type MtEditorContentElement = {
 export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
   (props: AppProps, ref) => {
     const [isReady, setIsReady] = useState(false);
+    const { t } = useTranslation();
     const {
       previousPageNum,
       selectedPage,
@@ -66,7 +70,7 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
           'Translated content',
         ];
 
-        async function displayPage() {
+        const displayPage = async () => {
           setIsReady(false);
           props.setIsLoading(true);
 
@@ -208,7 +212,7 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
           setPageContent(content);
           props.setIsLoading(false);
           setIsReady(true);
-        }
+        };
         displayPage();
       }
     }, [
@@ -279,10 +283,7 @@ export const MtEditorContent = forwardRef<MtEditorContentElement, AppProps>(
             justifyContent="center"
             alignItems="stretch">
             <Grid xs={6} sx={{ marginTop: '15vh' }} item>
-              <MtDropZone
-                acceptedFiles="text/csv"
-                onChange={props.onUpload}
-              />
+              <MtDropZone onUpload={props.onUpload} />
             </Grid>
           </Grid>
         )}
