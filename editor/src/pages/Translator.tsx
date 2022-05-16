@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import store from 'store2';
 import Papa from 'papaparse';
-import {  getDateLocale } from '../utils/tools/getDateLocale.utils';
+import { getDateLocale } from '../utils/tools/getDateLocale.utils';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { RowData, TranslatableResourceType } from '../definitions/definitions';
+import { RowData, TranslatableResourceType } from '../definitions/custom';
 import { useConfirm } from 'material-ui-confirm';
 import { MtAlert, MtAlertElement } from '../components/MtAlert/MtAlert';
 import { AlertColor } from '@mui/material/Alert/Alert';
@@ -14,6 +14,7 @@ import {
   MtEditorContentElement,
 } from '../components/MtEditorContent/MtEditorContent';
 import { MtFieldElement } from '../components/MtEditorField/MtEditorField';
+import { Page, Frame } from '@shopify/polaris';
 
 export default function Translator() {
   const [isLoading, setIsLoading] = useState(false);
@@ -146,55 +147,68 @@ export default function Translator() {
     [hasEdited, t]
   );
 
+  async function processFileUpload(file: File) {
+    if (isEditing) handleSave(true, true);
+    if (file.type !== 'text/csv') {
+      displayAlert(`${t('Upload.wrongType')} 🧐`, 'error');
+      return;
+    }
+
+    setIsLoading(true);
+    setIsEditing(false);
+    setFile(file);
+    fileRef.current = file;
+    parsedData.current = [];
+    let index = 0;
+
+    Papa.parse<File>(file, {
+      worker: true,
+      step: (row: any) => {
+        if (index === 0 && row.data[0] !== 'Type') {
+          displayAlert(t('Upload.error'), 'error');
+          setIsLoading(false);
+          return;
+        }
+
+        const dt: RowData = { data: row.data, id: index };
+
+        if (row.data.length > 7) row.data = row.data.splice(0, 7);
+        if (row.data.length === 7) parsedData.current.push(dt);
+        index++;
+      },
+      complete: async () => {
+        displayAlert(`${t('Upload.success')} 🤓`);
+        setDisplayedData([...parsedData.current]);
+        setFileData([...parsedData.current]);
+        store.remove('fileData');
+        store.set('fileData', {
+          content: parsedData.current,
+          name: fileRef.current?.name,
+          size: fileRef.current?.size,
+          lastModified: fileRef.current?.lastModified,
+          savedAt: new Date().toLocaleString(),
+        });
+        setIsLoading(false);
+        setIsEditing(true);
+      },
+    });
+  }
+
+  async function handleDrop(
+    files: File[],
+    acceptedFiles: File[],
+    rejectedFiles: File[]
+  ) {
+    //TODO: add rejected behaviour
+    await processFileUpload(acceptedFiles[0]);
+  }
+
   async function handleUpload(
     e: React.ChangeEvent<HTMLInputElement> | { target: DataTransfer }
   ) {
     if (e?.target?.files) {
       handleCloseFile();
-      if (isEditing) handleSave(true, true);
-      if (e.target.files[0].type !== 'text/csv') {
-        displayAlert(`${t('Upload.wrongType')} 🧐`, 'error');
-        return;
-      }
-
-      setIsLoading(true);
-      setIsEditing(false);
-      setFile(e.target.files[0]);
-      fileRef.current = e.target.files[0];
-      parsedData.current = [];
-      let index = 0;
-
-      Papa.parse<File>(e.target.files[0], {
-        worker: true,
-        step: (row: any) => {
-          if (index === 0 && row.data[0] !== 'Type') {
-            displayAlert(t('Upload.error'), 'error');
-            setIsLoading(false);
-            return;
-          }
-
-          const dt: RowData = { data: row.data, id: index };
-
-          if (row.data.length > 7) row.data = row.data.splice(0, 7);
-          if (row.data.length === 7) parsedData.current.push(dt);
-          index++;
-        },
-        complete: async () => {
-          displayAlert(`${t('Upload.success')} 🤓`);
-          setDisplayedData([...parsedData.current]);
-          setFileData([...parsedData.current]);
-          store.remove('fileData');
-          store.set('fileData', {
-            content: parsedData.current,
-            name: fileRef.current?.name,
-            size: fileRef.current?.size,
-            lastModified: fileRef.current?.lastModified,
-            savedAt: new Date().toLocaleString(),
-          });
-          setIsLoading(false);
-          setIsEditing(true);
-        },
-      });
+      await processFileUpload(e.target.files[0]);
     }
   }
 
@@ -282,7 +296,8 @@ export default function Translator() {
             title: t('RestoreSessionDialog.title'),
             description: t('RestoreSessionDialog.description', {
               date: formatDistanceToNow(
-                new Date(store.get('fileData').savedAt), {locale: getDateLocale()}
+                new Date(store.get('fileData').savedAt),
+                { locale: getDateLocale() }
               ),
             }),
             confirmationText: t('General.yesUpper'),
@@ -333,7 +348,7 @@ export default function Translator() {
 
   return (
     <>
-      <MtAppBar
+      {/* <MtAppBar
         data={fileData}
         display={displayCol}
         onDisplayChange={setDisplayCol}
@@ -346,18 +361,20 @@ export default function Translator() {
         numOfDisplayedFields={numOfDisplayedFields}
         filteredDataIds={setFilteredDataIds}
         filteredDataTypes={setFilteredTypes}
-      />
-      <MtEditorContent
-        ref={contentRef}
-        display={displayCol}
-        data={displayedData}
-        renderedFields={renderedFields}
-        onSave={handleSave}
-        onUpload={handleUpload}
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
-      />
-      <MtAlert ref={alertEl} />
+      /> */}
+      <Page fullWidth>
+        <MtEditorContent
+          ref={contentRef}
+          display={displayCol}
+          data={displayedData}
+          renderedFields={renderedFields}
+          onSave={handleSave}
+          onUpload={handleDrop}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+        />
+        <MtAlert ref={alertEl} />
+      </Page>
     </>
   );
 }

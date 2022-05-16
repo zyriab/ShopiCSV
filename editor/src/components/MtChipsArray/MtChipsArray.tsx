@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FilterType } from '../../definitions/definitions';
+import { FilterType } from '../../definitions/custom';
 import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
-import FilterListIcon from '@mui/icons-material/FilterList';
+import { Badge } from '@shopify/polaris';
+import { FilterMajor } from '@shopify/polaris-icons';
 
 interface AppProps {
   data: FilterType[];
@@ -70,11 +71,9 @@ export function MtFilterChipsArray(props: AppProps) {
         })
       ) : (
         <ListItem>
-          <Chip
-            icon={<FilterListIcon />}
-            label={t('EmptyFilterChip.label')}
-            size="small"
-          />
+          <Badge icon={FilterMajor} size="small">
+            {t('EmptyFilterChip.label')}
+          </Badge>
         </ListItem>
       )}
     </ChipsContainer>
