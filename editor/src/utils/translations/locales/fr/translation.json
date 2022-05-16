@@ -6,7 +6,12 @@
     "noLower": "non",
     "search": "Rechercher",
     "login": "Connexion",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "language": "Langue"
+  },
+  "Language": {
+    "french": "français",
+    "english": "anglais"
   },
   "AppBar": {
     "lastModifDate": "Modifié il y a {{date}}",
