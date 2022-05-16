@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {
   RowData,
   TranslatableResourceType,
-} from '../../definitions/definitions';
+} from '../../definitions/custom';
 import { formatDistanceToNow } from 'date-fns';
 import { formatBytes } from '../../utils/tools/formatBytes.utils';
 import { getDateLocale } from '../../utils/tools/getDateLocale.utils';

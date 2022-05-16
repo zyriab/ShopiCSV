@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {
   FilterType,
   TranslatableResourceType,
-} from '../../definitions/definitions';
+} from '../../definitions/custom';
 import { MtFilterChipsArray } from '../MtChipsArray/MtChipsArray';
 import { MtFilterDialog } from '../MtFilterDialog/MtFilterDialog';
 

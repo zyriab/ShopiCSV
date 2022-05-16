@@ -10,7 +10,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useSearch } from '../../utils/hooks/useSearch';
-import { RowData } from '../../definitions/definitions';
+import { RowData } from '../../definitions/custom';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
