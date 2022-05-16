@@ -1,6 +1,5 @@
 import i18next from 'i18next';
-import enFlagSvg from '../../utils/flags/en';
-import frFlagSvg from '../../utils/flags/fr';
+import { FlagEN, FlagFR } from '../../components/Flags/Flags';
 
 export default function getLangText(lang?: string) {
   const currentLang = lang || i18next.resolvedLanguage;
@@ -12,13 +11,13 @@ export default function getLangText(lang?: string) {
       text = `${i18next.t('Language.french')} ${
         i18next.resolvedLanguage !== 'fr' ? '(français)' : ''
       }`;
-      flag = frFlagSvg;
+      flag = FlagFR;
       break;
     default:
       text = `${i18next.t('Language.english')} ${
         i18next.resolvedLanguage !== 'en' ? '(English)' : ''
       }`;
-      flag = enFlagSvg;
+      flag = FlagEN;
       break;
   }
 
