@@ -54,7 +54,8 @@
     "label": "Filter content"
   },
   "DropZone": {
-    "message": "Drag and drop your file or click inside the rectangle"
+    "button": "Add file",
+    "message": "or drop file to upload"
   },
   "FilterType": {
     "COLLECTION": "A product collection.",
