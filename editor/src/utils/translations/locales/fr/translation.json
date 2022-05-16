@@ -54,7 +54,7 @@
     "label": "Filtrer le contenu"
   },
   "DropZone": {
-    "message": "Glissez et déposez votre fichier ici ou cliquez"
+    "message": "Glissez et déposez votre fichier ou cliquez dans le rectangle"
   },
   "FilterType": {
     "COLLECTION": "Une collection de produit.",
