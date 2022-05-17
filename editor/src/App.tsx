@@ -12,13 +12,16 @@ import { MtFooter } from './components/MtFooter/MtFooter';
 
 import './App.css';
 import '@shopify/polaris/build/esm/styles.css';
+import MtNavMenu from './components/MtNavMenu/MtNavMenu';
 
 function App() {
   const darkMode = useDarkMode();
   return (
-    <PolarisProvider i18n={getPolarisLocale as any}>
-      <ThemeProvider theme={darkMode.theme}>
-        <Frame topBar={<MtNavBar onModeChange={darkMode.setIsDark} />}>
+    <PolarisProvider
+      colorScheme={darkMode.isDark ? 'dark' : 'light'}
+      i18n={getPolarisLocale as any}>
+      {/* <ThemeProvider theme={darkMode.theme}> */}
+        <Frame topBar={<MtNavBar onModeChange={darkMode.setIsDark} />} navigation={<MtNavMenu />}>
           <ConfirmProvider>
             <Box sx={{ minHeight: '600px' }}>
               <MtRouter />
@@ -26,7 +29,7 @@ function App() {
             <MtFooter />
           </ConfirmProvider>
         </Frame>
-      </ThemeProvider>
+      {/* </ThemeProvider> */}
     </PolarisProvider>
   );
 }
