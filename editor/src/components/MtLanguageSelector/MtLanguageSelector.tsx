@@ -47,7 +47,6 @@ export function MtLanguageSelector() {
 
   useEffect(() => {
     options.sort((a, b) => a.value.localeCompare(b.value));
-    console.log(i18n.resolvedLanguage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
