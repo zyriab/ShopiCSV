@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppState, Auth0Provider } from '@auth0/auth0-react';
 
 interface AppProps {
-  children: JSX.Element[] | JSX.Element;
+  children: React.ReactNode;
 }
 
 export const AuthProvider = (props: AppProps) => {
