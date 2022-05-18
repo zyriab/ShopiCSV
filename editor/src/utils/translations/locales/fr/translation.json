@@ -13,6 +13,15 @@
     "french": "français",
     "english": "anglais"
   },
+  "NavMenu": {
+    "home": "Accueil",
+    "translations": "Traductions",
+    "products": "Produits",
+    "sectionSeparator": "AIDE & COMMUNAUTÉ",
+    "help": "Comment utiliser ShopiCSV",
+    "discord": "Discuter avec nous sur Discord",
+    "review": "Laisser un avis"
+  },
   "AppBar": {
     "lastModifDate": "Modifié il y a {{date}}",
     "lastSaveDate": "Sauvegardé il y a {{date}}",

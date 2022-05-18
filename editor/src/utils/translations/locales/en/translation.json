@@ -13,6 +13,15 @@
     "french": "French",
     "english": "English"
   },
+  "NavMenu": {
+    "home": "Home",
+    "translations": "Translations",
+    "products": "Products",
+    "sectionSeparator": "HELP & COMMUNITY",
+    "help": "How to use ShopiCSV",
+    "discord": "Chat with us on Discord",
+    "review": "Leave us a review"
+  },
   "AppBar": {
     "lastModifDate": "Modified {{date}} ago",
     "lastSaveDate": "Saved {{date}} ago",
