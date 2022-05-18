@@ -52,10 +52,7 @@ export function useSearch(data: RowData[] | string[], searchIndex = 0) {
   }
 
   useEffect(() => {
-    const foo = () => debSearch.cancel();
-    return () => {
-      foo();
-    };
+    return () => debSearch.cancel();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
