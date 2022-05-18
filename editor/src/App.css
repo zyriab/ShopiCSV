@@ -1,3 +1,8 @@
+/* Forcing Polaris' hamburger menu even on desktop */
+.Polaris-TopBar__NavigationIcon {
+  display: block!important;
+}
+
 .App {
   text-align: center;
 }
