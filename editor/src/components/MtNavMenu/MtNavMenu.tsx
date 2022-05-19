@@ -70,7 +70,6 @@ export default function MtNavMenu(props: MtNavMenuProps) {
         text: t('NavMenu.review'),
         path: 'https://www.shopicsv.app/review',
         icon: <ThumbsUpMinor />,
-        external: true,
       },
     ],
     [t]
@@ -103,7 +102,7 @@ export default function MtNavMenu(props: MtNavMenuProps) {
             setSelectedItem={setSelected}
           />
           <ListSubheader>{t('NavMenu.sectionSeparator')}</ListSubheader>
-          <MtNavItems items={mainNavItems} />
+          <MtNavItems items={secondaryNavItems} />
         </List>
       </Box>
     </Drawer>
