@@ -214,7 +214,7 @@ export const MtAppBar = (props: AppProps) => {
               onChange={props.onUpload}
               type="file"
               accept="text/csv"
-              style={{ display: 'none' }}
+              className="display-none"
               title="file upload"
             />
             <Tooltip title={t('AppBar.saveToolTip')}>
