@@ -81,7 +81,6 @@ const sharedStyles = {
             ? '1rem 0 0 1.7rem'
             : '.07rem 0 0 1.7rem',
           fontSize: '.8125rem',
-          color: '#6d7175',
         },
       },
     },
@@ -140,6 +139,13 @@ export const lightTheme: ThemeOptions = {
               '&.Mui-focusVisible': {
                 backGroundColor: '#edeeef',
               },
+            },
+          },
+        },
+        MuiListSubheader: {
+          styleOverrides: {
+            root: {
+              color: '#6d7175',
             },
           },
         },
@@ -206,6 +212,13 @@ export const darkTheme: ThemeOptions = {
                 outline: '2px solid #2662b6',
                 borderRadius: '7px',
               },
+            },
+          },
+        },
+        MuiListSubheader: {
+          styleOverrides: {
+            root: {
+              color: '#999fa4',
             },
           },
         },
