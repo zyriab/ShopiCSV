@@ -47,7 +47,7 @@
   },
   "CloseFileDialog": {
     "title": "Supprimer le fichier pour toujours ?",
-    "description": "Cela retirera le fichier and versions précédentes de votre espace de stockage.",
+    "description": "Cela retirera le fichier et versions précédentes de votre espace de stockage.",
     "yes": "Oui, supprimer",
     "no": "Non, garder le fichier"
   },
