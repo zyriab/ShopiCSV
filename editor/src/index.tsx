@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './utils/translations/translations.ts';
 
 import './index.css';
+import './style.css';
 
 ReactDOM.render(
   <React.StrictMode>
