@@ -7,7 +7,7 @@ export function MtLoginBtn() {
   const { t } = useTranslation();
   const { loginWithPopup } = useAuth0();
   return (
-    <Button primary onClick={() => loginWithPopup()}>
+    <Button primary fullWidth onClick={() => loginWithPopup()}>
       {t('General.login')}
     </Button>
   );
