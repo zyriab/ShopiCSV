@@ -3,7 +3,6 @@ import { useAuth0 } from '@auth0/auth0-react';
 import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
 import MtDarkModeSwitch from '../MtDarkModeSwitch/MtDarkModeSwitch';
 import { MtAuthenticationBtn } from '../AuthButtons/MtAuthenticationBtn';
-// TODO: add user image + popover menu (settings, log out, etc)
 import { MtLanguageSelector } from '../MtLanguageSelector/MtLanguageSelector';
 import {
   ActionListItemDescriptor,
