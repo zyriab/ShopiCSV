@@ -21,13 +21,6 @@ const sharedStyles = {
     ].join(','),
   },
   components: {
-    MuiList: {
-      styleOverrides: {
-        root: {
-          paddingTop: '3rem',
-        },
-      },
-    },
     MuiListItem: {
       styleOverrides: {
         root: {
@@ -49,7 +42,9 @@ const sharedStyles = {
       styleOverrides: {
         primary: {
           fontWeight: 500,
-          fontSize: matchMedia('(max-width: 800px)').matches ? '1.7rem' : '1rem',
+          fontSize: matchMedia('(max-width: 800px)').matches
+            ? '.975rem'
+            : '.875rem',
         },
       },
     },
@@ -58,7 +53,7 @@ const sharedStyles = {
         root: {
           fontWeight: 500,
           padding: matchMedia('(max-width: 800px)').matches
-            ? '1rem .5rem 1rem 1rem'
+            ? '.8rem .5rem .8rem 1rem'
             : '0 .5rem 0 1rem',
           '&.Mui-selected': {
             '&::before': {
@@ -83,11 +78,10 @@ const sharedStyles = {
       styleOverrides: {
         root: {
           padding: matchMedia('(max-width: 800px)').matches
-            ? '1rem 0 1rem 1.7rem'
-            : '.07rem 0 .07rem 1.7rem',
-          fontSize: matchMedia('(max-width: 800px)').matches
-            ? '1.5rem'
-            : '.875rem',
+            ? '1rem 0 0 1.7rem'
+            : '.07rem 0 0 1.7rem',
+          fontSize: '.8125rem',
+          color: '#6d7175',
         },
       },
     },
