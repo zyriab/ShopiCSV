@@ -1,67 +1,57 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { MtDarkModeSwitch } from '../MtDarkModeSwitch/MtDarkModeSwitch';
+import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
+import MtDarkModeSwitch from '../MtDarkModeSwitch/MtDarkModeSwitch';
 import { MtAuthenticationBtn } from '../AuthButtons/MtAuthenticationBtn';
 // TODO: add user image + popover menu (settings, log out, etc)
 import { MtLanguageSelector } from '../MtLanguageSelector/MtLanguageSelector';
 import {
   ActionListItemDescriptor,
-  CustomProperties,
+  // CustomProperties,
   Icon,
   Stack,
   TopBar,
 } from '@shopify/polaris';
 import {
-  HomeMinor,
-  LanguageMinor,
   QuestionMarkMinor,
   ExternalSmallMinor,
   SettingsMinor,
+  LogOutMinor,
 } from '@shopify/polaris-icons';
-import { useSearch } from '../../utils/hooks/useSearch';
 import { useTranslation } from 'react-i18next';
-import { RowData } from '../../definitions/custom';
-import dataContext from '../../utils/contexts/data.context';
 import { useNavigate } from 'react-router-dom';
-import { isMobile } from 'react-device-detect';
 import MtNavMenu from '../MtNavMenu/MtNavMenu';
+import { Logo } from '@shopify/polaris/build/ts/latest/src/utilities/frame/types';
 
 interface MtNavBarProps {
-  onModeChange: (isDark: boolean) => void;
+  logo: Logo;
+  onThemeChange: (isDark: boolean) => void;
 }
 
 export default function MtNavBar(props: MtNavBarProps) {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const { t } = useTranslation();
-  const { isAuthenticated, user } = useAuth0();
-  const navigate = useNavigate();
-  const context = useContext(dataContext);
-  const { inputValue, handleChange, handleClear, resultIds } = useSearch(
-    context.data,
-    5
-  );
 
-  const searchFieldEl = (
-    <TopBar.SearchField
-      onChange={handleChange}
-      value={inputValue}
-      // onFocus={} // TODO: select all text
-      placeholder={t('General.search')}
-      showFocusBorder
-    />
-  );
+  const { t } = useTranslation();
+  const { isAuthenticated, user, logout } = useAuth0();
+  const { isMobile } = useDetectScreenSize();
+  const navigate = useNavigate();
 
   const userMenuEl = isAuthenticated ? (
-    <div style={{ marginLeft: '5px' }}>
+    <div className="ml-05">
       <TopBar.UserMenu
         actions={[
           {
             items: [
               {
-                content: 'Settings',
+                content: t('General.settings'),
                 icon: SettingsMinor,
                 onAction: () => navigate('/settings'),
+              },
+              {
+                content: t('General.logout'),
+                icon: LogOutMinor,
+                onAction: () => logout({ returnTo: window.location.origin }),
               },
             ],
           },
@@ -86,7 +76,7 @@ export default function MtNavBar(props: MtNavBarProps) {
       />
     </div>
   ) : (
-    <div style={{ width: '250px', display: 'flex', justifyContent: 'center' }}>
+    <div className="Auth-Btn__Top-Bar">
       <MtAuthenticationBtn />
     </div>
   );
@@ -94,7 +84,7 @@ export default function MtNavBar(props: MtNavBarProps) {
   // TODO: implement editor filtering (search, fields type, toggle fields)
   const secondaryMenuEl = (
     <Stack wrap={false} alignment="center">
-      <MtDarkModeSwitch onChange={props.onModeChange} />
+      {!isMobile && <MtDarkModeSwitch onChange={props.onThemeChange} />}
       <MtLanguageSelector />
     </Stack>
   );
@@ -102,11 +92,9 @@ export default function MtNavBar(props: MtNavBarProps) {
   return (
     // FIXME: custom color doesn't apply
     // <CustomProperties style={{ backgroundColor: '#1976d2' }}>
-    <>
+    <div id="Top-Bar__Main">
       <TopBar
         showNavigationToggle
-        // searchField={searchFieldEl}
-        // onSearchResultsDismiss={handleClear}
         onNavigationToggle={() => setIsNavMenuOpen((current) => !current)}
         userMenu={userMenuEl}
         secondaryMenu={secondaryMenuEl}
@@ -115,8 +103,10 @@ export default function MtNavBar(props: MtNavBarProps) {
         open={isNavMenuOpen}
         onClose={() => setIsNavMenuOpen(false)}
         onOpen={() => setIsNavMenuOpen(true)}
+        onThemeChange={props.onThemeChange}
+        logo={props.logo}
       />
-    </>
+    </div>
     // </CustomProperties>
   );
 }
