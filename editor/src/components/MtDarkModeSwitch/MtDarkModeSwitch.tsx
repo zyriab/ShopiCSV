@@ -54,7 +54,7 @@ const StyledSwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-export function MtDarkModeSwitch(props: AppProps) {
+export default function MtDarkModeSwitch(props: AppProps) {
   const [active, setActive] = useState(
     store.get('themeMode') === 'dark' || false
   );
