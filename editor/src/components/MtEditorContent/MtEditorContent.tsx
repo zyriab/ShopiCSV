@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { RowData } from '../../definitions/custom';
 import { usePagination } from '../../utils/hooks/usePagination';
-import { useTranslation } from 'react-i18next';
 import Grid from '@mui/material/Grid';
 import Backdrop from '@mui/material/Backdrop';
 import { MtRowsDisplayControl } from '../MtRowsDisplayControl/MtRowsDisplayControl';
@@ -30,7 +29,7 @@ export type MtEditorContentElement = {
   resetPagination: () => void;
 };
 
-export const MtEditorContent = forwardRef<
+const MtEditorContent = forwardRef<
   MtEditorContentElement,
   MtEditorContentProps
 >((props: MtEditorContentProps, ref) => {
@@ -280,3 +279,7 @@ export const MtEditorContent = forwardRef<
     </>
   );
 });
+
+MtEditorContent.displayName = 'MtEditorContent';
+
+export {MtEditorContent};
