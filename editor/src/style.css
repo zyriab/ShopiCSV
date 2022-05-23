@@ -46,11 +46,12 @@
 .Auth-Btn__Top-Bar {
   margin: 0 1rem 0 1rem;
   width: 120px;
+  white-space: nowrap;
 }
 
 /* Polaris customization */
 
 /* Removing the small space taken by the (inexistent) search field on the app's main top bar */
 #Top-Bar__Main .Polaris-TopBar__SearchField {
-  display: none!important;
+  display: none !important;
 }
