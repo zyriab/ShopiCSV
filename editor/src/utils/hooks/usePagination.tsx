@@ -6,17 +6,15 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import store from 'store2';
 import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
-import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
-import Button from '@mui/material/Button';
+import { Pagination, TextField } from '@shopify/polaris';
 
 export function usePagination(dataLength: number, maxElemStorageId: string) {
+  const { t } = useTranslation();
+
   const [selectedPage, setSelectedPage] = useState(1);
   const [currentPageNum, setCurrentPageNum] = useState(1);
   const [maxElementsPerPage, setMaxElementsPerPage] = useState(
@@ -41,19 +39,18 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
         const input = e.children[1].children[0];
         input.addEventListener('blur', () => setGoToPageHelpTxt(''));
         input.addEventListener('focus', () => {
-          if (goToPageInputVal !== '') setGoToPageHelpTxt('Press enter');
+          if (goToPageInputVal !== '')
+            setGoToPageHelpTxt(t('Pagination.goToPageHelpTxt'));
         });
       }
     },
-    [goToPageInputVal]
+    [goToPageInputVal, t]
   );
 
-  function handleGoToPageInputChange(
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) {
-    setGoToPageInputVal(e.target.value);
-    if (e.target.value.length === 0) setGoToPageHelpTxt('');
-    else setGoToPageHelpTxt('Press return');
+  function handleGoToPageInputChange(value: string, id: string) {
+    setGoToPageInputVal(value);
+    if (value.length === 0) setGoToPageHelpTxt('');
+    else setGoToPageHelpTxt(t('Pagination.goToPageHelpTxt'));
   }
 
   function handleElementsPerPageChange(n: number) {
@@ -204,8 +201,9 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
   /* COMPONENTS PROPS */
   const goToPageFieldProps = {
     targetRef: goToPageInputEl,
+    max: maxPageNum,
     value: goToPageInputVal,
-    helperText: goToPageHelpTxt,
+    helpText: goToPageHelpTxt,
     onChange: handleGoToPageInputChange,
   };
 
@@ -246,68 +244,46 @@ type ChangePageBtnsRef = {
 
 const ChangePageButtons = forwardRef<ChangePageBtnsRef, ChangePageBtnsProps>(
   (props: ChangePageBtnsProps, ref) => {
-    const leftButtonEl = useRef<HTMLButtonElement>(null!);
-    const rightButtonEl = useRef<HTMLButtonElement>(null!);
-
     useImperativeHandle(ref, () => ({
-      next: () => rightButtonEl.current.click(),
-      previous: () => leftButtonEl.current.click(),
+      next: props.goNextPage,
+      previous: props.goPrevPage,
     }));
 
     return (
-      <Grid
-        spacing={2}
-        container
-        item
-        alignItems="center"
-        justifyContent="center">
-        <Grid item>
-          <Button
-            ref={leftButtonEl}
-            variant="contained"
-            onClick={props.goPrevPage}>
-            <ArrowBackRoundedIcon />
-          </Button>
-        </Grid>
-        <Grid item>
-          <Typography variant="subtitle1" component="div">
-            {`${props.currentPageNum} / ${props.maxPageNum}`}
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Button
-            ref={rightButtonEl}
-            variant="contained"
-            onClick={props.goNextPage}>
-            <ArrowForwardRoundedIcon />
-          </Button>
-        </Grid>
-      </Grid>
+      <Pagination
+        hasNext
+        hasPrevious
+        onNext={props.goNextPage}
+        onPrevious={props.goPrevPage}
+        label={`${props.currentPageNum}/${props.maxPageNum}`}
+      />
     );
   }
 );
 
 interface GoToPageFieldProps {
-  helperText: string;
+  helpText: string;
   value: string;
-  onChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
+  max: number;
+  onChange: (value: string, id: string) => void;
   targetRef: React.RefCallback<HTMLDivElement>;
 }
 
 function GoToPageField(props: GoToPageFieldProps) {
+  const { t } = useTranslation();
+
   return (
     <TextField
-      ref={props.targetRef}
-      id="go-to-page-field"
-      variant="standard"
+      label={t('Pagination.goToPageLabel')}
       type="number"
-      label="Go to page"
-      sx={{ minHeight: '4.5rem' }}
-      helperText={props.helperText}
+      inputMode="numeric"
+      min={0}
+      max={props.max}
+      helpText={props.helpText}
       value={props.value}
       onChange={props.onChange}
+      autoComplete="off"
+      selectTextOnFocus
     />
   );
 }
