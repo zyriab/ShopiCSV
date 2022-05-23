@@ -38,9 +38,11 @@
     "alertMsg": "Restauré votre dernière session du {{date}} avec succès"
   },
   "Upload": {
+    "bannerTitle": "Le fichier suivant n'a pas pu être téléchargé :",
     "success": "Document transcrit avec succès",
     "error": "Le fichié téléchargé ne correspond pas à un CSV de traduction",
-    "wrongType": "Fichié rejeté. Seuls les fichier .CSV sont autorisés"
+    "wrongType": "\"{{fileName}}\" n'est pas pris en charge. Le type du fichier doit être .csv.",
+    "fileTooBig": "\"{{fileName}}\" n'est pas pris en charge. La taille du fichier ne peut excéder {{maxFileSize}}. (Taille actuelle: {{fileSize}})."
   },
   "Save": {
     "success": "Sauvegardé",

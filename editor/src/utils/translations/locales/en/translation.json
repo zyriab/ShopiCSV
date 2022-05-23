@@ -39,8 +39,7 @@
   },
   "Upload": {
     "success": "Successfully parsed document",
-    "error": "The uploaded file does not correspond to a translation CSV",
-    "wrongType": "File rejected. You may only upload .CSV files"
+    "error": "The uploaded file does not correspond to a translation CSV"
   },
   "Save": {
     "success": "Successfully saved",
@@ -65,7 +64,12 @@
   },
   "DropZone": {
     "button": "Add file",
-    "message": "or drop file to upload"
+    "message": "or drop file to upload",
+    "bannerTitle": "The following file couldn’t be uploaded:",
+    "wrongType": "\"{{name}}\" is not supported.\nFile type must be .csv.",
+    "fileTooBig": "\"{{name}}\" is not supported.\nFile size cannot exceed {{maxSize}}. (Current size: {{size}}).",
+    "invalidColNumber": "\"{{name}}\" is not supported.\nFile does not seem to be a translation .csv. Make sure the rows are made of {{expectedColNumber}} columns.",
+    "invalidHeaderContent": "\"{{name}}\" is not supported.\nMake sure the first row contains the name of each columns, without typo.\nFor more information, check out the <4>supported files' structure</4>."
   },
   "FilterType": {
     "COLLECTION": "A product collection.",
