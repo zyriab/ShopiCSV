@@ -55,3 +55,14 @@
 #Top-Bar__Main .Polaris-TopBar__SearchField {
   display: none !important;
 }
+
+/* Changing the main top bar color */
+#Top-Bar__Main .Polaris-TopBar {
+  background-color: #178b6e;
+}
+
+/* Forcing Polaris' hamburger menu even on desktop */
+.Polaris-TopBar__NavigationIcon {
+  display: block !important;
+  fill: #e3e5e7;
+}
