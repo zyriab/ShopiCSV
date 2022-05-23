@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import useDarkMode from '../../utils/hooks/useDarkMode';
 import {
   DropZone,
   Button,
@@ -14,6 +13,7 @@ import {
 } from '@shopify/polaris';
 import Papa from 'papaparse';
 import { formatBytes } from '../../utils/tools/formatBytes.utils';
+import themeContext from '../../utils/contexts/theme.context';
 
 interface MtDropZoneProps {
   onUpload: (files: File[]) => Promise<void>;
@@ -48,7 +48,7 @@ export function MtDropZone(props: MtDropZoneProps) {
   const [rejectedFiles, setRejectedFiles] = useState<File[]>([]);
 
   const { t } = useTranslation();
-  const { isDark } = useDarkMode();
+  const {themeStr} = useContext(themeContext);
 
   async function handleUpload(
     files: File[],
@@ -106,7 +106,7 @@ export function MtDropZone(props: MtDropZoneProps) {
   const errorMessage = hasError && (
     <CustomProperties
       style={{ whiteSpace: 'pre-line' }}
-      colorScheme={isDark ? 'dark' : 'light'}>
+      colorScheme={themeStr}>
       <Banner title={t('DropZone.bannerTitle')} status="critical">
         <List type="bullet">
           {rejectedFiles.map((file, index) => {
