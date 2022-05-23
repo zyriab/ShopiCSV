@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
+import useDarkMode from '../../utils/hooks/useDarkMode';
 import MtDarkModeSwitch from '../MtDarkModeSwitch/MtDarkModeSwitch';
 import { MtAuthenticationBtn } from '../AuthButtons/MtAuthenticationBtn';
 import { MtLanguageSelector } from '../MtLanguageSelector/MtLanguageSelector';
 import {
   ActionListItemDescriptor,
+  CustomProperties,
   // CustomProperties,
   Icon,
   Stack,
@@ -32,6 +34,7 @@ export default function MtNavBar(props: MtNavBarProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const { t } = useTranslation();
+  const { isDark } = useDarkMode();
   const { isAuthenticated, user, logout } = useAuth0();
   const { isMobile } = useDetectScreenSize();
   const navigate = useNavigate();
@@ -83,6 +86,7 @@ export default function MtNavBar(props: MtNavBarProps) {
   // TODO: implement editor filtering (search, fields type, toggle fields)
   const secondaryMenuEl = (
     <Stack wrap={false} alignment="center">
+      {/* TODO: Try to use the hook in this file directly */}
       {!isMobile && <MtDarkModeSwitch onChange={props.onThemeChange} />}
       <MtLanguageSelector />
     </Stack>
@@ -90,14 +94,15 @@ export default function MtNavBar(props: MtNavBarProps) {
 
   return (
     // FIXME: custom color doesn't apply
-    // <CustomProperties style={{ backgroundColor: '#1976d2' }}>
     <div id="Top-Bar__Main">
-      <TopBar
-        showNavigationToggle
-        onNavigationToggle={() => setIsNavMenuOpen((current) => !current)}
-        userMenu={userMenuEl}
-        secondaryMenu={secondaryMenuEl}
-      />
+      <CustomProperties colorScheme="dark">
+        <TopBar
+          showNavigationToggle
+          onNavigationToggle={() => setIsNavMenuOpen((current) => !current)}
+          userMenu={userMenuEl}
+          secondaryMenu={secondaryMenuEl}
+        />
+      </CustomProperties>
       <MtNavMenu
         open={isNavMenuOpen}
         onClose={() => setIsNavMenuOpen(false)}
@@ -106,6 +111,5 @@ export default function MtNavBar(props: MtNavBarProps) {
         logo={props.logo}
       />
     </div>
-    // </CustomProperties>
   );
 }
