@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
-import useDarkMode from '../../utils/hooks/useDarkMode';
 import MtDarkModeSwitch from '../MtDarkModeSwitch/MtDarkModeSwitch';
 import { MtAuthenticationBtn } from '../AuthButtons/MtAuthenticationBtn';
 import { MtLanguageSelector } from '../MtLanguageSelector/MtLanguageSelector';
 import {
   ActionListItemDescriptor,
   CustomProperties,
-  // CustomProperties,
   Icon,
   Stack,
   TopBar,
@@ -22,19 +20,12 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import MtNavMenu from '../MtNavMenu/MtNavMenu';
-import { Logo } from '@shopify/polaris/build/ts/latest/src/utilities/frame/types';
 
-interface MtNavBarProps {
-  logo: Logo;
-  onThemeChange: (isDark: boolean) => void;
-}
-
-export default function MtNavBar(props: MtNavBarProps) {
+export default function MtNavBar() {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const { t } = useTranslation();
-  const { isDark } = useDarkMode();
   const { isAuthenticated, user, logout } = useAuth0();
   const { isMobile } = useDetectScreenSize();
   const navigate = useNavigate();
@@ -86,14 +77,12 @@ export default function MtNavBar(props: MtNavBarProps) {
   // TODO: implement editor filtering (search, fields type, toggle fields)
   const secondaryMenuEl = (
     <Stack wrap={false} alignment="center">
-      {/* TODO: Try to use the hook in this file directly */}
-      {!isMobile && <MtDarkModeSwitch onChange={props.onThemeChange} />}
+      {!isMobile && <MtDarkModeSwitch />}
       <MtLanguageSelector />
     </Stack>
   );
 
   return (
-    // FIXME: custom color doesn't apply
     <div id="Top-Bar__Main">
       <CustomProperties colorScheme="dark">
         <TopBar
@@ -107,8 +96,6 @@ export default function MtNavBar(props: MtNavBarProps) {
         open={isNavMenuOpen}
         onClose={() => setIsNavMenuOpen(false)}
         onOpen={() => setIsNavMenuOpen(true)}
-        onThemeChange={props.onThemeChange}
-        logo={props.logo}
       />
     </div>
   );
