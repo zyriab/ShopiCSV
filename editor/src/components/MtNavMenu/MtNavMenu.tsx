@@ -18,14 +18,12 @@ import {
 } from '@shopify/polaris-icons';
 import MtNavItems from '../MtNavItems/MtNavItems';
 import MtDarkModeSwitch from '../MtDarkModeSwitch/MtDarkModeSwitch';
-import { Logo } from '@shopify/polaris/build/ts/latest/src/utilities/frame/types';
+import logo from '../../utils/helpers/logo.helper';
 
 interface MtNavMenuProps {
   open: boolean;
   onClose: () => void;
   onOpen: () => void;
-  onThemeChange: (isDark: boolean) => void;
-  logo: Logo;
 }
 
 export default function MtNavMenu(props: MtNavMenuProps) {
@@ -109,18 +107,18 @@ export default function MtNavMenu(props: MtNavMenuProps) {
             <Stack vertical spacing="extraTight">
               {isTablet && (
                 <div className="align-center">
-                  <a href={props.logo.url}>
+                  <a href={logo.url}>
                     <img
-                      src={props.logo.topBarSource || ''}
-                      width={props.logo.width}
-                      alt={props.logo.accessibilityLabel || 'Application Logo'}
+                      src={logo.topBarSource || ''}
+                      width={logo.width}
+                      alt={logo.accessibilityLabel || 'Application Logo'}
                     />
                   </a>
                 </div>
               )}
               {isMobile && (
                 <div className="align-right pr-1">
-                  <MtDarkModeSwitch onChange={props.onThemeChange} />
+                  <MtDarkModeSwitch />
                 </div>
               )}
             </Stack>
