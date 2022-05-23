@@ -150,7 +150,7 @@ export default function Translator() {
   async function processFileUpload(file: File) {
     if (isEditing) handleSave(true, true);
     if (file.type !== 'text/csv') {
-      displayAlert(`${t('Upload.wrongType')} 🧐`, 'error');
+      displayAlert(`${t('DropZone.wrongType')} 🧐`, 'error');
       return;
     }
 
@@ -161,7 +161,7 @@ export default function Translator() {
     parsedData.current = [];
     let index = 0;
 
-    Papa.parse<File>(file, {
+    Papa.parse<string[]>(file, {
       worker: true,
       step: (row: any) => {
         if (index === 0 && row.data[0] !== 'Type') {
@@ -194,13 +194,9 @@ export default function Translator() {
     });
   }
 
-  async function handleDrop(
-    files: File[],
-    acceptedFiles: File[],
-    rejectedFiles: File[]
-  ) {
+  async function handleDrop(files: File[]) {
     //TODO: add rejected behaviour
-    await processFileUpload(acceptedFiles[0]);
+    await processFileUpload(files[0]);
   }
 
   async function handleUpload(
@@ -233,7 +229,7 @@ export default function Translator() {
     else setDisplayCol([2, 5, 6]);
   }, []);
 
-  /* FILTERING */
+  /* ROW FILTERING */
   useEffect(() => {
     let arr = [];
     if (filteredDataIds.length > 0)
@@ -362,7 +358,7 @@ export default function Translator() {
         filteredDataIds={setFilteredDataIds}
         filteredDataTypes={setFilteredTypes}
       /> */}
-      <Page fullWidth>
+      <Page fullWidth >
         <MtEditorContent
           ref={contentRef}
           display={displayCol}
