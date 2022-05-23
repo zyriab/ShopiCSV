@@ -52,7 +52,12 @@
     "no": "No, keep it"
   },
   "RowDisplayControl": {
-    "displayPer": "Display rows per:"
+    "displayPer": "Display rows per:",
+    "btnA11yLabel": "Display {{number}} rows per page."
+  },
+  "Pagination": {
+    "goToPageLabel": "Go to page",
+    "goToPageHelpTxt": "Press return"
   },
   "FilterDialog": {
     "title": "Choose which content you wish to filter",

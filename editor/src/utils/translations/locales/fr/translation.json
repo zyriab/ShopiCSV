@@ -52,7 +52,12 @@
     "no": "Non, garder le fichier"
   },
   "RowDisplayControl": {
-    "displayPer": "Afficher les rangées par :"
+    "displayPer": "Afficher les rangées par :",
+    "btnA11yLabel": "Afficher les rangées par {{number}} sur la page."
+  },
+  "Pagination": {
+    "goToPageLabel": "Aller à la page",
+    "goToPageHelpTxt": "Appuyez sur entrée"
   },
   "FilterDialog": {
     "title": "Choisissez le contenu à filtrer",
