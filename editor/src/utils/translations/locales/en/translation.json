@@ -69,7 +69,7 @@
     "wrongType": "\"{{name}}\" is not supported.\nFile type must be .csv.",
     "fileTooBig": "\"{{name}}\" is not supported.\nFile size cannot exceed {{maxSize}}. (Current size: {{size}}).",
     "invalidColNumber": "\"{{name}}\" is not supported.\nFile does not seem to be a translation .csv. Make sure the rows are made of {{expectedColNumber}} columns.",
-    "invalidHeaderContent": "\"{{name}}\" is not supported.\nMake sure the first row contains the name of each columns, without typo.\nFor more information, check out the <4>supported files' structure</4>."
+    "invalidHeaderContent": "\"{{name}}\" is not supported.\nMake sure the first row contains the name of each columns without any errors.\nFor more information, check out the <4>supported file structures</4>."
   },
   "FilterType": {
     "COLLECTION": "A product collection.",
