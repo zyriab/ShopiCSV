@@ -1,17 +1,16 @@
 import React from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
+import { Spinner } from '@shopify/polaris';
 
 export function MtSpinner() {
   return (
-    <Box
-      sx={{
+    <div
+      style={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: '5%',
       }}>
-      <CircularProgress size={100} />
-    </Box>
+      <Spinner accessibilityLabel="Editor loading spinner" />
+    </div>
   );
 }
