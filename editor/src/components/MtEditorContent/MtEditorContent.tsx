@@ -14,6 +14,9 @@ import { MtSpinner } from '../MtSpinner/MtSpinner';
 import { MtBackToTopBtn } from '../MtBackToTopBtn/MtBackToTopBtn';
 import { MtEditorField, MtFieldElement } from '../MtEditorField/MtEditorField';
 import { MtDropZone } from '../MtDropZone/MtDropZone';
+import { Stack, Layout } from '@shopify/polaris';
+
+import './MtEditorContent.css';
 
 interface MtEditorContentProps {
   onSave: (displayMsg?: boolean, isAutosave?: boolean) => boolean;
@@ -221,60 +224,31 @@ const MtEditorContent = forwardRef<
       </Backdrop>
       <MtBackToTopBtn />
       {pageContent.length > 0 && isReady ? (
-        <Grid
-          sx={{
-            marginTop: '1rem',
-            marginBottom: '.5rem',
-            paddingLeft: '.5rem',
-            paddingRight: '.5rem',
-          }}
-          columns={7}
-          container
-          direction="column"
-          justifyContent="flext-start"
-          spacing={1}>
-          {pageContent}
-          <Grid
-            xs
-            sx={{ paddingTop: '1ch' }}
-            container
-            item
-            direction="row"
-            justifyContent="flex-end"
-            alignItems="center"
-            spacing={2}>
-            <Grid item>
+        <Layout sectioned>
+          <Layout.Section fullWidth>{pageContent}</Layout.Section>
+          <Layout.Section secondary fullWidth>
+            <Stack distribution="fill" alignment="center">
               <MtRowsDisplayControl
                 maxRowDisplay={maxElementsPerPage}
                 handleRowsDisplayChange={handleElementsPerPageChange}
               />
-            </Grid>
-            <Grid sm={1} lg item />
-            <Grid xs item container direction="row" justifyContent="flex-end">
-              <Grid xs={1.5} item>
+              <Stack distribution="trailing" alignment="center">
                 <GoToPageField {...goToPageFieldProps} />
-              </Grid>
-              <Grid xs={4} item sx={{ paddingTop: '1rem' }}>
                 <ChangePageButtons {...changePageButtonsProps} />
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+              </Stack>
+            </Stack>
+          </Layout.Section>
+        </Layout>
       ) : (
-        <Grid
-          container
-          sx={{
-            hreight: '250px',
-            marginTop: '1rem',
-            paddingLeft: '.5rem',
-            paddingRight: '.5rem',
-          }}
-          justifyContent="center"
-          alignItems="stretch">
-          <Grid xs={6} sx={{ marginTop: '15vh' }} item>
-            <MtDropZone onUpload={props.onUpload} dataType="Translations" />
-          </Grid>
-        </Grid>
+        <Layout>
+          <Layout.Section fullWidth>
+            <div className="MtEditorContent-DropZone__Outer-Wrapper">
+              <div className="MtEditorContent-DropZone__Inner-Wrapper">
+                <MtDropZone onUpload={props.onUpload} dataType="Translations" />
+              </div>
+            </div>
+          </Layout.Section>
+        </Layout>
       )}
     </>
   );
@@ -282,4 +256,4 @@ const MtEditorContent = forwardRef<
 
 MtEditorContent.displayName = 'MtEditorContent';
 
-export {MtEditorContent};
+export { MtEditorContent };
