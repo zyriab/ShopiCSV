@@ -3,7 +3,6 @@ import { Frame } from '@shopify/polaris';
 import { ConfirmProvider } from 'material-ui-confirm';
 import MtThemeProvider from './components/MtThemeProvider/MtThemeProvider';
 import { MtRouter } from './components/MtRouter/MtRouter';
-import Box from '@mui/material/Box';
 import { MtFooter } from './components/MtFooter/MtFooter';
 import MtNavBar from './components/MtNavBar/MtNavBar';
 import logo from './utils/helpers/logo.helper';
@@ -16,9 +15,9 @@ function App() {
     <MtThemeProvider>
       <Frame logo={logo} topBar={<MtNavBar />}>
         <ConfirmProvider>
-          <Box sx={{ minHeight: '600px' }}>
+          <div className="min-h-600px">
             <MtRouter />
-          </Box>
+          </div>
           <MtFooter />
         </ConfirmProvider>
       </Frame>
