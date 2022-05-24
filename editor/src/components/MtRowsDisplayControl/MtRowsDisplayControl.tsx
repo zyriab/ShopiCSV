@@ -13,7 +13,7 @@ export function MtRowsDisplayControl(props: AppProps) {
   const BTN_VALUES = [2, 4, 8, 16];
 
   return (
-    <Stack>
+    <Stack alignment="baseline">
       <TextStyle variation="subdued">
         {t('RowDisplayControl.displayPer')}
       </TextStyle>
@@ -24,7 +24,9 @@ export function MtRowsDisplayControl(props: AppProps) {
             onClick={() => props.handleRowsDisplayChange(v)}
             outline={props.maxRowDisplay === v}
             plain={props.maxRowDisplay !== v}
+            pressed
             monochrome
+            removeUnderline
             accessibilityLabel={t('RowDisplayControl.btnA11yLabel', {
               number: v,
             })}>
