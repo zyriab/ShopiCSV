@@ -48,7 +48,7 @@ export function MtDropZone(props: MtDropZoneProps) {
   const [rejectedFiles, setRejectedFiles] = useState<File[]>([]);
 
   const { t } = useTranslation();
-  const {themeStr} = useContext(themeContext);
+  const { themeStr } = useContext(themeContext);
 
   async function handleUpload(
     files: File[],
@@ -104,9 +104,7 @@ export function MtDropZone(props: MtDropZoneProps) {
   }
 
   const errorMessage = hasError && (
-    <CustomProperties
-      style={{ whiteSpace: 'pre-line' }}
-      colorScheme={themeStr}>
+    <CustomProperties style={{ whiteSpace: 'pre-line' }} colorScheme={themeStr}>
       <Banner title={t('DropZone.bannerTitle')} status="critical">
         <List type="bullet">
           {rejectedFiles.map((file, index) => {
@@ -158,6 +156,7 @@ export function MtDropZone(props: MtDropZoneProps) {
   return (
     <Stack vertical>
       {errorMessage}
+
       <Card sectioned>
         <DropZone
           dropOnPage
