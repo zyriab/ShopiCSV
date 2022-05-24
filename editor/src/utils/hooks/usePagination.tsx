@@ -10,11 +10,9 @@ import { useTranslation } from 'react-i18next';
 import store from 'store2';
 import debounce from 'lodash.debounce';
 import throttle from 'lodash.throttle';
-import { Pagination, TextField } from '@shopify/polaris';
+import { Key, Pagination, TextField } from '@shopify/polaris';
 
 export function usePagination(dataLength: number, maxElemStorageId: string) {
-  const { t } = useTranslation();
-
   const [selectedPage, setSelectedPage] = useState(1);
   const [currentPageNum, setCurrentPageNum] = useState(1);
   const [maxElementsPerPage, setMaxElementsPerPage] = useState(
@@ -29,28 +27,12 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
   );
   const [pageContent, setPageContent] = useState<JSX.Element[]>([]);
   const [goToPageInputVal, setGoToPageInputVal] = useState('');
-  const [goToPageHelpTxt, setGoToPageHelpTxt] = useState('');
   const previousPageNum = useRef<number>(null!);
   const navigationButtonsEl = useRef<ChangePageBtnsRef>(null!);
   const isHandling = useRef(false);
-  const goToPageInputEl: React.RefCallback<HTMLDivElement> = useCallback(
-    (e) => {
-      if (e) {
-        const input = e.children[1].children[0];
-        input.addEventListener('blur', () => setGoToPageHelpTxt(''));
-        input.addEventListener('focus', () => {
-          if (goToPageInputVal !== '')
-            setGoToPageHelpTxt(t('Pagination.goToPageHelpTxt'));
-        });
-      }
-    },
-    [goToPageInputVal, t]
-  );
 
   function handleGoToPageInputChange(value: string, id: string) {
     setGoToPageInputVal(value);
-    if (value.length === 0) setGoToPageHelpTxt('');
-    else setGoToPageHelpTxt(t('Pagination.goToPageHelpTxt'));
   }
 
   function handleElementsPerPageChange(n: number) {
@@ -149,15 +131,6 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
           if (+goToPageInputVal > maxPageNum) n = maxPageNum;
           else if (+goToPageInputVal <= 0) n = 1;
           goToPage(n);
-        } else if (
-          (e.code === 'ArrowLeft' || e.code === 'ArrowRight') &&
-          document.activeElement?.nodeName !== 'INPUT' &&
-          document.activeElement?.nodeName !== 'TEXTAREA'
-        ) {
-          e.stopImmediatePropagation();
-          e.preventDefault();
-          if (e.code === 'ArrowLeft') navigationButtonsEl.current?.previous();
-          else if (e.code === 'ArrowRight') navigationButtonsEl.current?.next();
         }
       }
       isHandling.current = false;
@@ -200,10 +173,8 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
 
   /* COMPONENTS PROPS */
   const goToPageFieldProps = {
-    targetRef: goToPageInputEl,
     max: maxPageNum,
     value: goToPageInputVal,
-    helpText: goToPageHelpTxt,
     onChange: handleGoToPageInputChange,
   };
 
@@ -256,17 +227,17 @@ const ChangePageButtons = forwardRef<ChangePageBtnsRef, ChangePageBtnsProps>(
         onNext={props.goNextPage}
         onPrevious={props.goPrevPage}
         label={`${props.currentPageNum}/${props.maxPageNum}`}
+        nextKeys={[Key.RightArrow]}
+        previousKeys={[Key.LeftArrow]}
       />
     );
   }
 );
 
 interface GoToPageFieldProps {
-  helpText: string;
   value: string;
   max: number;
   onChange: (value: string, id: string) => void;
-  targetRef: React.RefCallback<HTMLDivElement>;
 }
 
 function GoToPageField(props: GoToPageFieldProps) {
@@ -274,12 +245,13 @@ function GoToPageField(props: GoToPageFieldProps) {
 
   return (
     <TextField
+      id="go-to-page-field"
       label={t('Pagination.goToPageLabel')}
       type="number"
       inputMode="numeric"
       min={0}
       max={props.max}
-      helpText={props.helpText}
+      helpText={t('Pagination.goToPageHelpTxt')}
       value={props.value}
       onChange={props.onChange}
       autoComplete="off"
