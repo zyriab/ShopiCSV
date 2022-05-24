@@ -30,7 +30,8 @@
     "uploadToolTip": "Upload a file",
     "saveToolTip": "Save",
     "downloadToolTip": "Download",
-    "ariaToggleGroup": "Fields to display"
+    "ariaToggleGroup": "Fields to display",
+    "rows": "Rows:"
   },
   "RestoreSessionDialog": {
     "title": "Restore last session?",

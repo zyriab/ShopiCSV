@@ -30,7 +30,8 @@
     "uploadToolTip": "Télécharger un fichier",
     "saveToolTip": "Sauvegarder",
     "downloadToolTip": "Télécharger",
-    "ariaToggleGroup": "Champs à afficher"
+    "ariaToggleGroup": "Champs à afficher",
+    "rows": "Rangées :"
   },
   "RestoreSessionDialog": {
     "title": "Restaurer la dernière session ?",
