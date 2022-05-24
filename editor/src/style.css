@@ -43,6 +43,10 @@
   justify-content: flex-start;
 }
 
+.min-h-600px {
+  min-height: 600px;
+}
+
 .Auth-Btn__Top-Bar {
   margin: 0 1rem 0 1rem;
   width: 120px;
