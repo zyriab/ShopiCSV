@@ -1,15 +1,11 @@
 import React from 'react';
 import { Spinner } from '@shopify/polaris';
 
+import './MtSpinner.css';
+
 export function MtSpinner() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: '5%',
-      }}>
+    <div className="MtSpinner__Wrapper">
       <Spinner accessibilityLabel="Editor loading spinner" />
     </div>
   );
