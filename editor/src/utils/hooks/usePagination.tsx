@@ -249,7 +249,7 @@ function GoToPageField(props: GoToPageFieldProps) {
       label={t('Pagination.goToPageLabel')}
       type="number"
       inputMode="numeric"
-      min={0}
+      min={1}
       max={props.max}
       helpText={t('Pagination.goToPageHelpTxt')}
       value={props.value}
