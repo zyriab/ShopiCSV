@@ -31,7 +31,7 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
   const navigationButtonsEl = useRef<ChangePageBtnsRef>(null!);
   const isHandling = useRef(false);
 
-  function handleGoToPageInputChange(value: string, id: string) {
+  function handleGoToPageInputChange(value: string) {
     setGoToPageInputVal(value);
   }
 
@@ -128,7 +128,7 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
           document.activeElement?.getAttribute('id') === 'go-to-page-field'
         ) {
           let n = +goToPageInputVal;
-          if (+goToPageInputVal > maxPageNum) n = maxPageNum;
+          if (n > maxPageNum) n = maxPageNum;
           else if (+goToPageInputVal <= 0) n = 1;
           goToPage(n);
         }
