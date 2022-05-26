@@ -8,13 +8,13 @@ import { RowData, TranslatableResourceType } from '../definitions/custom';
 import { useConfirm } from 'material-ui-confirm';
 import { MtAlert, MtAlertElement } from '../components/MtAlert/MtAlert';
 import { AlertColor } from '@mui/material/Alert/Alert';
-import { MtAppBar } from '../components/MtAppBar/MtAppBar';
+import MtAppBar from '../components/MtAppBar/MtAppBar';
 import {
   MtEditorContent,
   MtEditorContentElement,
 } from '../components/MtEditorContent/MtEditorContent';
 import { MtFieldElement } from '../components/MtEditorField/MtEditorField';
-import { Page, Frame } from '@shopify/polaris';
+import { Page } from '@shopify/polaris';
 
 export default function Translator() {
   const [isLoading, setIsLoading] = useState(false);
@@ -344,7 +344,7 @@ export default function Translator() {
 
   return (
     <>
-      {/* <MtAppBar
+      <MtAppBar
         data={fileData}
         display={displayCol}
         onDisplayChange={setDisplayCol}
@@ -357,7 +357,7 @@ export default function Translator() {
         numOfDisplayedFields={numOfDisplayedFields}
         filteredDataIds={setFilteredDataIds}
         filteredDataTypes={setFilteredTypes}
-      /> */}
+      />
       <Page fullWidth >
         <MtEditorContent
           ref={contentRef}
