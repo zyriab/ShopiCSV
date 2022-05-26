@@ -19,7 +19,7 @@ interface PopperComponentProps {
   open: boolean;
 }
 
-interface AppProps {
+interface MtFilterDialogProps {
   filters: FilterType[];
   selected: FilterType[];
   onClose: (selection: FilterType[]) => void;
@@ -102,7 +102,7 @@ function PopperComponent(props: PopperComponentProps) {
   return <StyledAutocompletePopper {...other} />;
 }
 
-export function MtFilterDialog(props: AppProps) {
+export function MtFilterDialog(props: MtFilterDialogProps) {
   const [pendingValue, setPendingValue] = useState<FilterType[]>([]);
   const theme = useTheme();
   const { t } = useTranslation();
