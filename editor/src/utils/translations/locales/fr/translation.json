@@ -4,16 +4,34 @@
     "yesLower": "oui",
     "noUpper": "Non",
     "noLower": "non",
-    "search": "Rechercher..."
+    "search": "Rechercher",
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "language": "Langue",
+    "settings": "Paramètres"
+  },
+  "Language": {
+    "french": "français",
+    "english": "anglais"
+  },
+  "NavMenu": {
+    "home": "Accueil",
+    "translations": "Traductions",
+    "products": "Produits",
+    "sectionSeparator": "AIDE & COMMUNAUTÉ",
+    "help": "Comment utiliser ShopiCSV",
+    "discord": "Discuter avec nous sur Discord",
+    "review": "Laisser un avis"
   },
   "AppBar": {
     "lastModifDate": "Modifié il y a {{date}}",
     "lastSaveDate": "Sauvegardé il y a {{date}}",
-    "closeToolTip": "Fermer le fichier",
-    "uploadToolTip": "Télécharger un fichier",
-    "saveToolTip": "Sauvegarder",
-    "downloadToolTip": "Télécharger",
-    "ariaToggleGroup": "Champs à afficher"
+    "closeTooltip": "Fermer le fichier",
+    "uploadTooltip": "Télécharger un fichier",
+    "saveTooltip": "Sauvegarder",
+    "downloadTooltip": "Télécharger",
+    "ariaToggleGroup": "Champs à afficher",
+    "rows": "Rangées :"
   },
   "RestoreSessionDialog": {
     "title": "Restaurer la dernière session ?",
@@ -22,8 +40,7 @@
   },
   "Upload": {
     "success": "Document transcrit avec succès",
-    "error": "Le fichié téléchargé ne correspond pas à un CSV de traduction",
-    "wrongType": "Fichié rejeté. Seuls les fichier .CSV sont autorisés"
+    "error": "Le fichié téléchargé ne correspond pas à un CSV de traduction"
   },
   "Save": {
     "success": "Sauvegardé",
@@ -31,12 +48,17 @@
   },
   "CloseFileDialog": {
     "title": "Supprimer le fichier pour toujours ?",
-    "description": "Cela retirera le fichier and versions précédentes de votre espace de stockage.",
+    "description": "Cela retirera le fichier et versions précédentes de votre espace de stockage.",
     "yes": "Oui, supprimer",
     "no": "Non, garder le fichier"
   },
   "RowDisplayControl": {
-    "displayPer": "Afficher les rangées par :"
+    "displayPer": "Afficher les rangées par :",
+    "btnA11yLabel": "Afficher les rangées par {{number}} sur la page."
+  },
+  "Pagination": {
+    "goToPageLabel": "Aller à la page",
+    "goToPageHelpTxt": "Appuyez sur entrée"
   },
   "FilterDialog": {
     "title": "Choisissez le contenu à filtrer",
@@ -46,8 +68,18 @@
   "EmptyFilterChip": {
     "label": "Filtrer le contenu"
   },
+  "ColumnSelector": {
+    "label": "Colonnes",
+    "title": "Afficher/cacher des colonnes"
+  },
   "DropZone": {
-    "message": "Glissez et déposez votre fichier ici ou cliquez"
+    "button": "Ajouter un fichier",
+    "message": "ou déposez un fichier à télécharger",
+    "bannerTitle": "Le fichier suivant n'a pas pu être téléchargé :",
+    "wrongType": "\"{{name}}\" n'est pas pris en charge. Le type du fichier doit être .csv.",
+    "fileTooBig": "\"{{name}}\" n'est pas pris en charge. La taille du fichier ne peut excéder {{maxSize}}. (Taille actuelle: {{size}}).",
+    "invalidColNumber": "\"{{name}}\" n'est pas pris en charge.\nLe fichier ne semble pas être un .csv de traduction. Assurez-vous que les rangées sont composées de {{expectedColNumber}} colonnes.",
+    "invalidHeaderContent": "\"{{name}}\" n'est pas pris en charge.\nAssurez-vous que la première rangée contient le nom de chaque colonne sans fautes.\nPour plus d'information, consultez les <4>structures de fichier prises en charge</4>."
   },
   "FilterType": {
     "COLLECTION": "Une collection de produit.",

@@ -1,0 +1,23 @@
+.MtEditorContent-DropZone__Outer-Wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 8%;
+}
+
+.MtEditorContent-DropZone__Inner-Wrapper {
+  flex: 0 0 60%;
+}
+
+/* Mobile */
+@media screen AND (max-width: 425px) {
+  .MtEditorContent-DropZone__Inner-Wrapper {
+    flex: 0 0 90%;
+  }
+}
+
+/* Tablet */
+@media screen AND (min-width: 426px) AND (max-width: 768px) {
+  .MtEditorContent-DropZone__Inner-Wrapper {
+    flex: 0 0 80%;
+  }
+}

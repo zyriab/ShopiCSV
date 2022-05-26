@@ -1,78 +1,102 @@
 import React, { useState } from 'react';
-import store from 'store2';
-import { NavLink } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import useScrollTrigger from '@mui/material/useScrollTrigger';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Slide from '@mui/material/Slide';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import { MtDarkModeSwitch } from '../MtDarkModeSwitch/MtDarkModeSwitch';
+import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
+import MtDarkModeSwitch from '../MtDarkModeSwitch/MtDarkModeSwitch';
 import { MtAuthenticationBtn } from '../AuthButtons/MtAuthenticationBtn';
-
 import { MtLanguageSelector } from '../MtLanguageSelector/MtLanguageSelector';
+import {
+  ActionListItemDescriptor,
+  CustomProperties,
+  Icon,
+  Stack,
+  TopBar,
+} from '@shopify/polaris';
+import {
+  QuestionMarkMinor,
+  ExternalSmallMinor,
+  SettingsMinor,
+  LogOutMinor,
+} from '@shopify/polaris-icons';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import MtNavMenu from '../MtNavMenu/MtNavMenu';
 
-function HideOnScroll({ children }: { children: React.ReactElement }) {
-  const trigger = useScrollTrigger();
-  return (
-    <Slide appear={false} direction="down" in={!trigger}>
-      {children}
-    </Slide>
+export default function MtNavBar() {
+  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+
+  const { t } = useTranslation();
+  const { isAuthenticated, user, logout } = useAuth0();
+  const { isMobile } = useDetectScreenSize();
+  const navigate = useNavigate();
+
+  const userMenuEl = isAuthenticated ? (
+    <div className="ml-05">
+      <TopBar.UserMenu
+        actions={[
+          {
+            items: [
+              {
+                content: t('General.settings'),
+                icon: SettingsMinor,
+                onAction: () => navigate('/settings'),
+              },
+              {
+                content: t('General.logout'),
+                icon: LogOutMinor,
+                onAction: () => logout({ returnTo: window.location.origin }),
+              },
+            ],
+          },
+          {
+            items: [
+              {
+                content: 'How to use ShopiCSV',
+                icon: QuestionMarkMinor,
+                suffix: <Icon source={ExternalSmallMinor} />,
+                url: 'https://metaoist.io/',
+                external: true,
+              },
+            ] as ActionListItemDescriptor[],
+          },
+        ]}
+        name={user?.nickname || 'Not connected'}
+        detail={user?.name}
+        initials={user?.nickname?.at(0)?.toUpperCase() || '?'}
+        avatar={user?.picture}
+        open={isUserMenuOpen}
+        onToggle={() => setIsUserMenuOpen((current) => !current)}
+      />
+    </div>
+  ) : (
+    <div className="Auth-Btn__Top-Bar">
+      <MtAuthenticationBtn />
+    </div>
   );
-}
 
-interface AppProps {
-  onModeChange: (isDark: boolean) => void;
-}
-
-export function MtNavBar(props: AppProps) {
-  const [, setIsDark] = useState(store.get('themeMode') === 'dark' || false);
-  const { isAuthenticated } = useAuth0();
-
-  function handleActivateDarkMode(dark: boolean) {
-    setIsDark(dark);
-    props.onModeChange(dark);
-    if (dark) store.set('themeMode', 'dark');
-    else store.set('themeMode', 'light');
-  }
+  // TODO: implement editor filtering (search, fields type, toggle fields)
+  const secondaryMenuEl = (
+    <Stack wrap={false} alignment="center">
+      {!isMobile && <MtDarkModeSwitch />}
+      <MtLanguageSelector />
+    </Stack>
+  );
 
   return (
-    <>
-      <HideOnScroll>
-        <AppBar
-          enableColorOnDark
-          color="primary"
-          sx={{ zIndex: (theme) => theme.zIndex.drawer + 2 }}>
-          <Toolbar>
-            <Grid container direction="row" alignItems="center">
-              <Grid xs={1.5} item>
-                <Typography variant="h6" component="div">
-                  ShopiCSV 🤠
-                </Typography>
-              </Grid>
-              <Grid item>
-                <MtDarkModeSwitch onChange={handleActivateDarkMode} />
-              </Grid>
-              <Grid item>
-                <MtLanguageSelector />
-              </Grid>
-              <Grid item>
-                <NavLink to="/">Home</NavLink>
-              </Grid>
-              {isAuthenticated && (
-                <Grid item>
-                  <NavLink to="/translator">Translator</NavLink>
-                </Grid>
-              )}
-              <Grid item>
-                <MtAuthenticationBtn />
-              </Grid>
-            </Grid>
-          </Toolbar>
-        </AppBar>
-      </HideOnScroll>
-      <Toolbar />
-    </>
+    <div id="Top-Bar__Main">
+      <CustomProperties colorScheme="dark">
+        <TopBar
+          showNavigationToggle
+          onNavigationToggle={() => setIsNavMenuOpen((current) => !current)}
+          userMenu={userMenuEl}
+          secondaryMenu={secondaryMenuEl}
+        />
+      </CustomProperties>
+      <MtNavMenu
+        open={isNavMenuOpen}
+        onClose={() => setIsNavMenuOpen(false)}
+        onOpen={() => setIsNavMenuOpen(true)}
+      />
+    </div>
   );
 }

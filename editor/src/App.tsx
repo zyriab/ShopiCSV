@@ -1,29 +1,27 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
+import { Frame } from '@shopify/polaris';
 import { ConfirmProvider } from 'material-ui-confirm';
-import {MtRouter} from './components/MtRouter/MtRouter';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import { useDarkMode } from './utils/hooks/useDarkMode';
-import { MtNavBar } from './components/MtNavBar/MtNavBar';
+import MtThemeProvider from './components/MtThemeProvider/MtThemeProvider';
+import { MtRouter } from './components/MtRouter/MtRouter';
 import { MtFooter } from './components/MtFooter/MtFooter';
+import MtNavBar from './components/MtNavBar/MtNavBar';
+import logo from './utils/helpers/logo.helper';
 
 import './App.css';
+import '@shopify/polaris/build/esm/styles.css';
 
 function App() {
-  const darkMode = useDarkMode();
   return (
-    <ThemeProvider theme={darkMode.theme}>
-      <ConfirmProvider>
-        <Paper>
-          <MtNavBar onModeChange={darkMode.setIsDark} />
-          <Box sx={{ minHeight: '600px' }}>
+    <MtThemeProvider>
+      <Frame logo={logo} topBar={<MtNavBar />}>
+        <ConfirmProvider>
+          <div className="min-h-600px">
             <MtRouter />
-          </Box>
+          </div>
           <MtFooter />
-        </Paper>
-      </ConfirmProvider>
-    </ThemeProvider>
+        </ConfirmProvider>
+      </Frame>
+    </MtThemeProvider>
   );
 }
 

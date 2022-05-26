@@ -1,32 +1,32 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  RowData,
-  TranslatableResourceType,
-} from '../../definitions/definitions';
+import themeContext from '../../utils/contexts/theme.context';
+import { RowData, TranslatableResourceType } from '../../definitions/custom';
 import { formatDistanceToNow } from 'date-fns';
-import { formatBytes } from '../../utils/formatBytes.utils';
-import { getLocale } from '../../utils/getLocale.utils';
+import { formatBytes } from '../../utils/tools/formatBytes.utils';
+import { getDateLocale } from '../../utils/tools/getDateLocale.utils';
 import store from 'store2';
-import LinearProgress from '@mui/material/LinearProgress';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import SaveIcon from '@mui/icons-material/Save';
-import DownloadIcon from '@mui/icons-material/Download';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import Typography from '@mui/material/Typography';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Tooltip from '@mui/material/Tooltip';
+import {
+  Loading,
+  Button,
+  ButtonGroup,
+  Tooltip,
+  TextStyle,
+  Stack,
+  CustomProperties,
+} from '@shopify/polaris';
+import {
+  ExportMinor,
+  ImportMinor,
+  SaveMinor,
+  DeleteMinor,
+} from '@shopify/polaris-icons';
 import { MtSearchField } from '../MtSearchField/MtSearchField';
 import { MtFieldsFilter } from '../MtFieldsFilter/MtFieldsFilter';
+import MtColumnSelector from '../MtColumnSelector/MtColumnSelector';
+import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
 
-interface AppProps {
+interface MtAppBarProps {
   onDownload: () => void;
   onSave: (displayMsg?: boolean, isAutosave?: boolean) => boolean;
   onUpload: (
@@ -44,7 +44,7 @@ interface AppProps {
   filteredDataTypes: (t: TranslatableResourceType[]) => void;
 }
 
-export const MtAppBar = (props: AppProps) => {
+export default function MtAppBar(props: MtAppBarProps) {
   const [displayFields, setDisplayFields] = useState(props.display);
   const [availableFilters, setAvailableFilters] = useState<
     TranslatableResourceType[]
@@ -55,13 +55,12 @@ export const MtAppBar = (props: AppProps) => {
   const [saveDisplayInterval, setSaveDisplayInterval] =
     useState<NodeJS.Timer | null>(null);
   const inputEl = useRef<HTMLInputElement>(null);
-  const fileNameEl = useRef<HTMLParagraphElement>(null);
-  const { t, i18n } = useTranslation();
 
-  function handleDisplayFields(
-    e: React.MouseEvent<HTMLElement, MouseEvent>,
-    fields: number[]
-  ) {
+  const { t } = useTranslation();
+  const { themeStr } = useContext(themeContext);
+  const { isDesktop, isMobile } = useDetectScreenSize();
+
+  function handleDisplayFields(fields: number[]) {
     if (fields.length < displayFields.length) props.onSave();
     setDisplayFields(fields);
     props.onDisplayChange(fields);
@@ -105,176 +104,133 @@ export const MtAppBar = (props: AppProps) => {
       ] as TranslatableResourceType[]);
   }, [props.data]);
 
-  return (
-    <AppBar
-      sx={{ zIndex: (theme) => theme.zIndex.drawer + 2 }}
-      enableColorOnDark
-      color="primary"
-      position="sticky">
-      <Toolbar>
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid xs={5} sx={{ width: '100%' }} item>
-            <Stack spacing={1}>
-              <MtSearchField
-                data={props.data}
-                filteredDataIds={props.filteredDataIds}
-                numOfDisplayedFields={props.numOfDisplayedFields}
+  return props.data.length > 0 ? (
+    <div
+      style={{
+        backgroundColor: 'var(--p-surface)',
+        width: '100%',
+        paddingTop: '10px',
+        paddingBottom: '10px',
+      }}>
+      <Stack alignment="center" distribution="center" wrap>
+        <Stack.Item>
+          <div />
+        </Stack.Item>
+        <Stack vertical>
+          <Stack.Item fill>
+            <MtSearchField
+              data={props.data}
+              filteredDataIds={props.filteredDataIds}
+              numOfDisplayedFields={props.numOfDisplayedFields}
+            />
+          </Stack.Item>
+          <Stack distribution="center" alignment="center">
+            <Stack.Item fill>
+              <MtFieldsFilter
+                availableFilters={availableFilters}
+                filteredDataTypes={props.filteredDataTypes}
               />
-              {props.data && (
-                <Box sx={{ marginLeft: '4%' }}>
-                  <MtFieldsFilter
-                    availableFilters={availableFilters}
-                    filteredDataTypes={props.filteredDataTypes}
-                  />
-                </Box>
-              )}
-            </Stack>
-          </Grid>
-          {store.get('fileData') && props.isEditing ? (
-            <Grid
-              xs={5}
-              alignItems="center"
-              justifyContent="space-evenly"
-              container
-              item>
-              <Grid item>
-                <Stack>
-                  {store.get('fileData') && (
-                    <Tooltip title={store.get('fileData').name}>
-                      <Typography
-                        ref={fileNameEl}
-                        sx={{
-                          width: '35ch',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                        variant="subtitle2"
-                        component="p">
+            </Stack.Item>
+            <div />
+            <MtColumnSelector
+              choices={props.data[0].data}
+              onChange={handleDisplayFields}
+            />
+          </Stack>
+        </Stack>
+        {store.get('fileData') && props.isEditing && (
+          <Stack.Item fill={isDesktop}>
+            <div style={{ marginLeft: '10px ' }}>
+              <Stack vertical={!isDesktop}>
+                <Stack vertical spacing="extraTight">
+                  <CustomProperties
+                    colorScheme={themeStr}
+                    style={{
+                      width: '35ch',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}>
+                    <Tooltip content={store.get('fileData').name}>
+                      <TextStyle variation="strong">
                         {store.get('fileData').name}
-                      </Typography>
+                      </TextStyle>
                     </Tooltip>
-                  )}
-                  <Typography variant="subtitle2" component="p">
-                    {`${formatBytes(store.get('fileData').size, 2)} | Rows: ${
+                  </CustomProperties>
+                  <TextStyle variation="subdued">
+                    {`${formatBytes(store.get('fileData').size, 2)} | ${t(
+                      'AppBar.rows'
+                    )} ${
                       store
                         .get('fileData')
                         .content.filter((e: RowData) => e.data.length === 7)
                         .length - 1
                     }`}
-                  </Typography>
+                  </TextStyle>
                 </Stack>
-              </Grid>
-              <Grid item>
-                <Stack>
-                  <Typography variant="subtitle1" component="p">
+                <Stack vertical spacing="extraTight">
+                  <TextStyle variation="subdued">
                     {t('AppBar.lastModifDate', {
                       date: formatDistanceToNow(
                         new Date(store.get('fileData').lastModified),
-                        { locale: getLocale(i18n.resolvedLanguage)}
+                        { locale: getDateLocale() }
                       ),
                     })}
-                  </Typography>
-                  <Typography variant="subtitle1" component="p">
+                  </TextStyle>
+                  <TextStyle variation="subdued">
                     {t('AppBar.lastSaveDate', {
                       date: formatDistanceToNow(saveTime, {
-                        locale: getLocale(i18n.resolvedLanguage),
+                        locale: getDateLocale(),
                       }),
                     })}
-                  </Typography>
+                  </TextStyle>
                 </Stack>
-              </Grid>
-            </Grid>
-          ) : (
-            <Grid xs={4} item />
-          )}
-          <Grid xs={'auto'} item>
-            <Tooltip title={t('AppBar.closeToolTip')}>
-              <span>
-                <IconButton
-                  sx={{ color: 'white' }}
-                  disabled={props.isLoading || !props.isEditing}
-                  onClick={() => props.onClose(true)}>
-                  <DeleteForeverIcon />
-                </IconButton>
-              </span>
-            </Tooltip>
-            <Tooltip title={t('AppBar.uploadToolTip')}>
-              <span>
-                <IconButton
-                  sx={{ color: 'white' }}
-                  disabled={props.isLoading}
-                  onClick={() => inputEl.current?.click()}>
-                  <UploadFileIcon />
-                </IconButton>
-              </span>
-            </Tooltip>
-            <input
-              ref={inputEl}
-              onChange={props.onUpload}
-              type="file"
-              accept="text/csv"
-              style={{ display: 'none' }}
-            />
-            <Tooltip title={t('AppBar.saveToolTip')}>
-              <span>
-                <IconButton
-                  sx={{ color: 'white' }}
-                  disabled={props.isLoading || !props.isEditing}
-                  onClick={handleSave}>
-                  <SaveIcon />
-                </IconButton>
-              </span>
-            </Tooltip>
-            <Tooltip title={t('AppBar.downloadToolTip')}>
-              <span>
-                <IconButton
-                  sx={{ color: 'white' }}
-                  disabled={props.isLoading || !props.isEditing}
-                  onClick={props.onDownload}>
-                  <DownloadIcon />
-                </IconButton>
-              </span>
-            </Tooltip>
-          </Grid>
-        </Grid>
-      </Toolbar>
-      <Toolbar>
-        <ToggleButtonGroup
-          fullWidth
-          size="small"
-          value={displayFields}
-          onChange={handleDisplayFields}
-          aria-label={t('AppBar.ariaToggleGroup')}>
-          <ToggleButton value={0} aria-label="Type">
-            Type
-          </ToggleButton>
-          <ToggleButton value={1} aria-label="Identification">
-            Identification
-          </ToggleButton>
-          <ToggleButton value={2} aria-label="Field">
-            Field
-          </ToggleButton>
-          <ToggleButton value={3} aria-label="Locale">
-            Locale
-          </ToggleButton>
-          <ToggleButton value={4} aria-label="Status">
-            Status
-          </ToggleButton>
-          <ToggleButton value={5} aria-label="Default content">
-            Default content
-          </ToggleButton>
-          <ToggleButton value={6} aria-label="Translated content">
-            Translated content
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Toolbar>
-      {props.isLoading && (
-        <LinearProgress
-          variant={props.loadValue ? 'determinate' : 'indeterminate'}
-          value={props.loadValue}
+              </Stack>
+            </div>
+          </Stack.Item>
+        )}
+        <ButtonGroup>
+          <Tooltip content={t('AppBar.closeTooltip')}>
+            <Button
+              plain
+              icon={DeleteMinor}
+              disabled={props.isLoading}
+              onClick={() => props.onClose(true)}></Button>
+          </Tooltip>
+          <Tooltip content={t('AppBar.uploadTooltip')}>
+            <Button
+              plain
+              icon={ExportMinor}
+              disabled={props.isLoading}
+              onClick={() => inputEl.current?.click()}></Button>
+          </Tooltip>
+          <Tooltip content={t('AppBar.saveTooltip')}>
+            <Button
+              plain
+              icon={SaveMinor}
+              disabled={props.isLoading}
+              onClick={handleSave}></Button>
+          </Tooltip>
+          <Tooltip content={t('AppBar.downloadTooltip')}>
+            <Button
+              plain
+              icon={ImportMinor}
+              disabled={props.isLoading || !props.isEditing}
+              onClick={props.onDownload}></Button>
+          </Tooltip>
+        </ButtonGroup>
+        <input
+          ref={inputEl}
+          onChange={props.onUpload}
+          type="file"
+          accept="text/csv"
+          className="display-none"
+          title="file upload"
         />
-      )}
-    </AppBar>
+      </Stack>
+      {props.isLoading && <Loading />}
+    </div>
+  ) : (
+    <div />
   );
-};
+}

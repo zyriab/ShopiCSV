@@ -1,4 +1,4 @@
-import React, { Route, Routes } from 'react-router-dom';
+import React, { Route, Routes, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from '../../auth/ProtectedRoute';
 import HomePage from '../../pages/Home';
 import TranslatorPage from '../../pages/Translator';
@@ -9,10 +9,10 @@ export function MtRouter() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route
-          path="/translator"
+          path="/translations"
           element={<ProtectedRoute component={TranslatorPage} />}
         />
-        <Route path="*" element={<HomePage />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
   );

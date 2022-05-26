@@ -3,16 +3,16 @@ import { useTranslation } from 'react-i18next';
 import {
   FilterType,
   TranslatableResourceType,
-} from '../../definitions/definitions';
-import { MtFilterChipsArray } from '../MtChipsArray/MtChipsArray';
+} from '../../definitions/custom';
+import { MtFilterChipsArray } from '../MtFilterChipsArray/MtFilterChipsArray';
 import { MtFilterDialog } from '../MtFilterDialog/MtFilterDialog';
 
-interface AppProps {
+interface MtFieldsFilterProps {
   availableFilters: TranslatableResourceType[];
   filteredDataTypes: (t: TranslatableResourceType[]) => void;
 }
 
-export function MtFieldsFilter(props: AppProps) {
+export function MtFieldsFilter(props: MtFieldsFilterProps) {
   const [filters, setFilters] = useState<FilterType[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<FilterType[]>([]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

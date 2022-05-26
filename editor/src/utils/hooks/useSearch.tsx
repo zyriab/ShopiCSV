@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import Worker from 'worker-loader!../workers/searchStrArray.worker'; // eslint-disable-line import/no-webpack-loader-syntax
-import { RowData } from '../../definitions/definitions';
+import { RowData } from '../../definitions/custom';
 import debounce from 'lodash.debounce';
 
 export function useSearch(data: RowData[] | string[], searchIndex = 0) {
@@ -33,11 +33,17 @@ export function useSearch(data: RowData[] | string[], searchIndex = 0) {
   );
 
   async function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string
   ) {
     setIsLoading(true);
-    setInputValue(e.target.value);
-    debSearch(e.target.value);
+
+    if (typeof e === 'string') {
+      setInputValue(e);
+      debSearch(e);
+    } else {
+      setInputValue(e.target.value);
+      debSearch(e.target.value);
+    }
   }
 
   function handleClear() {
@@ -46,10 +52,7 @@ export function useSearch(data: RowData[] | string[], searchIndex = 0) {
   }
 
   useEffect(() => {
-    const foo = () => debSearch.cancel();
-    return () => {
-      foo();
-    };
+    return () => debSearch.cancel();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
