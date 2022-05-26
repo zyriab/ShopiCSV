@@ -26,10 +26,10 @@
   "AppBar": {
     "lastModifDate": "Modifié il y a {{date}}",
     "lastSaveDate": "Sauvegardé il y a {{date}}",
-    "closeToolTip": "Fermer le fichier",
-    "uploadToolTip": "Télécharger un fichier",
-    "saveToolTip": "Sauvegarder",
-    "downloadToolTip": "Télécharger",
+    "closeTooltip": "Fermer le fichier",
+    "uploadTooltip": "Télécharger un fichier",
+    "saveTooltip": "Sauvegarder",
+    "downloadTooltip": "Télécharger",
     "ariaToggleGroup": "Champs à afficher",
     "rows": "Rangées :"
   },
@@ -67,6 +67,10 @@
   },
   "EmptyFilterChip": {
     "label": "Filtrer le contenu"
+  },
+  "ColumnSelector": {
+    "label": "Colonnes",
+    "title": "Afficher/cacher des colonnes"
   },
   "DropZone": {
     "button": "Ajouter un fichier",
