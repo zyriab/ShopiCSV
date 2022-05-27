@@ -36,11 +36,10 @@
   "RestoreSessionDialog": {
     "title": "Restaurer la dernière session ?",
     "description": "Voulez-vous restaurer votre dernière session d'il y a {{date}} ?",
-    "alertMsg": "Restauré votre dernière session du {{date}} avec succès"
+    "alertMsg": "Session restaurée"
   },
   "Upload": {
-    "success": "Document transcrit avec succès",
-    "error": "Le fichié téléchargé ne correspond pas à un CSV de traduction"
+    "success": "Document transcrit avec succès"
   },
   "Save": {
     "success": "Sauvegardé",
@@ -78,7 +77,6 @@
     "bannerTitle": "Le fichier suivant n'a pas pu être téléchargé :",
     "wrongType": "\"{{name}}\" n'est pas pris en charge. Le type du fichier doit être .csv.",
     "fileTooBig": "\"{{name}}\" n'est pas pris en charge. La taille du fichier ne peut excéder {{maxSize}}. (Taille actuelle: {{size}}).",
-    "invalidColNumber": "\"{{name}}\" n'est pas pris en charge.\nLe fichier ne semble pas être un .csv de traduction. Assurez-vous que les rangées sont composées de {{expectedColNumber}} colonnes.",
     "invalidHeaderContent": "\"{{name}}\" n'est pas pris en charge.\nAssurez-vous que la première rangée contient le nom de chaque colonne sans fautes.\nPour plus d'information, consultez les <4>structures de fichier prises en charge</4>."
   },
   "FilterType": {
