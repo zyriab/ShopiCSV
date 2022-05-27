@@ -12,36 +12,20 @@ import {
   Link,
 } from '@shopify/polaris';
 import Papa from 'papaparse';
-import { formatBytes } from '../../utils/tools/formatBytes.utils';
+import formatBytes from '../../utils/tools/formatBytes.utils';
+import getExpectedHeaderContent from '../../utils/tools/getExpectedHeaderContent.utils';
 import themeContext from '../../utils/contexts/theme.context';
+import { DataType } from '../../definitions/custom.d';
 
 interface MtDropZoneProps {
   onUpload: (files: File[]) => Promise<void>;
   dataType: DataType;
 }
 
-type DataType = 'Translations' | 'Products';
-
-type UploadError =
-  | 'InvalidType'
-  | 'InvalidSize'
-  | 'InvalidColNumber'
-  | 'InvalidHeaderContent';
+type UploadError = 'InvalidType' | 'InvalidSize' | 'InvalidHeaderContent';
 
 export function MtDropZone(props: MtDropZoneProps) {
   const MAX_FILE_SIZE = 10485760; // 10Mib
-  const EXPECTED_HEADER_CONTENT =
-    props.dataType === 'Translations'
-      ? [
-          'Type',
-          'Identification',
-          'Field',
-          'Locale',
-          'Status',
-          'Default content',
-          'Translated content',
-        ]
-      : [];
 
   const [errorType, setErrorType] = useState<UploadError>();
   const [hasError, setHasError] = useState(false);
@@ -62,20 +46,15 @@ export function MtDropZone(props: MtDropZoneProps) {
     Papa.parse<string[]>(accepted[0], {
       preview: 1,
       complete: async (file) => {
-        if (file.data[0].length !== 7) {
-          setRejectedFiles((current) => [...current, accepted[0]]);
-          setErrorType('InvalidColNumber');
-          setHasError(true);
-          return;
-        }
-
-        if (file.data[0].toString() !== EXPECTED_HEADER_CONTENT.toString()) {
+        if (
+          file.data[0].toString() !==
+          getExpectedHeaderContent(props.dataType, file.data.length).toString()
+        ) {
           setRejectedFiles((current) => [...current, accepted[0]]);
           setErrorType('InvalidHeaderContent');
           setHasError(true);
           return;
         }
-
         setHasError(false);
         props.onUpload(accepted);
       },
@@ -121,14 +100,6 @@ export function MtDropZone(props: MtDropZoneProps) {
                       name,
                       size: formatBytes(size),
                       maxFileSize: formatBytes(MAX_FILE_SIZE),
-                    })}
-                  </p>
-                )}
-                {errorType === 'InvalidColNumber' && (
-                  <p>
-                    {t('DropZone.invalidColNumber', {
-                      name,
-                      expectedColNumber: 7,
                     })}
                   </p>
                 )}
