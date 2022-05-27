@@ -25,10 +25,9 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
       ? Math.round((dataLength - 1) / maxElementsPerPage) || 1
       : 1
   );
-  const [pageContent, setPageContent] = useState<JSX.Element[]>([]);
+  const [pageContent, setPageContent] = useState<React.ReactNode[]>([]);
   const [goToPageInputVal, setGoToPageInputVal] = useState('');
   const previousPageNum = useRef<number>(null!);
-  const navigationButtonsEl = useRef<ChangePageBtnsRef>(null!);
   const isHandling = useRef(false);
 
   function handleGoToPageInputChange(value: string) {
@@ -179,7 +178,6 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
   };
 
   const changePageButtonsProps = {
-    ref: navigationButtonsEl,
     currentPageNum,
     maxPageNum,
     goNextPage: throttledGoNextPage,
@@ -208,32 +206,19 @@ interface ChangePageBtnsProps {
   goPrevPage: () => void;
 }
 
-type ChangePageBtnsRef = {
-  next: () => void;
-  previous: () => void;
-};
-
-const ChangePageButtons = forwardRef<ChangePageBtnsRef, ChangePageBtnsProps>(
-  (props: ChangePageBtnsProps, ref) => {
-    useImperativeHandle(ref, () => ({
-      next: props.goNextPage,
-      previous: props.goPrevPage,
-    }));
-
-    return (
-      <Pagination
-        hasNext
-        hasPrevious
-        onNext={props.goNextPage}
-        onPrevious={props.goPrevPage}
-        label={`${props.currentPageNum}/${props.maxPageNum}`}
-        nextKeys={[Key.RightArrow]}
-        previousKeys={[Key.LeftArrow]}
-      />
-    );
-  }
-);
-
+function ChangePageButtons(props: ChangePageBtnsProps) {
+  return (
+    <Pagination
+      hasNext
+      hasPrevious
+      onNext={props.goNextPage}
+      onPrevious={props.goPrevPage}
+      label={`${props.currentPageNum}/${props.maxPageNum}`}
+      nextKeys={[Key.RightArrow]}
+      previousKeys={[Key.LeftArrow]}
+    />
+  );
+}
 interface GoToPageFieldProps {
   value: string;
   max: number;
