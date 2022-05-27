@@ -1,5 +1,7 @@
 export type RowData = { id: number; data: string[] };
 
+export type DataType = 'Translations' | 'Products';
+
 export type TranslatableResourceType =
   | 'COLLECTION'
   | 'DELIVERY_METHOD_DEFINITION'
