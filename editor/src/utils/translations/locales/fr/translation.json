@@ -65,7 +65,7 @@
     "noOptionsText": "Aucun filtre disponible"
   },
   "EmptyFilterChip": {
-    "label": "Filtrer le contenu"
+    "label": "Filtrer par type"
   },
   "ColumnSelector": {
     "label": "Colonnes",
