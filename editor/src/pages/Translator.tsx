@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import store from 'store2';
 import Papa from 'papaparse';
-import { getDateLocale } from '../utils/tools/getDateLocale.utils';
+import getDateLocale from '../utils/tools/getDateLocale.utils';
+import getDataType from '../utils/tools/getDataType.utils';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { RowData, TranslatableResourceType } from '../definitions/custom';
 import { useConfirm } from 'material-ui-confirm';
 import { MtAlert, MtAlertElement } from '../components/MtAlert/MtAlert';
-import { AlertColor } from '@mui/material/Alert/Alert';
 import MtAppBar from '../components/MtAppBar/MtAppBar';
 import {
   MtEditorContent,
@@ -37,8 +37,8 @@ export default function Translator() {
   const confirmationDialog = useConfirm();
   const { t, i18n } = useTranslation();
 
-  function displayAlert(message: string, type: AlertColor = 'success') {
-    alertEl.current.show(message, type);
+  function displayAlert(message: string, isError: boolean = false) {
+    alertEl.current.show({ message, isError });
   }
 
   const hasEdited = useCallback((): [boolean, string[]] => {
@@ -136,7 +136,7 @@ export default function Translator() {
           }
         } else {
           if (displayMsg && !isAutosave) {
-            displayAlert(`${t('Save.upToDate')} 👍`, 'info');
+            displayAlert(`${t('Save.upToDate')} 👍`);
           }
         }
         setIsLoading(false);
@@ -148,10 +148,8 @@ export default function Translator() {
   );
 
   async function processFileUpload(file: File) {
-    if (isEditing) handleSave(true, true);
-    if (file.type !== 'text/csv') {
-      displayAlert(`${t('DropZone.wrongType')} 🧐`, 'error');
-      return;
+    if (isEditing) {
+      handleSave(true, true);
     }
 
     setIsLoading(true);
@@ -164,16 +162,11 @@ export default function Translator() {
     Papa.parse<string[]>(file, {
       worker: true,
       step: (row: any) => {
-        if (index === 0 && row.data[0] !== 'Type') {
-          displayAlert(t('Upload.error'), 'error');
-          setIsLoading(false);
-          return;
-        }
-
         const dt: RowData = { data: row.data, id: index };
 
-        if (row.data.length > 7) row.data = row.data.splice(0, 7);
-        if (row.data.length === 7) parsedData.current.push(dt);
+        // if (row.data.length > 7) row.data = row.data.splice(0, 7);
+        // if (row.data.length === 7) parsedData.current.push(dt);
+        parsedData.current.push(dt);
         index++;
       },
       complete: async () => {
@@ -322,8 +315,7 @@ export default function Translator() {
           displayAlert(
             `${t('RestoreSessionDialog.alertMsg', {
               date: store.get('fileData').savedAt,
-            })} 🐘`,
-            'info'
+            })} 🐘`
           );
 
           setIsLoading(false);
@@ -358,11 +350,13 @@ export default function Translator() {
         filteredDataIds={setFilteredDataIds}
         filteredDataTypes={setFilteredTypes}
       />
-      <Page fullWidth >
+      <Page fullWidth>
         <MtEditorContent
           ref={contentRef}
           display={displayCol}
+          dataType={getDataType()}
           data={displayedData}
+          headerContent={fileData[0]?.data}
           renderedFields={renderedFields}
           onSave={handleSave}
           onUpload={handleDrop}
