@@ -53,6 +53,14 @@
   white-space: nowrap;
 }
 
+/* MUI customization */
+
+/* Forcing translator's fields height to be 100% of their container's */
+.MuiGrid-root .MuiTextField-root,
+.MuiGrid-root .MuiInputBase-multiline {
+  height: 100%;
+}
+
 /* Polaris customization */
 
 /* Removing the small space taken by the (inexistent) search field on the app's main top bar */

@@ -45,7 +45,7 @@ export function MtSearchField(props: AppProps) {
       clearButton
       prefix={<Icon source={SearchMinor} />}
       suffix={
-        inputValue.length && (
+        inputValue.length > 0 && (
           <Tag>
             <Stack alignment="center">{endAdornment}</Stack>
           </Tag>

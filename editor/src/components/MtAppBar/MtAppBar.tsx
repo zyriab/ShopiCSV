@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import themeContext from '../../utils/contexts/theme.context';
 import { RowData, TranslatableResourceType } from '../../definitions/custom';
 import { formatDistanceToNow } from 'date-fns';
-import { formatBytes } from '../../utils/tools/formatBytes.utils';
-import { getDateLocale } from '../../utils/tools/getDateLocale.utils';
+import formatBytes from '../../utils/tools/formatBytes.utils';
+import getDateLocale from '../../utils/tools/getDateLocale.utils';
 import store from 'store2';
 import {
   Loading,
@@ -58,7 +58,7 @@ export default function MtAppBar(props: MtAppBarProps) {
 
   const { t } = useTranslation();
   const { themeStr } = useContext(themeContext);
-  const { isDesktop, isMobile } = useDetectScreenSize();
+  const { isDesktop } = useDetectScreenSize();
 
   function handleDisplayFields(fields: number[]) {
     if (fields.length < displayFields.length) props.onSave();
@@ -163,7 +163,7 @@ export default function MtAppBar(props: MtAppBarProps) {
                     )} ${
                       store
                         .get('fileData')
-                        .content.filter((e: RowData) => e.data.length === 7)
+                        .content.filter((e: RowData) => e.data.length >= 7)
                         .length - 1
                     }`}
                   </TextStyle>

@@ -36,7 +36,7 @@
   "RestoreSessionDialog": {
     "title": "Restore last session?",
     "description": "Do you want to restore your last session of {{date}} ago?",
-    "alertMsg": "Successfully restored your last session of {{date}}"
+    "alertMsg": "Session restored"
   },
   "Upload": {
     "success": "Successfully parsed document",
@@ -66,7 +66,7 @@
     "noOptionsText": "No filters available"
   },
   "EmptyFilterChip": {
-    "label": "Filter content"
+    "label": "Filter by type"
   },
   "ColumnSelector": {
     "label": "Columns",
@@ -78,7 +78,6 @@
     "bannerTitle": "The following file couldn’t be uploaded:",
     "wrongType": "\"{{name}}\" is not supported.\nFile type must be .csv.",
     "fileTooBig": "\"{{name}}\" is not supported.\nFile size cannot exceed {{maxSize}}. (Current size: {{size}}).",
-    "invalidColNumber": "\"{{name}}\" is not supported.\nFile does not seem to be a translation .csv. Make sure the rows are made of {{expectedColNumber}} columns.",
     "invalidHeaderContent": "\"{{name}}\" is not supported.\nMake sure the first row contains the name of each columns without any errors.\nFor more information, check out the <4>supported file structures</4>."
   },
   "FilterType": {
