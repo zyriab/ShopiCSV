@@ -184,7 +184,7 @@ const MtEditorContent = forwardRef<
                       code={isCode}
                       language={language}
                       label={props.headerContent![x]}
-                      fullWidth={width === true}
+                      fullWidth={true}
                       value={row.data[x]}
                     />
                   </Grid>
