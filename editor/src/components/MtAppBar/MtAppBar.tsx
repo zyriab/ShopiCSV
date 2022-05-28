@@ -79,9 +79,9 @@ export default function MtAppBar(props: MtAppBarProps) {
 
   useEffect(() => {
     if (
-      saveDisplayInterval === null &&
+      saveDisplayInterval == null &&
       props.isEditing &&
-      store.get('fileData').savedAt
+      store.get('fileData').savedAt != null
     ) {
       setSaveDisplayInterval(
         setInterval(() => {
@@ -177,13 +177,15 @@ export default function MtAppBar(props: MtAppBarProps) {
                       ),
                     })}
                   </TextStyle>
-                  <TextStyle variation="subdued">
-                    {t('AppBar.lastSaveDate', {
-                      date: formatDistanceToNow(saveTime, {
-                        locale: getDateLocale(),
-                      }),
-                    })}
-                  </TextStyle>
+                  {saveTime != null && (
+                    <TextStyle variation="subdued">
+                      {t('AppBar.lastSaveDate', {
+                        date: formatDistanceToNow(saveTime, {
+                          locale: getDateLocale(),
+                        }),
+                      })}
+                    </TextStyle>
+                  )}
                 </Stack>
               </Stack>
             </div>
