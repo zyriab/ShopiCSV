@@ -74,7 +74,6 @@ export default function MtNavBar() {
     </div>
   );
 
-  // TODO: implement editor filtering (search, fields type, toggle fields)
   const secondaryMenuEl = (
     <Stack wrap={false} alignment="center">
       {!isMobile && <MtDarkModeSwitch />}

@@ -188,7 +188,6 @@ export default function Translator() {
   }
 
   async function handleDrop(files: File[]) {
-    //TODO: add rejected behaviour
     await processFileUpload(files[0]);
   }
 
