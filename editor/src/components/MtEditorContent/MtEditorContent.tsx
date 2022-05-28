@@ -5,8 +5,9 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react';
-import { RowData } from '../../definitions/custom';
+import { RowData, DataType } from '../../definitions/custom';
 import { usePagination } from '../../utils/hooks/usePagination';
+import getFieldWidth from '../../utils/tools/getFieldWidth.utils';
 import Grid from '@mui/material/Grid';
 import Backdrop from '@mui/material/Backdrop';
 import { MtRowsDisplayControl } from '../MtRowsDisplayControl/MtRowsDisplayControl';
@@ -24,7 +25,9 @@ interface MtEditorContentProps {
   setIsLoading: (loading: boolean) => void;
   isLoading: boolean;
   display: number[];
+  dataType: DataType;
   data: RowData[];
+  headerContent?: string[];
   renderedFields: React.MutableRefObject<React.RefObject<MtFieldElement>[]>;
 }
 
@@ -56,20 +59,13 @@ const MtEditorContent = forwardRef<
     resetPagination,
   }));
 
-  // TODO: OPTI: 'data' shallowly changes, making React call this effect a second time on page load
+  /* Page's content setup */
   useEffect(() => {
-    if (props.data.length === 0) setPageContent([]);
-    if (props.data.length > 0 && !props.isLoading) {
-      const fieldNames = [
-        'Type',
-        'Identification',
-        'Field',
-        'Locale',
-        'Status',
-        'Default content',
-        'Translated content',
-      ];
+    if (props.data.length === 0) {
+      return setPageContent([]);
+    }
 
+    if (!props.isLoading && props.headerContent != null) {
       const displayPage = async () => {
         setIsReady(false);
         props.setIsLoading(true);
@@ -77,7 +73,7 @@ const MtEditorContent = forwardRef<
         // if user has gone to another page, save previous page
         if (selectedPage !== previousPageNum.current) props.onSave();
 
-        const content: JSX.Element[] = [];
+        const content: React.ReactNode[] = [];
         props.renderedFields.current = [];
 
         function setRow(i: number) {
@@ -100,7 +96,7 @@ const MtEditorContent = forwardRef<
 
           function getLanguage(row: string[]) {
             if (hasHTMLInRow(row)) return 'liquid';
-            else if (hasCSSInRow(row)) return 'css';
+            if (hasCSSInRow(row)) return 'css';
             return 'none';
           }
 
@@ -112,37 +108,59 @@ const MtEditorContent = forwardRef<
           if (index >= props.data.length) return;
 
           let row = props.data[index];
+          const numOfColumns = props.headerContent!.length;
           const tmp = [];
 
-          // had a bug once, data.length was 9 with empty indexes :/
-          if (row.data.length > 7) row.data = row.data.splice(0, 7);
-          if (row.data.length === 7) {
+          // had a bug once, data.length was 9 instead of 7 with empty indexes :/
+          if (row.data.length > numOfColumns) {
+            row.data = row.data.splice(0, numOfColumns);
+          }
+
+          if (row.data.length === numOfColumns) {
             const language = getLanguage(row.data);
             const hasEditor = language !== 'none';
 
-            for (let x = 0; x < 7; x++) {
-              let width =
-                !props.display.includes(5) && !props.display.includes(6)
-                  ? true
-                  : 1;
-              if (props.display.length !== 7 && (x === 5 || x === 6)) {
+            for (let x = 0; x < numOfColumns; x++) {
+              let width = getFieldWidth(
+                props.dataType,
+                props.display,
+                numOfColumns
+              );
+
+              if (
+                props.dataType === 'Translations' &&
+                props.display.length !== numOfColumns &&
+                (x === numOfColumns - 2 || x === numOfColumns - 1)
+              ) {
                 // code editor does not resize well with xs={true}
                 if (hasEditor) {
                   if (
-                    (!props.display.includes(5) && props.display.includes(6)) ||
-                    (props.display.includes(5) && !props.display.includes(6))
+                    (!props.display.includes(numOfColumns - 2) &&
+                      props.display.includes(numOfColumns - 1)) ||
+                    (props.display.includes(numOfColumns - 2) &&
+                      !props.display.includes(numOfColumns - 1))
                   ) {
-                    // other fields are of size 1 if [5]/[6] is present
-                    // Here we substract the number of displayed fields from the number of columns (7)
-                    // -1 is because [5]/[6] is not of size 1 and we want to make this calculation
-                    // based on the OTHER fields ;)
-                    // i.e: 7 col - (3-1) fields = size of 5 (+2 fields of size 1 = 7 columns taken 🤓)
-                    width = 7 - (props.display.length - 1);
+                    // if the 'default content' and/or 'translated content' are present, other fields' width = 1.
+                    // here we substract the number of displayed fields from the number of columns (7)
+                    // -1 is because [def./trans.] is not of size 1 and we want to make this calculation
+                    // based on the OTHER fields, thus removing [def./trans.] from the substraction ;)
+                    // i.e.: 3 fields = 2 [others] and 1 [def./trans.] =  7 [cols] - (3 [fields] - 1 [def./trans.])
+                    // = size of 5 [for def./trans.] + 2 [others] = 7 columns taken 🤓)
+                    width = numOfColumns - (props.display.length - 1);
                   } else {
-                    if (props.display.length === 2) width = 3.5;
-                    else if (props.display.length === 4) width = 2.5;
-                    else if (props.display.length === 6) width = 1.5;
-                    else width = Math.ceil(7 / props.display.length);
+                    // if the 'default content' and 'translated content' are present, other fields' width = 1.
+                    // therefore 'def.' and 'trans.' === (numOfColumns / props.display.length - (1 [other]))
+                    // i.e.: (even) 4 fields = 2 others and 2 [def + trans] -> (7 [cols] - 2 [others]) = 5 / 2 [def + trans]
+                    // or: (odd) 3 fields = 1 other and 2 [def + trans] -> 8 [cols] / 3 = 2.66
+                    // CEIL(2.66) = 3 -> + 0.5 -> * 2 [def. + trans.] = 7 + 1 [other] = 8
+                    // if numOfColumns = 7 -> 7 cols / 3 = 2.33 -> CEIL(2.33) = 3 * 2 [def. + trans] = 6 + 1 [other] = 7
+                    if (props.display.length % 2 === 0) {
+                      width = (numOfColumns - (props.display.length - 2)) / 2;
+                    } else {
+                      width =
+                        Math.ceil(numOfColumns / props.display.length) +
+                        (numOfColumns % 2 === 0 ? 0.5 : 0);
+                    }
                   }
                 } else width = true;
               }
@@ -151,11 +169,11 @@ const MtEditorContent = forwardRef<
                 props.renderedFields.current.push(createRef<MtFieldElement>());
 
                 const key = `${row.id}-${x}`;
-                const isCode = (x === 5 || x === 6) && hasEditor;
+                const isCode =
+                  (x === numOfColumns - 2 || x === numOfColumns - 1) &&
+                  hasEditor;
                 const fieldRef: React.RefObject<MtFieldElement> =
-                  props.renderedFields.current[
-                    props.renderedFields.current.length - 1
-                  ];
+                  props.renderedFields.current.at(-1)!;
 
                 tmp.push(
                   <Grid key={`grid-${x}`} xs={width} alignItems="stretch" item>
@@ -165,22 +183,18 @@ const MtEditorContent = forwardRef<
                       kid={key}
                       code={isCode}
                       language={language}
-                      label={fieldNames[x]}
+                      label={props.headerContent![x]}
                       fullWidth={width === true}
                       value={row.data[x]}
                     />
                   </Grid>
                 );
 
-                // setTimeout here is because there is a small latency before the ref is set
-                setTimeout(() => {
-                  if (fieldRef.current && !fieldRef.current?.isCode()) {
-                    const el =
-                      fieldRef.current?.getElement() as HTMLInputElement;
-                    el.style.height = '100%';
-                    (el.children[1] as HTMLInputElement).style.height = '100%';
-                  }
-                }, 0);
+                if (fieldRef.current && !fieldRef.current?.isCode()) {
+                  const el = fieldRef.current?.getElement() as HTMLInputElement;
+                  el.style.height = '100%';
+                  (el.children[1] as HTMLInputElement).style.height = '100%';
+                }
               }
             }
           }
@@ -195,6 +209,7 @@ const MtEditorContent = forwardRef<
               item
               direction="row"
               justifyContent="center"
+              columns={props.headerContent?.length || 0}
               spacing={1}>
               {setRow(i)}
             </Grid>
@@ -225,7 +240,16 @@ const MtEditorContent = forwardRef<
       <MtBackToTopBtn />
       {pageContent.length > 0 && isReady ? (
         <Layout sectioned>
-          <Layout.Section fullWidth>{pageContent}</Layout.Section>
+          <Layout.Section fullWidth>
+            <Grid
+              container
+              columns={props.headerContent?.length || 0}
+              direction="column"
+              justifyContent="flext-start"
+              spacing={1}>
+              {pageContent}
+            </Grid>
+          </Layout.Section>
           <Layout.Section secondary fullWidth>
             <Stack distribution="fill" alignment="center">
               <MtRowsDisplayControl
