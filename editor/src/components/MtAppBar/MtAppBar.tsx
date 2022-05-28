@@ -58,7 +58,7 @@ export default function MtAppBar(props: MtAppBarProps) {
 
   const { t } = useTranslation();
   const { themeStr } = useContext(themeContext);
-  const { isDesktop, isMobile } = useDetectScreenSize();
+  const { isDesktop } = useDetectScreenSize();
 
   function handleDisplayFields(fields: number[]) {
     if (fields.length < displayFields.length) props.onSave();
@@ -163,7 +163,7 @@ export default function MtAppBar(props: MtAppBarProps) {
                     )} ${
                       store
                         .get('fileData')
-                        .content.filter((e: RowData) => e.data.length === 7)
+                        .content.filter((e: RowData) => e.data.length >= 7)
                         .length - 1
                     }`}
                   </TextStyle>
