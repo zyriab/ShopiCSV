@@ -177,7 +177,7 @@ export default function MtAppBar(props: MtAppBarProps) {
                       ),
                     })}
                   </TextStyle>
-                  {saveTime != null && (
+                  {saveTime > new Date('1/1/1971') && (
                     <TextStyle variation="subdued">
                       {t('AppBar.lastSaveDate', {
                         date: formatDistanceToNow(saveTime, {
