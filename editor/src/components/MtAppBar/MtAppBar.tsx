@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import themeContext from '../../utils/contexts/theme.context';
 import { RowData, TranslatableResourceType } from '../../definitions/custom';
 import { formatDistanceToNow } from 'date-fns';
-import { formatBytes } from '../../utils/tools/formatBytes.utils';
-import { getDateLocale } from '../../utils/tools/getDateLocale.utils';
+import formatBytes from '../../utils/tools/formatBytes.utils';
+import getDateLocale from '../../utils/tools/getDateLocale.utils';
 import store from 'store2';
 import {
   Loading,
