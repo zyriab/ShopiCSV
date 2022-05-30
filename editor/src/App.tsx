@@ -24,7 +24,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (isAuthenticated && isIdentified.current == null && user) {
+    if (isAuthenticated && !isIdentified.current && user) {
       const slug = generateSlug();
 
       LogRocket.identify(user.nickname || slug, {
