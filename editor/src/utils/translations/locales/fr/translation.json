@@ -73,7 +73,7 @@
   },
   "DropZone": {
     "button": "Ajouter un fichier",
-    "message": "ou déposez un fichier à télécharger",
+    "message": "ou déposer un fichier à télécharger",
     "bannerTitle": "Le fichier suivant n'a pas pu être téléchargé :",
     "wrongType": "\"{{name}}\" n'est pas pris en charge. Le type du fichier doit être .csv.",
     "fileTooBig": "\"{{name}}\" n'est pas pris en charge. La taille du fichier ne peut excéder {{maxSize}}. (Taille actuelle: {{size}}).",
