@@ -25,7 +25,8 @@ export function MtBackToTopBtn() {
   useEffect(() => {
     window.addEventListener('scroll', debouncedDisplayFn);
     return () => debouncedDisplayFn.cancel();
-  }, [debouncedDisplayFn]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <IconButton

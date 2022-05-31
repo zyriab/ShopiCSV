@@ -1,88 +1,154 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import React, { useContext, useState } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
+import {
+  DropZone,
+  Button,
+  Stack,
+  TextStyle,
+  Card,
+  Banner,
+  List,
+  CustomProperties,
+  Link,
+} from '@shopify/polaris';
+import Papa from 'papaparse';
+import formatBytes from '../../utils/tools/formatBytes.utils';
+import getExpectedHeaderContent from '../../utils/tools/getExpectedHeaderContent.utils';
+import themeContext from '../../utils/contexts/theme.context';
+import { DataType } from '../../definitions/custom.d';
 
-import './MtDropZone.css';
-
-interface AppProps {
-  text?: string;
-  acceptedFiles?: string;
-  multiple?: boolean;
-  onChange: (
-    e: React.ChangeEvent<HTMLInputElement> | { target: DataTransfer }
-  ) => Promise<void>;
+interface MtDropZoneProps {
+  onUpload: (files: File[]) => Promise<void>;
+  dataType: DataType;
 }
 
-export function MtDropZone(props: AppProps) {
-  const [hasDrop, setHasDrop] = useState(false);
-  const inputEl = useRef<HTMLInputElement>(null);
-  const dropZoneEl = useRef<HTMLDivElement>(null);
-  const isHandling = useRef(false);
+type UploadError = 'InvalidType' | 'InvalidSize' | 'InvalidHeaderContent';
+
+export function MtDropZone(props: MtDropZoneProps) {
+  const MAX_FILE_SIZE = 10485760; // 10Mib
+
+  const [errorType, setErrorType] = useState<UploadError>();
+  const [hasError, setHasError] = useState(false);
+  const [rejectedFiles, setRejectedFiles] = useState<File[]>([]);
+
   const { t } = useTranslation();
+  const { themeStr } = useContext(themeContext);
 
-  useEffect(() => {
-    dropZoneEl.current?.addEventListener('click', () => {
-      if (!isHandling.current) {
-        isHandling.current = true;
-        inputEl.current?.click();
-      }
-      isHandling.current = false;
-    });
+  async function handleUpload(
+    files: File[],
+    accepted: File[],
+    rejected: File[]
+  ) {
+    if (rejected.length > 0) {
+      return;
+    }
 
-    dropZoneEl.current?.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      setHasDrop(true);
-    });
-
-    ['dragleave', 'dragend'].forEach((type) => {
-      dropZoneEl.current?.addEventListener(type, () => {
-        setHasDrop(false);
-      });
-    });
-
-    dropZoneEl.current?.addEventListener('drop', (e) => {
-      e.preventDefault();
-      if (!isHandling.current) {
-        isHandling.current = true;
-        if (e.dataTransfer?.files.length && inputEl.current) {
-          inputEl.current.files = e.dataTransfer?.files;
-          props.onChange({ target: e.dataTransfer });
+    Papa.parse<string[]>(accepted[0], {
+      preview: 1,
+      complete: async (file) => {
+        if (
+          file.data[0].toString() !==
+          getExpectedHeaderContent(props.dataType, file.data[0].length).toString()
+        ) {
+          setRejectedFiles((current) => [...current, accepted[0]]);
+          setErrorType('InvalidHeaderContent');
+          setHasError(true);
+          return;
         }
-      }
-      isHandling.current = false;
-      setHasDrop(false);
+        setHasError(false);
+        props.onUpload(accepted);
+      },
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }
+
+  function handleValidateUpload(file: File) {
+    setRejectedFiles([]);
+    setErrorType(undefined);
+
+    if (file.type !== 'text/csv') {
+      setErrorType('InvalidType');
+      setRejectedFiles((current) => [...current, file]);
+      setHasError(true);
+      return false;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      setErrorType('InvalidSize');
+      setRejectedFiles((current) => [...current, file]);
+      setHasError(true);
+      return false;
+    }
+
+    return true;
+  }
+
+  const errorMessage = hasError && (
+    <CustomProperties style={{ whiteSpace: 'pre-line' }} colorScheme={themeStr}>
+      <Banner title={t('DropZone.bannerTitle')} status="critical">
+        <List type="bullet">
+          {rejectedFiles.map((file, index) => {
+            const { name, size } = file;
+
+            return (
+              <List.Item key={index}>
+                {errorType === 'InvalidType' && (
+                  <p>{t('DropZone.wrongType', { name })}</p>
+                )}
+                {errorType === 'InvalidSize' && (
+                  <p>
+                    {t('DropZone.fileTooBig', {
+                      name,
+                      size: formatBytes(size),
+                      maxFileSize: formatBytes(MAX_FILE_SIZE),
+                    })}
+                  </p>
+                )}
+                {errorType === 'InvalidHeaderContent' && (
+                  <Trans i18nKey="DropZone.invalidHeaderContent">
+                    "{{ name }}" is not supported. Make sure the first row
+                    contains the name of each columns, without typo. For more
+                    information, check out the{' '}
+                    <Link
+                      external
+                      url="https://www.shopicsv.app/help/file-format#header-content">
+                      supported files' structure
+                    </Link>
+                    .
+                  </Trans>
+                )}
+              </List.Item>
+            );
+          })}
+        </List>
+      </Banner>
+    </CustomProperties>
+  );
 
   return (
-    <>
-      <div
-        ref={dropZoneEl}
-        className={`drop-zone${hasDrop ? ' drop-zone--over' : ''}`}>
-        <div>
-          <AddCircleOutlineIcon
-            sx={{
-              fontSize: '3rem!important',
-              verticalAlign: 'top!important',
-              marginBottom: '1.5rem',
-              color: '#1976d2',
-            }}
-          />
-        </div>
-        <div className="drop-zone__prompt">
-          {props.text || t('DropZone.message')}
-        </div>
-        <input
-          className="drop-zone__input"
-          ref={inputEl}
-          multiple={props.multiple || false}
-          onChange={props.onChange}
-          type="file"
-          accept={props.acceptedFiles}
-          style={{ display: 'none' }}
-        />
-      </div>
-    </>
+    <Stack vertical>
+      {errorMessage}
+
+      <Card sectioned>
+        <DropZone
+          dropOnPage
+          overlayText={t('DropZone.message')}
+          allowMultiple={false}
+          customValidator={handleValidateUpload}
+          onDrop={handleUpload}>
+          <Stack vertical spacing="loose">
+            <div />
+            <Stack vertical alignment="center" spacing="extraTight">
+              <img src="images/icons/UploadSpot.svg" alt="Upload a file" />
+              <Button>{t('DropZone.button')}</Button>
+              <div />
+              <div />
+              <div />
+              <TextStyle variation="subdued">{t('DropZone.message')}</TextStyle>
+            </Stack>
+            <div />
+          </Stack>
+        </DropZone>
+      </Card>
+    </Stack>
   );
 }

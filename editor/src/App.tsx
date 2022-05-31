@@ -1,29 +1,57 @@
-import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
+import React, { useRef, useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import { ConfirmProvider } from 'material-ui-confirm';
-import {MtRouter} from './components/MtRouter/MtRouter';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import { useDarkMode } from './utils/hooks/useDarkMode';
-import { MtNavBar } from './components/MtNavBar/MtNavBar';
+import MtThemeProvider from './components/MtThemeProvider/MtThemeProvider';
+import { MtRouter } from './components/MtRouter/MtRouter';
 import { MtFooter } from './components/MtFooter/MtFooter';
+import MtNavBar from './components/MtNavBar/MtNavBar';
+import logo from './utils/helpers/logo.helper';
+import { Frame } from '@shopify/polaris';
+import { generateSlug } from 'random-word-slugs';
+import LogRocket from 'logrocket';
 
 import './App.css';
+import '@shopify/polaris/build/esm/styles.css';
 
 function App() {
-  const darkMode = useDarkMode();
+  const isIdentified = useRef(false);
+  const isInit = useRef(false);
+
+  const { isAuthenticated, user } = useAuth0();
+
+  /* Setting up user behavior logging */
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test') {
+      LogRocket.init('8dmljr/shopicsv');
+      isInit.current = true;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isInit.current && isAuthenticated && !isIdentified.current && user) {
+      const slug = generateSlug();
+
+      LogRocket.identify(user.nickname || slug, {
+        name: user.nickname || slug,
+        email: user.email || 'no email available',
+      });
+
+      isIdentified.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
+
   return (
-    <ThemeProvider theme={darkMode.theme}>
-      <ConfirmProvider>
-        <Paper>
-          <MtNavBar onModeChange={darkMode.setIsDark} />
-          <Box sx={{ minHeight: '600px' }}>
+    <MtThemeProvider>
+      <Frame logo={logo} topBar={<MtNavBar />}>
+        <ConfirmProvider>
+          <div className="min-h-600px">
             <MtRouter />
-          </Box>
+          </div>
           <MtFooter />
-        </Paper>
-      </ConfirmProvider>
-    </ThemeProvider>
+        </ConfirmProvider>
+      </Frame>
+    </MtThemeProvider>
   );
 }
 

@@ -1,4 +1,4 @@
-import { RowData } from '../definitions/definitions';
+import { RowData } from '../../definitions/custom';
 
 export function searchStrArray(
   searchValue: string,

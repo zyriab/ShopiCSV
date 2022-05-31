@@ -4,26 +4,43 @@
     "yesLower": "yes",
     "noUpper": "No",
     "noLower": "no",
-    "search": "Search..."
+    "search": "Search",
+    "login": "Log in",
+    "logout": "Log out",
+    "language": "Language",
+    "settings": "Settings"
+  },
+  "Language": {
+    "french": "French",
+    "english": "English"
+  },
+  "NavMenu": {
+    "home": "Home",
+    "translations": "Translations",
+    "products": "Products",
+    "sectionSeparator": "HELP & COMMUNITY",
+    "help": "How to use ShopiCSV",
+    "discord": "Chat with us on Discord",
+    "review": "Leave us a review"
   },
   "AppBar": {
     "lastModifDate": "Modified {{date}} ago",
     "lastSaveDate": "Saved {{date}} ago",
-    "closeToolTip": "Close file",
-    "uploadToolTip": "Upload a file",
-    "saveToolTip": "Save",
-    "downloadToolTip": "Download",
-    "ariaToggleGroup": "Fields to display"
+    "closeTooltip": "Close file",
+    "uploadTooltip": "Upload a file",
+    "saveTooltip": "Save",
+    "downloadTooltip": "Download",
+    "ariaToggleGroup": "Fields to display",
+    "rows": "Rows:"
   },
   "RestoreSessionDialog": {
     "title": "Restore last session?",
     "description": "Do you want to restore your last session of {{date}} ago?",
-    "alertMsg": "Successfully restored your last session of {{date}}"
+    "alertMsg": "Session restored"
   },
   "Upload": {
     "success": "Successfully parsed document",
-    "error": "The uploaded file does not correspond to a translation CSV",
-    "wrongType": "File rejected. You may only upload .CSV files"
+    "error": "The uploaded file does not correspond to a translation CSV"
   },
   "Save": {
     "success": "Successfully saved",
@@ -36,7 +53,12 @@
     "no": "No, keep it"
   },
   "RowDisplayControl": {
-    "displayPer": "Display rows per:"
+    "displayPer": "Display rows per:",
+    "btnA11yLabel": "Display {{number}} rows per page."
+  },
+  "Pagination": {
+    "goToPageLabel": "Go to page",
+    "goToPageHelpTxt": "Press return"
   },
   "FilterDialog": {
     "title": "Choose which content you wish to filter",
@@ -44,10 +66,19 @@
     "noOptionsText": "No filters available"
   },
   "EmptyFilterChip": {
-    "label": "Filter content"
+    "label": "Filter by type"
+  },
+  "ColumnSelector": {
+    "label": "Columns",
+    "title": "Show/hide columns"
   },
   "DropZone": {
-    "message": "Drag and drop your file here or click"
+    "button": "Add file",
+    "message": "or drop file to upload",
+    "bannerTitle": "The following file couldn’t be uploaded:",
+    "wrongType": "\"{{name}}\" is not supported.\nFile type must be .csv.",
+    "fileTooBig": "\"{{name}}\" is not supported.\nFile size cannot exceed {{maxSize}}. (Current size: {{size}}).",
+    "invalidHeaderContent": "\"{{name}}\" is not supported.\nMake sure the first row contains the name of each columns without any errors.\nFor more information, check out the <4>supported file structures</4>."
   },
   "FilterType": {
     "COLLECTION": "A product collection.",

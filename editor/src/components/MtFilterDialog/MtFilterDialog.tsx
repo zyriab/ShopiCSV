@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FilterType } from '../../definitions/definitions';
+import { FilterType } from '../../definitions/custom';
 import { useTheme, styled } from '@mui/material/styles';
 import Popper from '@mui/material/Popper';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -19,7 +19,7 @@ interface PopperComponentProps {
   open: boolean;
 }
 
-interface AppProps {
+interface MtFilterDialogProps {
   filters: FilterType[];
   selected: FilterType[];
   onClose: (selection: FilterType[]) => void;
@@ -102,7 +102,7 @@ function PopperComponent(props: PopperComponentProps) {
   return <StyledAutocompletePopper {...other} />;
 }
 
-export function MtFilterDialog(props: AppProps) {
+export function MtFilterDialog(props: MtFilterDialogProps) {
   const [pendingValue, setPendingValue] = useState<FilterType[]>([]);
   const theme = useTheme();
   const { t } = useTranslation();
