@@ -89,7 +89,9 @@ export default function Translator() {
       }
     }
 
-    if (isDeleting) store.remove('fileData');
+    if (isDeleting) {
+      store.remove('fileData');
+    }
 
     contentRef.current.resetPagination();
     parsedData.current = [];
@@ -163,9 +165,7 @@ export default function Translator() {
       worker: true,
       step: (row: any) => {
         const dt: RowData = { data: row.data, id: index };
-
-        // if (row.data.length > 7) row.data = row.data.splice(0, 7);
-        // if (row.data.length === 7) parsedData.current.push(dt);
+        
         parsedData.current.push(dt);
         index++;
       },
