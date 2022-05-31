@@ -15,16 +15,20 @@ import '@shopify/polaris/build/esm/styles.css';
 
 function App() {
   const isIdentified = useRef(false);
+  const isInit = useRef(false);
 
   const { isAuthenticated, user } = useAuth0();
 
   /* Setting up user behavior logging */
   useEffect(() => {
-    LogRocket.init('8dmljr/shopicsv');
+    if (process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test') {
+      LogRocket.init('8dmljr/shopicsv');
+      isInit.current = true;
+    }
   }, []);
 
   useEffect(() => {
-    if (isAuthenticated && !isIdentified.current && user) {
+    if (isInit.current && isAuthenticated && !isIdentified.current && user) {
       const slug = generateSlug();
 
       LogRocket.identify(user.nickname || slug, {
