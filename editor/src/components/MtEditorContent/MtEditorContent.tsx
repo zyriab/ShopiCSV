@@ -66,9 +66,6 @@ const MtEditorContent = forwardRef<
     setIsReady(false);
     props.setIsLoading(true);
 
-    // FIXME: saving -> sometimes the page fields are already unmounted
-    // -> crashes the app (@see https://github.com/Metaoist-Dsgn/ShopiCSV/issues/67)
-
     // if user has gone to another page, save previous page
     if (selectedPage !== previousPageNum.current) {
       props.onSave();
