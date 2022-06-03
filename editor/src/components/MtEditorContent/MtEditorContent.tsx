@@ -70,7 +70,9 @@ const MtEditorContent = forwardRef<
     // -> crashes the app (@see https://github.com/Metaoist-Dsgn/ShopiCSV/issues/67)
 
     // if user has gone to another page, save previous page
-    if (selectedPage !== previousPageNum.current) props.onSave();
+    if (selectedPage !== previousPageNum.current) {
+      props.onSave();
+    }
 
     const content: React.ReactNode[] = [];
     props.renderedFields.current = [];
@@ -173,7 +175,13 @@ const MtEditorContent = forwardRef<
     if (!props.isLoading && props.headerContent != null) {
       displayPage();
     }
-  }, [displayPage, props.data.length, props.headerContent, props.isLoading, setPageContent]);
+  }, [
+    displayPage,
+    props.data.length,
+    props.headerContent,
+    props.isLoading,
+    setPageContent,
+  ]);
 
   return (
     <>
