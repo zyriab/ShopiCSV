@@ -37,11 +37,11 @@ export const MtEditorField = forwardRef<MtFieldElement, AppProps>(
 
     function getValue() {
       if (props.code) {
-        return editorEl.current.getValue();
+        return editorEl.current?.getValue();
       }
 
       return (inputEl.current.children[1].children[0] as HTMLInputElement)
-        .value;
+        ?.value;
     }
 
     function getElement() {
@@ -54,7 +54,7 @@ export const MtEditorField = forwardRef<MtFieldElement, AppProps>(
 
     function layout() {
       if (props.code) {
-        editorEl.current.layout();
+        editorEl.current?.layout();
       }
     }
 
