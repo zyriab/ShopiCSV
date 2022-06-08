@@ -225,15 +225,6 @@ export default function MtAppBar(props: MtAppBarProps) {
               disabled={props.isLoading || !props.isEditing}
               onClick={props.onDownload}></Button>
           </Tooltip>
-          <Button
-            onClick={async () => {
-              const res = await window.fetch(
-                'https://44kxybpuheewejuvm3lkqsxw3m0zevhn.lambda-url.eu-central-1.on.aws/'
-              );
-              return console.table(res);
-            }}>
-            Test fetch
-          </Button>
         </ButtonGroup>
         <input
           ref={inputEl}
