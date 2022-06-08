@@ -3,10 +3,11 @@ import store from 'store2';
 import Papa from 'papaparse';
 import getDateLocale from '../utils/tools/getDateLocale.utils';
 import getDataType from '../utils/tools/getDataType.utils';
+import saveFile from '../utils/tools/buckaroo/saveFile.utils';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { RowData, TranslatableResourceType } from '../definitions/custom';
 import { useConfirm } from 'material-ui-confirm';
+import { useAuth0 } from '@auth0/auth0-react';
 import { MtAlert, MtAlertElement } from '../components/MtAlert/MtAlert';
 import MtAppBar from '../components/MtAppBar/MtAppBar';
 import {
@@ -15,6 +16,7 @@ import {
 } from '../components/MtEditorContent/MtEditorContent';
 import { MtFieldElement } from '../components/MtEditorField/MtEditorField';
 import { Page } from '@shopify/polaris';
+import { RowData, TranslatableResourceType } from '../definitions/custom';
 
 export default function Translator() {
   const [isLoading, setIsLoading] = useState(false);
@@ -34,8 +36,10 @@ export default function Translator() {
   const renderedFields = useRef<React.RefObject<MtFieldElement>[]>([]);
   const alertEl = useRef<MtAlertElement>(null!);
   const contentRef = useRef<MtEditorContentElement>(null!);
+
   const confirmationDialog = useConfirm();
   const { t, i18n } = useTranslation();
+  const { getAccessTokenSilently } = useAuth0();
 
   function displayAlert(message: string, isError: boolean = false) {
     alertEl.current.show({ message, isError });
@@ -106,7 +110,7 @@ export default function Translator() {
   }
 
   const handleSave = useCallback(
-    (displayMsg = false, isAutosave = false) => {
+    async (displayMsg = false, isAutosave = false) => {
       if (parsedData.current.length > 0 && renderedFields.current) {
         setIsLoading(true);
         const [hasEdit, editedFieldsKid] = hasEdited();
@@ -122,6 +126,14 @@ export default function Translator() {
                 field.current.getValue() as string;
             }
           }
+
+          const token = await getAccessTokenSilently();
+
+          await saveFile({
+            file: parsedData.current,
+            fileName: fileRef.current!.name,
+            token,
+          });
 
           //setFileData([...parsedData.current]);
           store.remove('fileData');
@@ -146,12 +158,12 @@ export default function Translator() {
       }
       return false;
     },
-    [hasEdited, t]
+    [getAccessTokenSilently, hasEdited, t]
   );
 
   async function processFileUpload(file: File) {
     if (isEditing) {
-      handleSave(true, true);
+      await handleSave(true, true);
     }
 
     setIsLoading(true);
@@ -165,7 +177,7 @@ export default function Translator() {
       worker: true,
       step: (row: any) => {
         const dt: RowData = { data: row.data, id: index };
-        
+
         parsedData.current.push(dt);
         index++;
       },
@@ -200,9 +212,9 @@ export default function Translator() {
     }
   }
 
-  function handleDownload() {
+  async function handleDownload() {
     if (parsedData.current) {
-      handleSave();
+      await handleSave();
       const lines = parsedData.current.map((e) => e.data);
       const data = Papa.unparse(lines);
       const blob = new Blob([data], { type: 'text/csv' });
@@ -248,13 +260,13 @@ export default function Translator() {
 
   /* KEY BINDINGS */
   useEffect(() => {
-    window.addEventListener('keydown', (e) => {
+    window.addEventListener('keydown', async (e) => {
       if (e.ctrlKey || e.metaKey) {
         switch (e.key) {
           case 's':
             e.preventDefault();
             e.stopImmediatePropagation();
-            handleSave(true);
+            await handleSave(true);
             break;
           default:
             break;
@@ -265,9 +277,9 @@ export default function Translator() {
 
   /* AUTOSAVE */
   useEffect(() => {
-    const intervalId = setInterval(() => {
+    const intervalId = setInterval(async () => {
       if (isEditing && !isLoading) {
-        handleSave(true, true);
+        await handleSave(true, true);
       }
     }, 180000);
 
