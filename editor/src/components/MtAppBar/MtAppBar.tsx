@@ -28,7 +28,7 @@ import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
 
 interface MtAppBarProps {
   onDownload: () => void;
-  onSave: (displayMsg?: boolean, isAutosave?: boolean) => boolean;
+  onSave: (displayMsg?: boolean, isAutosave?: boolean) => Promise<boolean>;
   onUpload: (
     e: React.ChangeEvent<HTMLInputElement> | { target: DataTransfer }
   ) => Promise<void>;
@@ -60,19 +60,24 @@ export default function MtAppBar(props: MtAppBarProps) {
   const { themeStr } = useContext(themeContext);
   const { isDesktop } = useDetectScreenSize();
 
-  function handleDisplayFields(fields: number[]) {
-    if (fields.length < displayFields.length) props.onSave();
+  async function handleDisplayFields(fields: number[]) {
+    if (fields.length < displayFields.length) {
+      await props.onSave();
+    }
+
     setDisplayFields(fields);
     props.onDisplayChange(fields);
   }
 
-  function handleSave() {
-    const hasSaved = props.onSave(true);
+  async function handleSave() {
+    const hasSaved = await props.onSave(true);
+
     if (hasSaved) {
       if (saveDisplayInterval !== null) {
         clearInterval(saveDisplayInterval);
         setSaveDisplayInterval(null);
       }
+
       setSaveTime(new Date());
     }
   }
@@ -211,7 +216,7 @@ export default function MtAppBar(props: MtAppBarProps) {
               plain
               icon={SaveMinor}
               disabled={props.isLoading}
-              onClick={handleSave}></Button>
+              onClick={async () => await handleSave()}></Button>
           </Tooltip>
           <Tooltip content={t('AppBar.downloadTooltip')}>
             <Button

@@ -23,7 +23,7 @@ import getFilePosition from '../../utils/tools/getFilePosition.utils';
 import getEditorLanguage from '../../utils/tools/getEditorLanguage.utils';
 
 interface MtEditorContentProps {
-  onSave: (displayMsg?: boolean, isAutosave?: boolean) => boolean;
+  onSave: (displayMsg?: boolean, isAutosave?: boolean) => Promise<boolean>;
   onUpload: (files: File[]) => Promise<void>;
   setIsLoading: (loading: boolean) => void;
   isLoading: boolean;
@@ -68,7 +68,7 @@ const MtEditorContent = forwardRef<
 
     // if user has gone to another page, save previous page
     if (selectedPage !== previousPageNum.current) {
-      props.onSave();
+      await props.onSave();
     }
 
     const content: React.ReactNode[] = [];
