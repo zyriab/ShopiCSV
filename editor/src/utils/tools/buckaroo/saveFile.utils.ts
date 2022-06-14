@@ -2,6 +2,7 @@ import Papa from 'papaparse';
 import getDataType from '../getDataType.utils';
 import { GetUploadUrlQuery } from '../../helpers/gqlQueries.helper';
 import { RowData } from '../../../definitions/custom';
+import checkFetch from '../checkFetch.utils';
 
 interface SaveFileArgs {
   file: RowData[];
@@ -19,25 +20,18 @@ export default async function SaveFile(args: SaveFileArgs) {
     query.variables.fileName = args.fileName;
     query.variables.path = getDataType();
 
-    // Getting AWS signed POST from Buckaroo
-    const res = await window.fetch(
-      'https://44kxybpuheewejuvm3lkqsxw3m0zevhn.lambda-url.eu-central-1.on.aws/',
-      {
-        method: 'POST',
-        body: JSON.stringify(query),
-        headers: {
-          'Content-Type': 'application/json',
-          // Passing the encrypted tenant to call the proper Auth0 API
-          Authorization: `Bearer ${args.token} ${process.env.REACT_APP_TENANT}`,
-        },
-      }
-    );
+    // Fetching AWS signed POST from Buckaroo
+    const res = await window.fetch(process.env.REACT_APP_BUCKAROO_URL!, {
+      method: 'POST',
+      body: JSON.stringify(query),
+      headers: {
+        'Content-Type': 'application/json',
+        // Passing the encrypted tenant to call the proper Auth0 API
+        Authorization: `Bearer ${args.token} ${process.env.REACT_APP_TENANT}`,
+      },
+    });
 
-    if (!res.ok) {
-      throw new Error(
-        `Error while fetching save post. ${res.status}: ${res.statusText}`
-      );
-    }
+    checkFetch(res);
 
     const resData = await res.json();
     const typename = resData.data.getUploadUrl.__typename;
@@ -51,17 +45,13 @@ export default async function SaveFile(args: SaveFileArgs) {
       );
       form.append('file', data);
 
-      // Uploading file to the bucket
+      // Uploading file to bucket
       const upRes = await window.fetch(url, {
         method: 'POST',
         body: form,
       });
 
-      if (!upRes.ok) {
-        throw new Error(
-          `Error while posting saved file. ${res.status}: ${res.statusText}`
-        );
-      }
+      checkFetch(upRes);
     } else {
       throw new Error(resData.data.message);
     }
