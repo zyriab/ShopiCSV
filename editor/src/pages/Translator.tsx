@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import store from 'store2';
 import Papa from 'papaparse';
+import { generateSlug } from 'random-word-slugs';
 import getDateLocale from '../utils/tools/getDateLocale.utils';
 import getDataType from '../utils/tools/getDataType.utils';
 import saveFile from '../utils/tools/buckaroo/saveFile.utils';
@@ -17,6 +18,10 @@ import {
 import { MtFieldElement } from '../components/MtEditorField/MtEditorField';
 import { Page } from '@shopify/polaris';
 import { RowData, TranslatableResourceType } from '../definitions/custom';
+<<<<<<< Updated upstream
+=======
+import saveFileLocally from '../utils/tools/demo/saveFileLocally.utils';
+>>>>>>> Stashed changes
 
 export default function Translator() {
   const [isLoading, setIsLoading] = useState(false);
@@ -127,6 +132,10 @@ export default function Translator() {
             }
           }
 
+<<<<<<< Updated upstream
+=======
+          setFileData([...parsedData.current]);
+>>>>>>> Stashed changes
           const token = await getAccessTokenSilently();
 
           await saveFile({
@@ -135,14 +144,19 @@ export default function Translator() {
             token,
           });
 
+<<<<<<< Updated upstream
           //setFileData([...parsedData.current]);
           store.remove('fileData');
           store.set('fileData', {
+=======
+          saveFileLocally({
+>>>>>>> Stashed changes
             content: parsedData.current,
-            name: fileRef.current?.name,
-            size: fileRef.current?.size,
-            lastModified: fileRef.current?.lastModified,
-            savedAt: new Date().toLocaleString(),
+            name:
+              fileRef.current?.name ||
+              `${generateSlug()}-${new Date().toISOString()}`,
+            size: fileRef.current?.size || -1,
+            lastModified: fileRef.current?.lastModified || Date.now(),
           });
 
           if (displayMsg) {
@@ -289,55 +303,66 @@ export default function Translator() {
   /* AUTO-OPEN */
   useEffect(() => {
     async function openFromMemory() {
-      if (store.get('fileData')) {
-        try {
-          await confirmationDialog({
-            allowClose: true,
-            title: t('RestoreSessionDialog.title'),
-            description: t('RestoreSessionDialog.description', {
-              date: formatDistanceToNow(
-                new Date(store.get('fileData').savedAt),
-                { locale: getDateLocale() }
-              ),
+      try {
+        await confirmationDialog({
+          allowClose: true,
+          title: t('RestoreSessionDialog.title'),
+          description: t('RestoreSessionDialog.description', {
+            date: formatDistanceToNow(new Date(store.get('fileData').savedAt), {
+              locale: getDateLocale(),
             }),
-            confirmationText: t('General.yesUpper'),
-            cancellationText: t('General.noUpper'),
-            confirmationButtonProps: {
-              disableElevation: true,
-              variant: 'contained',
-            },
-            cancellationButtonProps: {
-              disableElevation: true,
-              variant: 'contained',
-            },
-          });
+          }),
+          confirmationText: t('General.yesUpper'),
+          cancellationText: t('General.noUpper'),
+          confirmationButtonProps: {
+            disableElevation: true,
+            variant: 'contained',
+          },
+          cancellationButtonProps: {
+            disableElevation: true,
+            variant: 'contained',
+          },
+        });
 
-          setIsLoading(true);
-          setIsEditing(false);
+        setIsLoading(true);
+        setIsEditing(false);
 
-          parsedData.current = [];
-          parsedData.current = store.get('fileData').content;
-          setFileData([...parsedData.current]);
-          setDisplayedData([...parsedData.current]);
+        parsedData.current = [];
+        parsedData.current = store.get('fileData').content;
+        setFileData([...parsedData.current]);
+        setDisplayedData([...parsedData.current]);
 
-          fileRef.current = { ...store.get('fileData') };
-          setFile({ ...store.get('fileData') });
+        fileRef.current = { ...store.get('fileData') };
+        setFile({ ...store.get('fileData') });
 
-          displayAlert(
-            `${t('RestoreSessionDialog.alertMsg', {
-              date: store.get('fileData').savedAt,
-            })} 🐘`
-          );
+        displayAlert(
+          `${t('RestoreSessionDialog.alertMsg', {
+            date: store.get('fileData').savedAt,
+          })} 🐘`
+        );
 
-          setIsLoading(false);
-          setIsEditing(true);
-        } catch {
-          store.remove('fileData');
-        }
+        setIsLoading(false);
+        setIsEditing(true);
+      } catch {
+        store.remove('fileData');
       }
     }
 
-    if (!isEditing && !hasClosed) openFromMemory();
+    async function openFromBuckaroo() {
+      try {
+
+      } catch(err) {
+        console.log(err);
+      }
+    }
+
+    if (!isEditing && !hasClosed) {
+      if (store.get('fileData')) {
+        openFromMemory();
+      } else {
+        openFromBuckaroo();
+      }
+    }
   }, [isEditing, hasClosed, confirmationDialog, t, i18n.resolvedLanguage]);
 
   useEffect(() => {

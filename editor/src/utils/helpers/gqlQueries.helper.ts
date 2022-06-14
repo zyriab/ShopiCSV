@@ -22,10 +22,16 @@ export const GetUploadUrlQuery = {
         url
         fields
       }
+<<<<<<< Updated upstream
     }
   }
   
   ${errorSpreads}
+=======
+      ${errorSpreads}
+    }
+  }
+>>>>>>> Stashed changes
 `,
   variables: {
     fileName: '',
