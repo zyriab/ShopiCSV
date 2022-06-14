@@ -18,10 +18,8 @@ import {
 import { MtFieldElement } from '../components/MtEditorField/MtEditorField';
 import { Page } from '@shopify/polaris';
 import { RowData, TranslatableResourceType } from '../definitions/custom';
-<<<<<<< Updated upstream
-=======
 import saveFileLocally from '../utils/tools/demo/saveFileLocally.utils';
->>>>>>> Stashed changes
+import getUpdatedParsedData from '../utils/tools/getUpdatedParsedData.utils';
 
 export default function Translator() {
   const [isLoading, setIsLoading] = useState(false);
@@ -117,47 +115,41 @@ export default function Translator() {
   const handleSave = useCallback(
     async (displayMsg = false, isAutosave = false) => {
       if (parsedData.current.length > 0 && renderedFields.current) {
+        // TODO: upgrade saving UX (no backdrop, etc)
+        // setIsSaving(true) (?)
         setIsLoading(true);
+
         const [hasEdit, editedFieldsKid] = hasEdited();
         const editedFields = renderedFields.current.filter(
           (f) => f.current && editedFieldsKid.includes(f.current.getKid())
         );
 
         if (hasEdit) {
-          for (let field of editedFields) {
-            if (field.current) {
-              const kid = field.current.getKid().split('-');
-              parsedData.current[parseFloat(kid[0])].data[parseFloat(kid[1])] =
-                field.current.getValue() as string;
-            }
-          }
-
-<<<<<<< Updated upstream
-=======
-          setFileData([...parsedData.current]);
->>>>>>> Stashed changes
           const token = await getAccessTokenSilently();
 
-          await saveFile({
-            file: parsedData.current,
-            fileName: fileRef.current!.name,
-            token,
+          parsedData.current = getUpdatedParsedData({
+            editedFields,
+            parsedData,
           });
 
-<<<<<<< Updated upstream
-          //setFileData([...parsedData.current]);
-          store.remove('fileData');
-          store.set('fileData', {
-=======
-          saveFileLocally({
->>>>>>> Stashed changes
-            content: parsedData.current,
-            name:
-              fileRef.current?.name ||
-              `${generateSlug()}-${new Date().toISOString()}`,
-            size: fileRef.current?.size || -1,
-            lastModified: fileRef.current?.lastModified || Date.now(),
-          });
+          setFileData([...parsedData.current]);
+
+          if (process.env.REACT_APP_ENV === 'demo') {
+            saveFileLocally({
+              content: parsedData.current,
+              name:
+                fileRef.current?.name ||
+                `${generateSlug()}-${new Date().toISOString()}`,
+              size: fileRef.current?.size || -1,
+              lastModified: fileRef.current?.lastModified || Date.now(),
+            });
+          } else {
+            await saveFile({
+              file: parsedData.current,
+              fileName: fileRef.current!.name,
+              token,
+            });
+          }
 
           if (displayMsg) {
             displayAlert(`${t('Save.success')} 💾`);
@@ -350,8 +342,32 @@ export default function Translator() {
 
     async function openFromBuckaroo() {
       try {
+        // TODO: write file explorer component
+        // fetch user's bucket content (buckaroo)
+        // open directory window w/ files + dirs
+        // let user select to (rename?), delete or open file
 
-      } catch(err) {
+        // open file if user selected one
+        setIsLoading(true);
+        setIsEditing(false);
+
+        parsedData.current = [];
+        parsedData.current = store.get('fileData').content;
+        setFileData([...parsedData.current]);
+        setDisplayedData([...parsedData.current]);
+
+        fileRef.current = { ...store.get('fileData') };
+        setFile({ ...store.get('fileData') });
+
+        displayAlert(
+          `${t('RestoreSessionDialog.alertMsg', {
+            date: store.get('fileData').savedAt,
+          })} 🐘`
+        );
+
+        setIsLoading(false);
+        setIsEditing(true);
+      } catch (err) {
         console.log(err);
       }
     }
