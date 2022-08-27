@@ -8,6 +8,10 @@
   display: none;
 }
 
+.no-outline {
+  outline: none !important;
+}
+
 .pt-1 {
   padding-top: 1rem;
 }
