@@ -1,11 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import useLogo from './utils/hooks/useLogo';
 import { ConfirmProvider } from 'material-ui-confirm';
 import MtThemeProvider from './components/MtThemeProvider/MtThemeProvider';
 import { MtRouter } from './components/MtRouter/MtRouter';
 import { MtFooter } from './components/MtFooter/MtFooter';
 import MtNavBar from './components/MtNavBar/MtNavBar';
-import logo from './utils/helpers/logo.helper';
 import { Frame } from '@shopify/polaris';
 import { generateSlug } from 'random-word-slugs';
 import LogRocket from 'logrocket';
@@ -18,10 +18,14 @@ function App() {
   const isInit = useRef(false);
 
   const { isAuthenticated, user } = useAuth0();
+  const logo = useLogo();
 
   /* Setting up user behavior logging */
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test') {
+    if (
+      process.env.NODE_ENV !== 'development' &&
+      process.env.NODE_ENV !== 'test'
+    ) {
       LogRocket.init('8dmljr/shopicsv');
       isInit.current = true;
     }
@@ -40,6 +44,8 @@ function App() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
+
+  // TODO: theme material UI confirm
 
   return (
     <MtThemeProvider>
