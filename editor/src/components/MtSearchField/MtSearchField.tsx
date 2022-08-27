@@ -33,24 +33,26 @@ export function MtSearchField(props: AppProps) {
   useEffect(() => props.filteredDataIds(resultIds), [props, resultIds]);
 
   return (
-    <TextField
-      labelHidden
-      label="search field"
-      autoComplete="off"
-      inputMode="search"
-      placeholder={t('General.search')}
-      value={inputValue}
-      onChange={handleChange}
-      onClearButtonClick={handleClear}
-      clearButton
-      prefix={<Icon source={SearchMinor} />}
-      suffix={
-        inputValue.length > 0 && (
-          <Tag>
-            <Stack alignment="center">{endAdornment}</Stack>
-          </Tag>
-        )
-      }
-    />
+    <div style={{ width: '400px' }}>
+      <TextField
+        labelHidden
+        label="search field"
+        autoComplete="off"
+        inputMode="search"
+        placeholder={t('General.search')}
+        value={inputValue}
+        onChange={handleChange}
+        onClearButtonClick={handleClear}
+        clearButton
+        prefix={<Icon source={SearchMinor} />}
+        suffix={
+          inputValue.length > 0 && (
+            <Tag>
+              <Stack alignment="center">{endAdornment}</Stack>
+            </Tag>
+          )
+        }
+      />
+    </div>
   );
 }
