@@ -89,7 +89,8 @@ export function MtFooter() {
                   borderRadius: '20px',
                   display: 'flex',
                   alignItems: 'center',
-                  background: '#24344d',
+                  // background: '#0b0c0d',
+                  background: 'transparent',
                 }}>
                 <Link sx={{ color: 'white' }} href="https://www.metaoist.io/">
                   <img
