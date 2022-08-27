@@ -1,0 +1,6 @@
+#MtBreadCrumbs-Btn .Polaris-Button__Text {
+  width: 12ch;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
