@@ -1,4 +1,4 @@
-import {searchStrArray} from '../tools/searchStrArray';
+import {searchStrArray} from '../tools/searchStrArray.utils';
 
 // eslint-disable-next-line no-restricted-globals
 const ctx: Worker = self as any;
