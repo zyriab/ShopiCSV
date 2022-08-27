@@ -38,17 +38,17 @@
     "description": "Do you want to restore your last session of {{date}} ago?",
     "alertMsg": "Session restored"
   },
-  "Upload": {
+  "OpenFile": {
     "success": "Successfully parsed document",
-    "error": "The uploaded file does not correspond to a translation CSV"
+    "error": "File is not supported"
   },
   "Save": {
     "success": "Successfully saved",
     "upToDate": "Already up to date"
   },
-  "CloseFileDialog": {
-    "title": "Permanently delete file?",
-    "description": "This will remove the file and previous versions from your storage space.",
+  "DeleteObjectDialog": {
+    "title": "Delete file?",
+    "description": "This will permanently delete the file and all copies of it from your storage.",
     "yes": "Yes, delete",
     "no": "No, keep it"
   },
@@ -99,5 +99,12 @@
     "PRODUCT_VARIANT": "An online store product variant.",
     "SHOP": "A shop.",
     "SHOP_POLICY": "A shop policy."
+  },
+  "FileExplorer": {
+    "FileCard": {
+      "path": "Path: {{path}}/",
+      "size": "Size: {{size}}",
+      "modified": "Modified:"
+    }
   }
 }
