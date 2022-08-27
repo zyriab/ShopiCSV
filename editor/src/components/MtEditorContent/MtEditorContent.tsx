@@ -6,7 +6,12 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react';
-import { RowData, DataType } from '../../definitions/custom';
+import {
+  RowData,
+  DataType,
+  FileInput,
+  BucketObjectInfo,
+} from '../../definitions/custom';
 import { usePagination } from '../../utils/hooks/usePagination';
 import getFieldWidth from '../../utils/tools/getFieldWidth.utils';
 import Grid from '@mui/material/Grid';
@@ -15,16 +20,20 @@ import { MtRowsDisplayControl } from '../MtRowsDisplayControl/MtRowsDisplayContr
 import { MtSpinner } from '../MtSpinner/MtSpinner';
 import { MtBackToTopBtn } from '../MtBackToTopBtn/MtBackToTopBtn';
 import { MtEditorField, MtFieldElement } from '../MtEditorField/MtEditorField';
-import { MtDropZone } from '../MtDropZone/MtDropZone';
+// import MtFileExplorer from '../MtFileExplorer/MtFileExplorer';
+import useFileExplorer from '../../utils/hooks/useFileExplorer';
+// import { MtDropZone } from '../MtDropZone/MtDropZone';
 import { Stack, Layout } from '@shopify/polaris';
-
-import './MtEditorContent.css';
 import getFilePosition from '../../utils/tools/getFilePosition.utils';
 import getEditorLanguage from '../../utils/tools/getEditorLanguage.utils';
 
+import './MtEditorContent.css';
+
 interface MtEditorContentProps {
   onSave: (displayMsg?: boolean, isAutosave?: boolean) => Promise<boolean>;
-  onUpload: (files: File[]) => Promise<void>;
+  onFileLoad: (file: File) => Promise<void>;
+  onUpload: (objInfo: BucketObjectInfo, file: File) => Promise<void>;
+  onDelete: (args: FileInput) => Promise<void>;
   setIsLoading: (loading: boolean) => void;
   isLoading: boolean;
   display: number[];
@@ -45,6 +54,20 @@ const MtEditorContent = forwardRef<
   const [isReady, setIsReady] = useState(false);
 
   const {
+    TopBar,
+    topBarProps,
+    FileCard,
+    fileCardProps,
+    PreviewCard,
+    previewCardProps,
+    fileUploadEl,
+  } = useFileExplorer({
+    onUpload: props.onUpload,
+    onFileLoad: props.onFileLoad,
+    onDelete: props.onDelete,
+  });
+
+  const {
     previousPageNum,
     selectedPage,
     resetPagination,
@@ -61,6 +84,10 @@ const MtEditorContent = forwardRef<
   useImperativeHandle(ref, () => ({
     resetPagination,
   }));
+
+  // async function handleUpload(objInfo: BucketObjectInfo, file: File) {
+  //   await props.onUpload(objInfo, file);
+  // }
 
   const displayPage = useCallback(async () => {
     setIsReady(false);
@@ -185,9 +212,12 @@ const MtEditorContent = forwardRef<
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={props.isLoading}>
+        {' '}
+        {/* TODO: only show backdrop on certain type of loads */}
         <MtSpinner />
       </Backdrop>
       <MtBackToTopBtn />
+      {/* File Editor */}
       {pageContent.length > 0 && isReady ? (
         <Layout sectioned>
           <Layout.Section fullWidth>
@@ -214,14 +244,38 @@ const MtEditorContent = forwardRef<
           </Layout.Section>
         </Layout>
       ) : (
+        // File explorer (Buckaroo)
         <Layout>
-          <Layout.Section fullWidth>
-            <div className="MtEditorContent-DropZone__Outer-Wrapper">
-              <div className="MtEditorContent-DropZone__Inner-Wrapper">
-                <MtDropZone onUpload={props.onUpload} dataType="Translations" />
-              </div>
-            </div>
+          {fileUploadEl}
+          {/*<Layout.Section>
+            <div />
+          </Layout.Section> */}
+          <Layout.Section secondary>
+            {/* <Stack vertical> */}
+              {/* <TopBar {...topBarProps} /> */}
+              <FileCard {...fileCardProps} />
+            {/* </Stack> */}
           </Layout.Section>
+          <Layout.Section>
+              <PreviewCard {...previewCardProps} />
+          </Layout.Section>
+          {/* <Layout.Section fullWidth>
+            <Stack vertical>
+              <div className="MtEditorContent-FileExplorer__Wrapper">
+                <MtFileExplorer
+                  onFileLoad={props.onFileLoad}
+                  onUpload={handleUpload}
+                  onDelete={props.onDelete}
+                />
+              </div> */}
+          <div className="MtEditorContent-DropZone__Outer-Wrapper">
+            {/* Wrappers are for dynamic sizing */}
+            {/*  <div className="MtEditorContent-DropZone__Inner-Wrapper">
+                  <MtDropZone onUpload={handleUpload} dataType="Translations" />
+                </div>*/}
+          </div>
+          {/* </Stack>
+          </Layout.Section> */}
         </Layout>
       )}
     </>
