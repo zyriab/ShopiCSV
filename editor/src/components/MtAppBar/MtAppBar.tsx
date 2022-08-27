@@ -29,9 +29,7 @@ import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
 interface MtAppBarProps {
   onDownload: () => void;
   onSave: (displayMsg?: boolean, isAutosave?: boolean) => Promise<boolean>;
-  onUpload: (
-    e: React.ChangeEvent<HTMLInputElement> | { target: DataTransfer }
-  ) => Promise<void>;
+  onUpload: (file: File) => Promise<void>;
   onClose: (deleteFile?: boolean) => Promise<void>;
   isLoading: boolean;
   isEditing: boolean;
@@ -116,45 +114,44 @@ export default function MtAppBar(props: MtAppBarProps) {
         width: '100%',
         paddingTop: '10px',
         paddingBottom: '10px',
+        paddingLeft: '2rem',
       }}>
       <Stack alignment="center" distribution="center" wrap>
-        <Stack.Item>
-          <div />
-        </Stack.Item>
-        <Stack vertical>
-          <Stack.Item fill>
-            <MtSearchField
-              data={props.data}
-              filteredDataIds={props.filteredDataIds}
-              numOfDisplayedFields={props.numOfDisplayedFields}
-            />
-          </Stack.Item>
-          <Stack distribution="center" alignment="center">
-            <Stack.Item fill>
-              <MtFieldsFilter
-                availableFilters={availableFilters}
-                filteredDataTypes={props.filteredDataTypes}
+        {/* TODO: work on responsivity */}
+        <Stack.Item fill>
+          <Stack vertical={!isDesktop}>
+            <Stack.Item>
+              <MtSearchField
+                data={props.data}
+                filteredDataIds={props.filteredDataIds}
+                numOfDisplayedFields={props.numOfDisplayedFields}
               />
             </Stack.Item>
-            <div />
-            <MtColumnSelector
-              choices={props.data[0].data}
-              onChange={handleDisplayFields}
-            />
+            <Stack.Item>
+              <Stack alignment="center">
+                <MtFieldsFilter
+                  availableFilters={availableFilters}
+                  filteredDataTypes={props.filteredDataTypes}
+                />
+                <div />
+                <MtColumnSelector
+                  choices={props.data[0].data}
+                  onChange={handleDisplayFields}
+                />
+              </Stack>
+            </Stack.Item>
           </Stack>
-        </Stack>
+        </Stack.Item>
         {store.get('fileData') && props.isEditing && (
           <Stack.Item fill={isDesktop}>
-            <div style={{ marginLeft: '10px ' }}>
-              <Stack vertical={!isDesktop}>
+            <div style={{ marginRight: '10px ' }}>
+              <Stack vertical={!isDesktop} distribution="trailing">
                 <Stack vertical spacing="extraTight">
                   <CustomProperties
                     colorScheme={themeStr}
+                    className="use-ellipsis"
                     style={{
                       width: '35ch',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
                     }}>
                     <Tooltip content={store.get('fileData').name}>
                       <TextStyle variation="strong">
@@ -228,11 +225,15 @@ export default function MtAppBar(props: MtAppBarProps) {
         </ButtonGroup>
         <input
           ref={inputEl}
-          onChange={props.onUpload}
+          onChange={async (e) =>
+            e?.target.files
+              ? await props.onUpload(e.target.files[0])
+              : undefined
+          }
           type="file"
           accept="text/csv"
           className="display-none"
-          title="file upload"
+          title="App bar file upload"
         />
       </Stack>
       {props.isLoading && <Loading />}
