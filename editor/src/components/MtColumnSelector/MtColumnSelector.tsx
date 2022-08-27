@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import store from 'store2';
 import { useTranslation } from 'react-i18next';
 import { Button, OptionList, Popover } from '@shopify/polaris';
+import {ViewMinor} from '@shopify/polaris-icons';
 import { OptionDescriptor } from '@shopify/polaris/build/ts/latest/src/types';
 
 interface MtColumnSelectorProps {
@@ -28,7 +29,7 @@ export default function MtColumnSelector(props: MtColumnSelectorProps) {
   }
 
   const activatorBtn = (
-    <Button onClick={handleTogglePopover} disclosure>
+    <Button onClick={handleTogglePopover} icon={ViewMinor} disclosure>
       {t('ColumnSelector.label')}
     </Button>
   );
