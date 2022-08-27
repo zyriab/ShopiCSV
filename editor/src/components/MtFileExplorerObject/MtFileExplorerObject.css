@@ -1,0 +1,15 @@
+.MtFileExplorerObject__default {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.MtFileExplorerObject__text {
+  inline-size: 7.5ch;
+  width: 7.5ch;
+  height: 100%;
+  overflow-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
