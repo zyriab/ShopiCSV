@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { isIOS } from 'react-device-detect';
+import useLogo from '../../utils/hooks/useLogo';
 import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/SwipeableDrawer';
@@ -18,7 +19,6 @@ import {
 } from '@shopify/polaris-icons';
 import MtNavItems from '../MtNavItems/MtNavItems';
 import MtDarkModeSwitch from '../MtDarkModeSwitch/MtDarkModeSwitch';
-import logo from '../../utils/helpers/logo.helper';
 
 interface MtNavMenuProps {
   open: boolean;
@@ -30,6 +30,7 @@ export default function MtNavMenu(props: MtNavMenuProps) {
   const location = useLocation();
   const { isMobile, isTablet } = useDetectScreenSize();
   const { t } = useTranslation();
+  const logo = useLogo();
 
   const [selected, setSelected] = useState(1);
   const [width] = useState(isMobile ? '90vw' : isTablet ? '75vw' : '300px');
