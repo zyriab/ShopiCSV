@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import store from 'store2';
 import Papa from 'papaparse';
-import { generateSlug } from 'random-word-slugs';
 import getDateLocale from '../utils/tools/getDateLocale.utils';
 import getDataType from '../utils/tools/getDataType.utils';
-import saveFile from '../utils/tools/buckaroo/saveFile.utils';
+import saveOnline from '../utils/tools/buckaroo/saveOnline.utils';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { useConfirm } from 'material-ui-confirm';
@@ -17,9 +16,19 @@ import {
 } from '../components/MtEditorContent/MtEditorContent';
 import { MtFieldElement } from '../components/MtEditorField/MtEditorField';
 import { Page } from '@shopify/polaris';
-import { RowData, TranslatableResourceType } from '../definitions/custom';
+import {
+  RowData,
+  FileInput,
+  BucketObjectInfo,
+  TranslatableResourceType,
+} from '../definitions/custom';
 import saveFileLocally from '../utils/tools/demo/saveFileLocally.utils';
 import getUpdatedParsedData from '../utils/tools/getUpdatedParsedData.utils';
+import deleteObject from '../utils/tools/buckaroo/deleteObject.utils';
+import downloadAndSaveObjectLocally from '../utils/tools/buckaroo/downloadAndSaveObjectLocally.utils';
+import { getDownloadUrl } from '../utils/tools/buckaroo/queries.utils';
+import { generateSlug } from 'random-word-slugs';
+import rowDataToString from '../utils/tools/buckaroo/rowDataToString';
 
 export default function Translator() {
   const [isLoading, setIsLoading] = useState(false);
@@ -35,9 +44,16 @@ export default function Translator() {
     TranslatableResourceType[]
   >([]);
   const [numOfDisplayedFields, setNumOfDisplayedFields] = useState(0);
+
+  const bucketObjectInfo = useRef<BucketObjectInfo>({
+    fileName: '',
+    path: '',
+    versionId: undefined,
+  });
   const parsedData = useRef<RowData[]>([]); // stores the file's content, used for data manipulation (saving, downloading, etc)
   const renderedFields = useRef<React.RefObject<MtFieldElement>[]>([]);
   const alertEl = useRef<MtAlertElement>(null!);
+  const errorEl = useRef<MtAlertElement>(null!);
   const contentRef = useRef<MtEditorContentElement>(null!);
 
   const confirmationDialog = useConfirm();
@@ -45,7 +61,8 @@ export default function Translator() {
   const { getAccessTokenSilently } = useAuth0();
 
   function displayAlert(message: string, isError: boolean = false) {
-    alertEl.current.show({ message, isError });
+    if (isError) return errorEl.current.show({ message, isError });
+    alertEl.current.show({ message });
   }
 
   const hasEdited = useCallback((): [boolean, string[]] => {
@@ -62,24 +79,24 @@ export default function Translator() {
           editedFieldsKid.push(kid);
           hasEdit = true;
         }
-      } else {
-        console.log('Error while checking for edits: field is null');
       }
     }
     return [hasEdit, editedFieldsKid];
   }, []);
 
-  async function handleCloseFile(deleteFile = false) {
-    let isDeleting = false;
+  async function handleDeleteFile(args: FileInput, confirm = true) {
+    const alreadyLoading = isLoading;
+
     setIsLoading(true);
-    if (deleteFile) {
+
+    if (confirm) {
       try {
         await confirmationDialog({
           allowClose: false,
-          title: t('CloseFileDialog.title'),
-          description: t('CloseFileDialog.description'),
-          confirmationText: t('CloseFileDialog.yes'),
-          cancellationText: t('CloseFileDialog.no'),
+          title: t('DeleteObjectDialog.title'),
+          description: t('DeleteObjectDialog.description'),
+          confirmationText: t('DeleteObjectDialog.yes'),
+          cancellationText: t('DeleteObjectDialog.no'),
           confirmationButtonProps: {
             color: 'error',
             disableElevation: true,
@@ -90,32 +107,79 @@ export default function Translator() {
             variant: 'contained',
           },
         });
-        isDeleting = true;
       } catch {
-        isDeleting = false;
+        return;
       }
     }
 
-    if (isDeleting) {
-      store.remove('fileData');
+    const token = await getAccessTokenSilently();
+
+    try {
+      await deleteObject({ ...args, token });
+    } catch (e) {
+      displayAlert((e as Error).message, true);
     }
 
-    contentRef.current.resetPagination();
-    parsedData.current = [];
-    fileRef.current = null;
-    setFile(null);
-    setFileData([]);
-    setDisplayedData([]);
-    setHasClosed(true);
+    setIsLoading(alreadyLoading ? true : false);
+  }
 
-    setIsEditing(false);
-    setIsLoading(false);
+  async function handleCloseFile(deleteFile = false) {
+    try {
+      if (!isEditing) return;
+
+      let isDeleting = false;
+      setIsLoading(true);
+      if (deleteFile) {
+        try {
+          await confirmationDialog({
+            allowClose: true,
+            title: t('DeleteObjectDialog.title'),
+            description: t('DeleteObjectDialog.description'),
+            confirmationText: t('DeleteObjectDialog.yes'),
+            cancellationText: t('DeleteObjectDialog.no'),
+            confirmationButtonProps: {
+              color: 'error',
+              disableElevation: true,
+              variant: 'contained',
+            },
+            cancellationButtonProps: {
+              disableElevation: true,
+              variant: 'contained',
+            },
+          });
+          isDeleting = true;
+        } catch {
+          isDeleting = false;
+        }
+      }
+
+      contentRef.current.resetPagination();
+      parsedData.current = [];
+      fileRef.current = null;
+      setFile(null);
+      setFileData([]);
+      setDisplayedData([]);
+      setHasClosed(true);
+
+      if (isDeleting) {
+        store.remove('fileData');
+        await handleDeleteFile(bucketObjectInfo.current, false);
+      }
+
+      setIsEditing(false);
+      setIsLoading(false);
+    } catch (e) {
+      setIsEditing(false);
+      setIsLoading(false);
+      displayAlert((e as Error).message, true);
+    }
   }
 
   const handleSave = useCallback(
     async (displayMsg = false, isAutosave = false) => {
       if (parsedData.current.length > 0 && renderedFields.current) {
         // TODO: upgrade saving UX (no backdrop, etc)
+
         // setIsSaving(true) (?)
         setIsLoading(true);
 
@@ -125,8 +189,6 @@ export default function Translator() {
         );
 
         if (hasEdit) {
-          const token = await getAccessTokenSilently();
-
           parsedData.current = getUpdatedParsedData({
             editedFields,
             parsedData,
@@ -134,19 +196,21 @@ export default function Translator() {
 
           setFileData([...parsedData.current]);
 
+          // TODO: activate/deactivate buckaroo on demo?
           if (process.env.REACT_APP_ENV === 'demo') {
             saveFileLocally({
               content: parsedData.current,
-              name:
-                fileRef.current?.name ||
-                `${generateSlug()}-${new Date().toISOString()}`,
+              name: bucketObjectInfo.current.fileName,
               size: fileRef.current?.size || -1,
               lastModified: fileRef.current?.lastModified || Date.now(),
             });
           } else {
-            await saveFile({
-              file: parsedData.current,
-              fileName: fileRef.current!.name,
+            const token = await getAccessTokenSilently();
+
+            // FIXME: failed to fetch
+            await saveOnline({
+              data: rowDataToString(parsedData.current),
+              fileName: bucketObjectInfo.current.fileName,
               token,
             });
           }
@@ -167,7 +231,7 @@ export default function Translator() {
     [getAccessTokenSilently, hasEdited, t]
   );
 
-  async function processFileUpload(file: File) {
+  async function handleFileOpen(file: File, token?: string) {
     if (isEditing) {
       await handleSave(true, true);
     }
@@ -176,19 +240,18 @@ export default function Translator() {
     setIsEditing(false);
     setFile(file);
     fileRef.current = file;
-    parsedData.current = [];
-    let index = 0;
+
+    const tmpParsed: RowData[] = [];
 
     Papa.parse<string[]>(file, {
       worker: true,
       step: (row: any) => {
-        const dt: RowData = { data: row.data, id: index };
+        const dt: RowData = { data: row.data, id: parsedData.current.length };
 
-        parsedData.current.push(dt);
-        index++;
+        tmpParsed.push(dt);
       },
       complete: async () => {
-        displayAlert(`${t('Upload.success')} 🤓`);
+        parsedData.current = tmpParsed;
         setDisplayedData([...parsedData.current]);
         setFileData([...parsedData.current]);
         store.remove('fileData');
@@ -199,41 +262,91 @@ export default function Translator() {
           lastModified: fileRef.current?.lastModified,
           savedAt: new Date().toLocaleString(),
         });
+        if (token != null) {
+          await saveOnline({
+            data: rowDataToString(parsedData.current),
+            fileName: bucketObjectInfo.current.fileName,
+            token,
+          });
+        }
+        displayAlert(`${t('OpenFile.success')} 🤓`);
         setIsLoading(false);
         setIsEditing(true);
       },
     });
   }
 
-  async function handleDrop(files: File[]) {
-    await processFileUpload(files[0]);
-  }
+  async function handleUpload(objInfo: BucketObjectInfo, file: File) {
+    try {
+      setIsLoading(true);
 
-  async function handleUpload(
-    e: React.ChangeEvent<HTMLInputElement> | { target: DataTransfer }
-  ) {
-    if (e?.target?.files) {
-      handleCloseFile();
-      await processFileUpload(e.target.files[0]);
+      bucketObjectInfo.current = {
+        ...objInfo,
+        fileName: objInfo.fileName || generateSlug(),
+      };
+
+      const token = await getAccessTokenSilently();
+
+      await handleCloseFile();
+      await handleFileOpen(file, token);
+
+      // TODO: activate/reactivate buckaroo on demo?
+
+      setIsLoading(false);
+    } catch (e) {
+      bucketObjectInfo.current = {
+        fileName: '',
+        path: '',
+        versionId: undefined,
+      };
+
+      displayAlert((e as Error).message, true);
     }
   }
 
   async function handleDownload() {
-    if (parsedData.current) {
-      await handleSave();
-      const lines = parsedData.current.map((e) => e.data);
-      const data = Papa.unparse(lines);
-      const blob = new Blob([data], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.download = `ShopiCSV_${file?.name}`;
-      link.href = url;
-      link.click();
-      displayAlert('Yee haw! 🤠');
-      handleCloseFile();
+    try {
+      if (parsedData.current) {
+        await handleSave();
+        const lines = parsedData.current.map((e) => e.data);
+        const data = Papa.unparse(lines);
+        const blob = new Blob([data], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+
+        link.download = `ShopiCSV_${file?.name}`;
+        link.href = url;
+        link.click();
+
+        displayAlert('Yee haw! 🤠');
+        handleCloseFile();
+        return;
+      }
+
+      if (bucketObjectInfo.current.fileName) {
+        const token = await getAccessTokenSilently();
+        const url = await getDownloadUrl({
+          ...bucketObjectInfo.current,
+          token,
+        });
+
+        await downloadAndSaveObjectLocally({
+          url,
+          objectName: bucketObjectInfo.current.fileName,
+        });
+
+        displayAlert('Yee haw! 🤠');
+        return;
+      }
+
+      throw new Error('No file found in memory or online.');
+    } catch (e) {
+      displayAlert((e as Error).message, true);
     }
   }
 
+  // FIXME: seems to bug (sometimes I have [] ... nothing)
+  /* Setting displayed columns */
   useEffect(() => {
     if (store.get('columns')) setDisplayCol(JSON.parse(store.get('columns')));
     else setDisplayCol([2, 5, 6]);
@@ -292,9 +405,9 @@ export default function Translator() {
     return () => clearInterval(intervalId);
   }, [isEditing, handleSave, isLoading, hasEdited]);
 
-  /* AUTO-OPEN */
+  /* AUTO-OPEN (local memory) */
   useEffect(() => {
-    async function openFromMemory() {
+    async function openFromLocalMemory() {
       try {
         await confirmationDialog({
           allowClose: true,
@@ -340,43 +453,9 @@ export default function Translator() {
       }
     }
 
-    async function openFromBuckaroo() {
-      try {
-        // TODO: write file explorer component
-        // fetch user's bucket content (buckaroo)
-        // open directory window w/ files + dirs
-        // let user select to (rename?), delete or open file
-
-        // open file if user selected one
-        setIsLoading(true);
-        setIsEditing(false);
-
-        parsedData.current = [];
-        parsedData.current = store.get('fileData').content;
-        setFileData([...parsedData.current]);
-        setDisplayedData([...parsedData.current]);
-
-        fileRef.current = { ...store.get('fileData') };
-        setFile({ ...store.get('fileData') });
-
-        displayAlert(
-          `${t('RestoreSessionDialog.alertMsg', {
-            date: store.get('fileData').savedAt,
-          })} 🐘`
-        );
-
-        setIsLoading(false);
-        setIsEditing(true);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
     if (!isEditing && !hasClosed) {
       if (store.get('fileData')) {
-        openFromMemory();
-      } else {
-        openFromBuckaroo();
+        openFromLocalMemory();
       }
     }
   }, [isEditing, hasClosed, confirmationDialog, t, i18n.resolvedLanguage]);
@@ -392,7 +471,7 @@ export default function Translator() {
         data={fileData}
         display={displayCol}
         onDisplayChange={setDisplayCol}
-        onUpload={handleUpload}
+        onUpload={async (e) => await handleUpload(bucketObjectInfo.current, e)}
         onSave={handleSave}
         onDownload={handleDownload}
         onClose={handleCloseFile}
@@ -411,10 +490,13 @@ export default function Translator() {
           headerContent={fileData[0]?.data}
           renderedFields={renderedFields}
           onSave={handleSave}
-          onUpload={handleDrop}
+          onFileLoad={handleFileOpen}
+          onUpload={handleUpload}
+          onDelete={handleDeleteFile}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
         />
+        <MtAlert ref={errorEl} />
         <MtAlert ref={alertEl} />
       </Page>
     </>
