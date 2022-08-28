@@ -47,6 +47,7 @@ export default function MtFileExplorerPreviewCard(
   const [selectedVersionObject, setSelectedVersionObject] =
     useState<BucketObjectVersion>();
   const [previewContent, setPreviewContent] = useState<React.ReactNode>();
+  const [isLoadingFile, setIsLoadingFile] = useState(false)
 
   const name = getPathRelativeName(selectedObject?.name || '', props.path);
   const path = `${props.path.join('/')}/`;
@@ -79,6 +80,8 @@ export default function MtFileExplorerPreviewCard(
     if (selectedObject == null || isDirectory(name)) {
       return;
     }
+
+    setIsLoadingFile(true);
 
     if (selectedObject.content.length === 0) {
       await fetchObjectsContent();
@@ -203,7 +206,7 @@ export default function MtFileExplorerPreviewCard(
             Delete
           </Button>
           {!isDirectory(name) && (
-            <Button onClick={handleLoad} primary>
+            <Button onClick={handleLoad} loading={isLoadingFile} primary>
               Load file
             </Button>
           )}
