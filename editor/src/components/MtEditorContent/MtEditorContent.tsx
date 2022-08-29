@@ -54,8 +54,8 @@ const MtEditorContent = forwardRef<
   const [isReady, setIsReady] = useState(false);
 
   const {
-    TopBar,
-    topBarProps,
+    // TopBar,
+    // topBarProps,
     FileCard,
     fileCardProps,
     PreviewCard,
