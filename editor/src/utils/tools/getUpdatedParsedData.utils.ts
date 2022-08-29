@@ -9,7 +9,6 @@ interface getUpdatedParsedDataArgs {
 
 export default function getUpdatedParsedData(args: getUpdatedParsedDataArgs) {
   const { editedFields, parsedData } = args;
-
   const tmp = parsedData.current;
 
   for (const field of editedFields) {
