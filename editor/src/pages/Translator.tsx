@@ -246,7 +246,7 @@ export default function Translator() {
     Papa.parse<string[]>(file, {
       worker: true,
       step: (row: any) => {
-        const dt: RowData = { data: row.data, id: parsedData.current.length };
+        const dt: RowData = { data: row.data, id: tmpParsed.length };
 
         tmpParsed.push(dt);
       },
