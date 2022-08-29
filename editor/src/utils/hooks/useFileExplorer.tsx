@@ -29,6 +29,7 @@ export default function useFileExplorer(props: useFileExplorerProps) {
   const [path, setPath] = useState<string[]>([]);
   const [filesContent, setFilesContent] = useState<BucketObject[]>([]);
   const [shouldUpdate, setShouldUpdate] = useState(true);
+  const [isFetchingObjects, setIsFetchingObjects] = useState(false);
 
   const isMounted = useRef(false);
   const fileInputEl = useRef<HTMLInputElement>(null);
@@ -71,8 +72,12 @@ export default function useFileExplorer(props: useFileExplorerProps) {
 
   const fetchData = useCallback(async () => {
     if (isMounted.current) {
+      setIsFetchingObjects(true);
+
       const token = await getAccessTokenSilently();
       const files = await listBucketContent({ token });
+
+      setIsFetchingObjects(false);
 
       setFilesContent(files);
     }
@@ -117,6 +122,7 @@ export default function useFileExplorer(props: useFileExplorerProps) {
     content: filesContent,
     selected: selectedFileId,
     setSelected: setSelectedFileId,
+    isLoading: isFetchingObjects,
     path,
     setPath,
     onClickUpload: handleClickUpload,

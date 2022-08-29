@@ -6,11 +6,13 @@ import isDirectory from '../../utils/tools/fileExplorer/isDirectory.utils';
 import formatPath from '../../utils/tools/fileExplorer/formatPath.utils';
 import getPathRelativeName from '../../utils/tools/fileExplorer/getPathRelativeName.utils';
 import { BucketObject } from '../../definitions/mtFileExplorer';
+import { MtSpinner } from '../MtSpinner/MtSpinner';
 
 export interface MtFileExplorerFileCardProps {
   content: BucketObject[];
   selected: string | undefined;
   setSelected: React.Dispatch<React.SetStateAction<string | undefined>>;
+  isLoading: boolean;
   path: string[];
   setPath: React.Dispatch<React.SetStateAction<string[]>>;
   onClickUpload: () => void;
@@ -109,6 +111,7 @@ export default function MtFileExplorerFileCard(
             ) : (
               <Stack.Item fill>
                 {/* <div style={{ width: '640px' }}> */}
+                {props.isLoading && <MtSpinner />}
                 <div>
                   <EmptyState
                     heading="No files yet"
