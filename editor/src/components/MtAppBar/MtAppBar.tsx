@@ -22,7 +22,7 @@ import {
   DeleteMinor,
 } from '@shopify/polaris-icons';
 import { MtSearchField } from '../MtSearchField/MtSearchField';
-import { MtFieldsFilter } from '../MtFieldsFilter/MtFieldsFilter';
+import MtFieldsFilter from '../MtFieldsFilter/MtFieldsFilter';
 import MtColumnSelector from '../MtColumnSelector/MtColumnSelector';
 import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
 
