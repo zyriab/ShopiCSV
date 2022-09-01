@@ -11,7 +11,7 @@ interface MtFilterChipsArrayProps {
   onDelete: (deleted: FilterType[]) => void;
 }
 
-export function MtFilterChipsArray(props: MtFilterChipsArrayProps) {
+export default function MtFilterChipsArray(props: MtFilterChipsArrayProps) {
   const [chipData, setChipData] = React.useState<FilterType[]>([]);
 
   const refEl = useRef<HTMLDivElement>(null);
@@ -36,6 +36,7 @@ export function MtFilterChipsArray(props: MtFilterChipsArrayProps) {
 
   useEffect(() => {
     setChipData([]);
+
     for (const c of props.data) {
       setChipData((current) => [...new Set([...current, c])]);
     }
