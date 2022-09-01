@@ -12,6 +12,11 @@ import Autocomplete, {
 } from '@mui/material/Autocomplete';
 import InputBase from '@mui/material/InputBase';
 import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
 
 interface PopperComponentProps {
   anchorEl?: any;
@@ -102,17 +107,32 @@ function PopperComponent(props: PopperComponentProps) {
   return <StyledAutocompletePopper {...other} />;
 }
 
-export function MtFilterDialog(props: MtFilterDialogProps) {
+export default function MtFilterDialog(props: MtFilterDialogProps) {
   const [pendingValue, setPendingValue] = useState<FilterType[]>([]);
+  const [isAllToggled, setIsAllToggled] = useState(
+    props.selected.length === props.filters.length
+  );
+
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const handleClose = () => {
-    props.onClose(pendingValue);
-  };
-
   const open = Boolean(props.anchorEl);
   const id = open ? 'filter-fields' : undefined;
+
+  function handleClose() {
+    props.onClose(pendingValue);
+  }
+
+  function handleToggleAll(event: React.ChangeEvent<HTMLInputElement>) {
+    setIsAllToggled(event.target.checked);
+
+    if (event.target.checked) {
+      setPendingValue(props.filters);
+      return;
+    }
+
+    setPendingValue([]);
+  }
 
   useEffect(() => {
     setPendingValue(props.selected);
@@ -127,13 +147,29 @@ export function MtFilterDialog(props: MtFilterDialogProps) {
       sx={{ width: '33vw' }}>
       <ClickAwayListener onClickAway={handleClose}>
         <div>
-          <Box
-            sx={{
-              padding: '8px 10px',
-              fontWeight: 600,
-            }}>
-            {t('FilterDialog.title')}
-          </Box>
+          <Stack direction="row" justifyContent="space-between">
+            <Box
+              sx={{
+                padding: '8px 10px',
+                fontWeight: 600,
+              }}>
+              {t('FilterDialog.title')}
+            </Box>
+            <FormGroup sx={{ marginRight: '4ch' }}>
+              {/* TOGGLE ALL switch */}
+              <FormControlLabel
+                control={
+                  <Switch checked={isAllToggled} onChange={handleToggleAll} />
+                }
+                label={
+                  <FormLabel sx={{ fontSize: '0.9rem' }}>
+                    {t('FilterDialog.toggleAllSwitch')}
+                  </FormLabel>
+                }
+                labelPlacement="start"
+              />
+            </FormGroup>
+          </Stack>
           <Autocomplete
             open
             multiple
@@ -154,6 +190,8 @@ export function MtFilterDialog(props: MtFilterDialogProps) {
               ) {
                 return;
               }
+
+              setIsAllToggled(newValue.length === props.filters.length);
               setPendingValue(newValue);
             }}
             disableCloseOnSelect
@@ -191,7 +229,7 @@ export function MtFilterDialog(props: MtFilterDialogProps) {
               </li>
             )}
             options={[...props.filters].sort((a, b) => {
-              // Display the selected labels first.
+              // Displays the selected labels first.
               let ai = props.selected.indexOf(a);
               ai =
                 ai === -1
