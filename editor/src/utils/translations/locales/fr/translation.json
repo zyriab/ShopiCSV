@@ -62,6 +62,7 @@
   },
   "FilterDialog": {
     "title": "Choisissez le contenu à filtrer",
+    "toggleAllSwitch": "Sélectionner tout",
     "searchPlaceholder": "Filtrer les champs",
     "noOptionsText": "Aucun filtre disponible"
   },
