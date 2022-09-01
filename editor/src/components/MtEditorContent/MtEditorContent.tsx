@@ -247,35 +247,22 @@ const MtEditorContent = forwardRef<
         // File explorer (Buckaroo)
         <Layout>
           {fileUploadEl}
-          {/*<Layout.Section>
-            <div />
-          </Layout.Section> */}
           <Layout.Section secondary>
             {/* <Stack vertical> */}
-              {/* <TopBar {...topBarProps} /> */}
-              <FileCard {...fileCardProps} />
+            {/* <TopBar {...topBarProps} /> */}
+            <FileCard {...fileCardProps} />
             {/* </Stack> */}
           </Layout.Section>
           <Layout.Section>
-              <PreviewCard {...previewCardProps} />
+            <PreviewCard {...previewCardProps} />
           </Layout.Section>
-          {/* <Layout.Section fullWidth>
-            <Stack vertical>
-              <div className="MtEditorContent-FileExplorer__Wrapper">
-                <MtFileExplorer
-                  onFileLoad={props.onFileLoad}
-                  onUpload={handleUpload}
-                  onDelete={props.onDelete}
-                />
-              </div> */}
+
           <div className="MtEditorContent-DropZone__Outer-Wrapper">
             {/* Wrappers are for dynamic sizing */}
             {/*  <div className="MtEditorContent-DropZone__Inner-Wrapper">
                   <MtDropZone onUpload={handleUpload} dataType="Translations" />
                 </div>*/}
           </div>
-          {/* </Stack>
-          </Layout.Section> */}
         </Layout>
       )}
     </>
