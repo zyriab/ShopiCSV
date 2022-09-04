@@ -63,6 +63,7 @@
   "FilterDialog": {
     "title": "Choose which content you wish to filter",
     "toggleAllSwitch": "Toggle all",
+    "showOutdated": "Only show outdated translations",
     "searchPlaceholder": "Filter fields",
     "noOptionsText": "No filters available"
   },
