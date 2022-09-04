@@ -31,6 +31,7 @@ interface MtAppBarProps {
   onSave: (displayMsg?: boolean, isAutosave?: boolean) => Promise<boolean>;
   onUpload: (file: File) => Promise<void>;
   onClose: (deleteFile?: boolean) => Promise<void>;
+  onShowOutdated: (show: boolean) => void;
   isLoading: boolean;
   isEditing: boolean;
   loadValue?: number;
@@ -52,6 +53,10 @@ export default function MtAppBar(props: MtAppBarProps) {
   );
   const [saveDisplayInterval, setSaveDisplayInterval] =
     useState<NodeJS.Timer | null>(null);
+  const [isWidthUnder1559px, setIsWidthUnder1559px] = useState(
+    matchMedia('(max-width: 1559px)').matches
+  );
+
   const inputEl = useRef<HTMLInputElement>(null);
 
   const { t } = useTranslation();
@@ -79,6 +84,12 @@ export default function MtAppBar(props: MtAppBarProps) {
       setSaveTime(new Date());
     }
   }
+
+  useEffect(() => {
+    window.addEventListener('resize', () =>
+      setIsWidthUnder1559px(matchMedia('(max-width: 1559px)').matches)
+    );
+  }, []);
 
   useEffect(() => {
     if (
@@ -117,9 +128,10 @@ export default function MtAppBar(props: MtAppBarProps) {
         paddingLeft: '2rem',
       }}>
       <Stack alignment="center" distribution="center" wrap>
-        {/* TODO: work on responsivity */}
         <Stack.Item fill>
-          <Stack vertical={!isDesktop}>
+          <Stack
+            // N.B.: matchMedia is not being called again on window resize
+            vertical={!isDesktop || isWidthUnder1559px}>
             <Stack.Item>
               <MtSearchField
                 data={props.data}
@@ -129,11 +141,13 @@ export default function MtAppBar(props: MtAppBarProps) {
             </Stack.Item>
             <Stack.Item>
               <Stack alignment="center">
-                <MtFieldsFilter
-                  availableFilters={availableFilters}
-                  filteredDataTypes={props.filteredDataTypes}
-                />
-                <div />
+                <Stack vertical>
+                  <MtFieldsFilter
+                    availableFilters={availableFilters}
+                    filteredDataTypes={props.filteredDataTypes}
+                    onShowOutdated={props.onShowOutdated}
+                  />
+                </Stack>
                 <MtColumnSelector
                   choices={props.data[0].data}
                   onChange={handleDisplayFields}
