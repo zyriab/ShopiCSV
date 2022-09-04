@@ -7,6 +7,7 @@ import MtFilterDialog from '../MtFilterDialog/MtFilterDialog';
 interface MtFieldsFilterProps {
   availableFilters: TranslatableResourceType[];
   filteredDataTypes: (t: TranslatableResourceType[]) => void;
+  onShowOutdated: (show: boolean) => void;
 }
 
 export default function MtFieldsFilter(props: MtFieldsFilterProps) {
@@ -98,8 +99,9 @@ export default function MtFieldsFilter(props: MtFieldsFilterProps) {
     setAnchorEl(el);
   }
 
-  function handleClose(selection: FilterType[]) {
+  function handleClose(selection: FilterType[], showOutdated: boolean) {
     setSelectedFilters(selection);
+    props.onShowOutdated(showOutdated);
     setAnchorEl(null);
   }
 

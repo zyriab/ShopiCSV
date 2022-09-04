@@ -44,6 +44,7 @@ export default function Translator() {
     TranslatableResourceType[]
   >([]);
   const [numOfDisplayedFields, setNumOfDisplayedFields] = useState(0);
+  const [displayOutdated, setDisplayOutdated] = useState(false);
 
   const bucketObjectInfo = useRef<BucketObjectInfo>({
     fileName: '',
@@ -290,8 +291,6 @@ export default function Translator() {
       await handleCloseFile();
       await handleFileOpen(file, token);
 
-      // TODO: activate/reactivate buckaroo on demo?
-
       setIsLoading(false);
     } catch (e) {
       bucketObjectInfo.current = {
@@ -475,6 +474,7 @@ export default function Translator() {
         onSave={handleSave}
         onDownload={handleDownload}
         onClose={handleCloseFile}
+        onShowOutdated={setDisplayOutdated}
         isLoading={isLoading}
         isEditing={isEditing}
         numOfDisplayedFields={numOfDisplayedFields}
@@ -495,6 +495,7 @@ export default function Translator() {
           onDelete={handleDeleteFile}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
+          showOutdated={displayOutdated}
         />
         <MtAlert ref={errorEl} />
         <MtAlert ref={alertEl} />

@@ -27,7 +27,7 @@ interface PopperComponentProps {
 interface MtFilterDialogProps {
   filters: FilterType[];
   selected: FilterType[];
-  onClose: (selection: FilterType[]) => void;
+  onClose: (selection: FilterType[], showOutdated: boolean) => void;
   anchorEl: any;
 }
 
@@ -112,6 +112,7 @@ export default function MtFilterDialog(props: MtFilterDialogProps) {
   const [isAllToggled, setIsAllToggled] = useState(
     props.selected.length === props.filters.length
   );
+  const [showOutdated, setShowOutdated] = useState(false);
 
   const theme = useTheme();
   const { t } = useTranslation();
@@ -120,7 +121,7 @@ export default function MtFilterDialog(props: MtFilterDialogProps) {
   const id = open ? 'filter-fields' : undefined;
 
   function handleClose() {
-    props.onClose(pendingValue);
+    props.onClose(pendingValue, showOutdated);
   }
 
   function handleToggleAll(event: React.ChangeEvent<HTMLInputElement>) {
@@ -132,6 +133,13 @@ export default function MtFilterDialog(props: MtFilterDialogProps) {
     }
 
     setPendingValue([]);
+  }
+
+  function handleShowOutdated(event: React.ChangeEvent<HTMLInputElement>) {
+    setShowOutdated(event.target.checked);
+
+    if (event.target.checked) {
+    }
   }
 
   useEffect(() => {
@@ -155,20 +163,36 @@ export default function MtFilterDialog(props: MtFilterDialogProps) {
               }}>
               {t('FilterDialog.title')}
             </Box>
-            <FormGroup sx={{ marginRight: '4ch' }}>
-              {/* TOGGLE ALL switch */}
-              <FormControlLabel
-                control={
-                  <Switch checked={isAllToggled} onChange={handleToggleAll} />
-                }
-                label={
-                  <FormLabel sx={{ fontSize: '0.9rem' }}>
-                    {t('FilterDialog.toggleAllSwitch')}
-                  </FormLabel>
-                }
-                labelPlacement="start"
-              />
-            </FormGroup>
+            <Stack>
+              <FormGroup sx={{ marginRight: '4ch' }}>
+                {/* TOGGLE ALL switch */}
+                <FormControlLabel
+                  control={
+                    <Switch checked={isAllToggled} onChange={handleToggleAll} />
+                  }
+                  label={
+                    <FormLabel sx={{ fontSize: '0.9rem' }}>
+                      {t('FilterDialog.toggleAllSwitch')}
+                    </FormLabel>
+                  }
+                  labelPlacement="start"
+                />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={showOutdated}
+                      onChange={handleShowOutdated}
+                    />
+                  }
+                  label={
+                    <FormLabel sx={{ fontSize: '0.9rem' }}>
+                      {t('FilterDialog.showOutdated')}
+                    </FormLabel>
+                  }
+                  labelPlacement="start"
+                />
+              </FormGroup>
+            </Stack>
           </Stack>
           <Autocomplete
             open

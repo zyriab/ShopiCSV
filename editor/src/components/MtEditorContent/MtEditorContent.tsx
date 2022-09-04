@@ -1,5 +1,6 @@
 import React, {
   useState,
+  useRef,
   useEffect,
   useCallback,
   createRef,
@@ -20,12 +21,13 @@ import { MtRowsDisplayControl } from '../MtRowsDisplayControl/MtRowsDisplayContr
 import { MtSpinner } from '../MtSpinner/MtSpinner';
 import { MtBackToTopBtn } from '../MtBackToTopBtn/MtBackToTopBtn';
 import { MtEditorField, MtFieldElement } from '../MtEditorField/MtEditorField';
-// import MtFileExplorer from '../MtFileExplorer/MtFileExplorer';
 import useFileExplorer from '../../utils/hooks/useFileExplorer';
 // import { MtDropZone } from '../MtDropZone/MtDropZone';
 import { Stack, Layout } from '@shopify/polaris';
 import getFilePosition from '../../utils/tools/getFilePosition.utils';
 import getEditorLanguage from '../../utils/tools/getEditorLanguage.utils';
+import getDataLength from '../../utils/tools/getDataLength.utils';
+import getStatusColIndex from '../../utils/tools/getStatusColIndex.utils';
 
 import './MtEditorContent.css';
 
@@ -35,6 +37,7 @@ interface MtEditorContentProps {
   onUpload: (objInfo: BucketObjectInfo, file: File) => Promise<void>;
   onDelete: (args: FileInput) => Promise<void>;
   setIsLoading: (loading: boolean) => void;
+  showOutdated: boolean;
   isLoading: boolean;
   display: number[];
   dataType: DataType;
@@ -52,6 +55,8 @@ const MtEditorContent = forwardRef<
   MtEditorContentProps
 >((props: MtEditorContentProps, ref) => {
   const [isReady, setIsReady] = useState(false);
+
+  const dataLength = useRef(getDataLength(props.data, props.showOutdated));
 
   const {
     // TopBar,
@@ -79,7 +84,7 @@ const MtEditorContent = forwardRef<
     goToPageFieldProps,
     ChangePageButtons,
     changePageButtonsProps,
-  } = usePagination(props.data.length, 'rowsNumber');
+  } = usePagination(dataLength.current, 'rowsNumber');
 
   useImperativeHandle(ref, () => ({
     resetPagination,
@@ -105,14 +110,23 @@ const MtEditorContent = forwardRef<
       // i.e: (2 x 5) - (5 - [0, 1, 2, 3, 4])
       const index = getFilePosition(selectedPage, maxElementsPerPage, i);
 
-      if (index >= props.data.length) return;
+      if (index >= props.data.length) {
+        return;
+      }
 
       const row = props.data[index];
       const numOfColumns = props.headerContent!.length;
       const tmp = [];
 
-      // had a bug once, data.length was 9 instead of 7 with empty indexes :/
+      if (
+        props.showOutdated &&
+        row.data[getStatusColIndex(props.data[0].data)] !== 'outdated'
+      ) {
+        return [];
+      }
+
       if (row.data.length > numOfColumns) {
+        // had a bug once, data.length was 9 instead of 7 with empty indexes :/
         row.data = row.data.splice(0, numOfColumns);
       }
 
@@ -206,6 +220,10 @@ const MtEditorContent = forwardRef<
     props.isLoading,
     setPageContent,
   ]);
+
+  useEffect(() => {
+    dataLength.current = getDataLength(props.data, props.showOutdated);
+  }, [props.data, props.showOutdated]);
 
   return (
     <>
