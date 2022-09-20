@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useTranslation } from 'react-i18next';
 import {
   Card,
   Scrollable,
@@ -25,6 +26,7 @@ import isDirectory from '../../utils/tools/fileExplorer/isDirectory.utils';
 import getDifferences from '../../utils/tools/fileExplorer/getDifferences.utils';
 import getFileContent from '../../utils/tools/buckaroo/getFileContent.utils';
 import { RowData, FileInput } from '../../definitions/custom';
+import { mockFileContentV1 } from '../../utils/tools/demo/filesContent.utils';
 
 import './MtFileExplorerPreviewCard.css';
 
@@ -32,7 +34,7 @@ export interface MtFileExplorerPreviewCardProps {
   content: BucketObject[];
   selected: string | undefined;
   path: string[];
-  onLoad: (file: File) => Promise<void>;
+  onLoad: (args: { file: File, path: string, versionId?: string, token?: string }) => Promise<void>;
   onDelete: (args: FileInput) => Promise<void>;
   // onRename: () => void;
   // onMove: () => void;
@@ -53,9 +55,15 @@ export default function MtFileExplorerPreviewCard(
   const path = `${props.path.join('/')}/`;
 
   const { getAccessTokenSilently } = useAuth0();
+  const { t } = useTranslation();
 
   const fetchObjectsContent = useCallback(async () => {
     if (selectedObject == null) {
+      return;
+    }
+
+    if (process.env.REACT_APP_ENV === 'demo') {
+      selectedObject.content = mockFileContentV1.content;
       return;
     }
 
@@ -77,7 +85,7 @@ export default function MtFileExplorerPreviewCard(
   }, [getAccessTokenSilently, selectedObject, selectedVersionObject]);
 
   async function handleLoad() {
-    if (selectedObject == null || isDirectory(name)) {
+    if (isLoadingFile || selectedObject == null || isDirectory(name)) {
       return;
     }
 
@@ -88,13 +96,30 @@ export default function MtFileExplorerPreviewCard(
     }
 
     const data = Papa.unparse(selectedObject.content.map((e) => e.data));
+    const file = new File([data], selectedObject.name, { type: 'text/csv', lastModified: selectedObject.lastModified.getTime() });
+
+    await props.onLoad({ file, path: selectedObject.path, versionId: selectedObject.id });
+  }
+
+  async function handleRestore() {
+    if (isLoadingFile || selectedVersionObject == null || selectedObject == null || isDirectory(name)) {
+      return;
+    }
+
+    setIsLoadingFile(true);
+
+    if (selectedVersionObject.content.length === 0) {
+      await fetchObjectsContent();
+    }
+
+    const data = Papa.unparse(selectedVersionObject.content.map(e => e.data));
     const file = new File([data], selectedObject.name, { type: 'text/csv' });
 
-    await props.onLoad(file);
+    await props.onLoad({ file, path: selectedObject.path, versionId: selectedObject.id });
   }
 
   async function handleDelete() {
-    if (selectedObject == null) {
+    if (selectedObject == null || process.env.REACT_APP_ENV === 'demo') {
       return;
     }
 
@@ -131,8 +156,8 @@ export default function MtFileExplorerPreviewCard(
       <div style={{ minWidth: '100px' }}>
         <Select
           labelHidden
-          label="Version"
-          placeholder="Select a version to compare"
+          label={t('FileExplorer.PreviewCard.version')}
+          placeholder={t('FileExplorer.PreviewCard.versionSelectorPlaceHolder')}
           value={selectedVersionObject?.id}
           onChange={(v) => handleSelection(v)}
           options={selectedObject?.versions?.map((v) => ({
@@ -142,7 +167,7 @@ export default function MtFileExplorerPreviewCard(
         />
       </div>
     );
-  }, [handleSelection, selectedObject?.versions, selectedVersionObject?.id]);
+  }, [handleSelection, selectedObject?.versions, selectedVersionObject?.id, t]);
 
   const headerActions = (
     <Stack>
@@ -151,32 +176,31 @@ export default function MtFileExplorerPreviewCard(
           {versionSelector}
           <Stack distribution="equalSpacing" alignment="trailing">
             <p>
-              Modified:{' '}
+              {t('FileExplorer.PreviewCard.modified')}{' '}
               {selectedVersionObject?.lastModified.toLocaleDateString()} -{' '}
               {selectedVersionObject?.lastModified.toLocaleTimeString()}
               <br />
-              Size: {formatBytes(selectedVersionObject?.size || 0)}{' '}
+              {t('FileExplorer.PreviewCard.size')} {formatBytes(selectedVersionObject?.size || 0)}{' '}
               <TextStyle
                 variation={
                   (selectedObject?.size || 0) <
-                  (selectedVersionObject?.size || 0)
+                    (selectedVersionObject?.size || 0)
                     ? 'negative'
                     : 'positive'
                 }>
-                {` (${
-                  (selectedObject?.size || 0) <=
+                {` (${(selectedObject?.size || 0) <=
                   (selectedVersionObject?.size || 0)
-                    ? '+'
-                    : '-'
-                }${formatBytes(
-                  Math.abs(
-                    (selectedObject?.size || 0) -
+                  ? '+'
+                  : '-'
+                  }${formatBytes(
+                    Math.abs(
+                      (selectedObject?.size || 0) -
                       (selectedVersionObject?.size || 0)
-                  )
-                )})`}
+                    )
+                  )})`}
               </TextStyle>
             </p>
-            <Button>Restore version</Button>
+            <Button onClick={handleRestore}>{t('FileExplorer.PreviewCard.restoreVersion')}</Button>
           </Stack>
         </Stack>
       </Stack.Item>
@@ -187,27 +211,27 @@ export default function MtFileExplorerPreviewCard(
     <Stack vertical>
       <Stack vertical spacing="extraTight">
         <Tooltip content={name}>
-          <div className="text-wrapper">Name: {name}</div>
+          <div className="text-wrapper">{t('FileExplorer.PreviewCard.name')} {name}</div>
         </Tooltip>
         <Tooltip content={path}>
-          <div className="text-wrapper">Path: {path}</div>
+          <div className="text-wrapper">{t('FileExplorer.PreviewCard.path')} {path}</div>
         </Tooltip>
         <div className="text-wrapper">
-          Size: {formatBytes(selectedObject?.size || 0)}
+          {t('FileExplorer.PreviewCard.size')} {formatBytes(selectedObject?.size || 0)}
         </div>
         <p>
-          Modified:{' '}
+          {t('FileExplorer.PreviewCard.modified')}{' '}
           {`${selectedObject?.lastModified.toLocaleDateString()} - ${selectedObject?.lastModified.toLocaleTimeString()}`}
         </p>
       </Stack>
       <Stack distribution="trailing">
         <ButtonGroup>
-          <Button onClick={handleDelete} icon={DeleteMinor} destructive>
-            Delete
+          <Button onClick={handleDelete} icon={DeleteMinor} disabled={process.env.REACT_APP_ENV === 'demo'} destructive>
+            {t('FileExplorer.PreviewCard.delete')}
           </Button>
           {!isDirectory(name) && (
             <Button onClick={handleLoad} loading={isLoadingFile} primary>
-              Load file
+              {t('FileExplorer.PreviewCard.loadFile')}
             </Button>
           )}
         </ButtonGroup>
@@ -223,6 +247,7 @@ export default function MtFileExplorerPreviewCard(
       backgroundColor: 'var(--p-surface-subdued)',
       padding: '1ch 2ch 1ch 2ch',
       overflowWrap: 'break-word',
+      width: '27vw',
     };
 
     if (selectedObject && selectedVersionObject != null) {
@@ -251,6 +276,10 @@ export default function MtFileExplorerPreviewCard(
           color: 'white',
         };
 
+        if (baseTxt.trim() === '') {
+          return <TextContainer>({t('FileExplorer.PreviewCard.emptyTranslation')})</TextContainer>
+        }
+
         return (
           <TextContainer>
             {baseTxt.split('').map((c, i) =>
@@ -272,26 +301,34 @@ export default function MtFileExplorerPreviewCard(
             horizontal={false}
             style={{
               height: '320px',
-              padding: '1% 0 0 1%',
+              padding: '1% 1% 1% 1%',
             }}>
             <Stack alignment="fill" vertical>
+              <Stack alignment="center" distribution="center" wrap={false}>
+                <div style={comparatorFieldStyle}>
+                  <TextContainer>{t('FileExplorer.PreviewCard.currentVersion')}</TextContainer>
+                </div>
+                <p>-</p>
+                <div style={comparatorFieldStyle}>
+                  <TextContainer>{t('FileExplorer.PreviewCard.selectedVersion')}</TextContainer>
+                </div>
+              </Stack>
               {tmp.map((x) => {
                 return (
-                  // <div key={x} style={{ width: '44%' }}>
                   <div key={x}>
-                    <Stack alignment="center" key={x} wrap={false}>
+                    <Stack alignment="center" distribution="center" key={x} wrap={false}>
                       <div style={comparatorFieldStyle}>
                         {highlightTxt(
-                          current[x].data?.at(-1) || '',
                           old[x].data?.at(-1) || '',
+                          current[x].data?.at(-1) || '',
                           'green'
                         )}
                       </div>
                       <p>{x + 1}</p>
                       <div style={comparatorFieldStyle}>
                         {highlightTxt(
-                          old[x].data?.at(-1) || '',
                           current[x].data?.at(-1) || '',
+                          old[x].data?.at(-1) || '',
                           'red'
                         )}
                       </div>
@@ -309,9 +346,9 @@ export default function MtFileExplorerPreviewCard(
       return (
         <div style={{ minHeight: '320px' }}>
           <EmptyState
-            heading="No differences"
+            heading={t('FileExplorer.PreviewCard.noDifferencesEmptyStateHeading')}
             image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png">
-            There is no differences between the two versions.
+            {t('FileExplorer.PreviewCard.noDifferencesEmptyStateText')}
             <div>{versionSelector}</div>
           </EmptyState>
         </div>
@@ -322,21 +359,21 @@ export default function MtFileExplorerPreviewCard(
       <div style={{ minHeight: '320px' }}>
         {isDirectory(formatPath(name)) ? (
           <p>
+            {/* TODO: implement dir card ? ;) */}
             would be cool to be able to see all folders here to navigate quickly
             🚀
           </p>
         ) : (
           <EmptyState
-            heading="Compare with older versions"
+            heading={t('FileExplorer.PreviewCard.compareEmptyStateHeading')}
             image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png">
-            Compare fields between the most recent and older versions of the
-            same file.
+            {t('FileExplorer.PreviewCard.compareEmptyStateText')}
             <div>{versionSelector}</div>
           </EmptyState>
         )}
       </div>
     );
-  }, [name, selectedObject, selectedVersionObject, versionSelector]);
+  }, [name, selectedObject, selectedVersionObject, versionSelector, t]);
 
   useEffect(() => {
     setSelectedObject(props.content.find((x) => x.id === props.selected));
@@ -354,7 +391,7 @@ export default function MtFileExplorerPreviewCard(
         {selectedObject ? (
           <>
             {selectedVersionObject != null && (
-              <Card.Section subdued title="Preview">
+              <Card.Section subdued title={t('FileExplorer.PreviewCard.previewEmptyStateHeading')}>
                 {headerActions}
               </Card.Section>
             )}
@@ -363,9 +400,9 @@ export default function MtFileExplorerPreviewCard(
           </>
         ) : (
           <EmptyState
-            heading="Select a file or sub-folder"
+            heading={t('FileExplorer.PreviewCard.previewEmptyStateHeading')}
             image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png">
-            Click on a file or a sub-folder to have more information about them.
+            {t('FileExplorer.PreviewCard.previewEmptyStateText')}
           </EmptyState>
         )}
       </div>
