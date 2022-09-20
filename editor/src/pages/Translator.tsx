@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import store from 'store2';
 import Papa from 'papaparse';
-import getDateLocale from '../utils/tools/getDateLocale.utils';
+// import getDateLocale from '../utils/tools/getDateLocale.utils';
 import getDataType from '../utils/tools/getDataType.utils';
 import saveOnline from '../utils/tools/buckaroo/saveOnline.utils';
-import { formatDistanceToNow } from 'date-fns';
+// import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { useConfirm } from 'material-ui-confirm';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -63,7 +63,7 @@ export default function Translator() {
 
   function displayAlert(message: string, isError: boolean = false) {
     if (isError) return errorEl.current.show({ message, isError });
-    alertEl.current.show({ message });
+    alertEl.current?.show({ message });
   }
 
   const hasEdited = useCallback((): [boolean, string[]] => {
@@ -164,7 +164,10 @@ export default function Translator() {
 
       if (isDeleting) {
         store.remove('fileData');
-        await handleDeleteFile(bucketObjectInfo.current, false);
+
+        if (process.env.REACT_APP_ENV !== 'demo') {
+          await handleDeleteFile(bucketObjectInfo.current, false);
+        }
       }
 
       setIsEditing(false);
@@ -197,7 +200,6 @@ export default function Translator() {
 
           setFileData([...parsedData.current]);
 
-          // TODO: activate/deactivate buckaroo on demo?
           if (process.env.REACT_APP_ENV === 'demo') {
             saveFileLocally({
               content: parsedData.current,
@@ -232,49 +234,65 @@ export default function Translator() {
     [getAccessTokenSilently, hasEdited, t]
   );
 
-  async function handleFileOpen(file: File, token?: string) {
-    if (isEditing) {
-      await handleSave(true, true);
-    }
+  async function handleFileOpen(args: { file: File, path: string, versionId?: string, token?: string }) {
+    try {
+      if (isEditing) {
+        await handleSave(true, true);
+      }
 
-    setIsLoading(true);
-    setIsEditing(false);
-    setFile(file);
-    fileRef.current = file;
+      setIsLoading(true);
+      setIsEditing(false);
+      setFile(args.file);
+      fileRef.current = args.file;
 
-    const tmpParsed: RowData[] = [];
+      const tmpParsed: RowData[] = [];
 
-    Papa.parse<string[]>(file, {
-      worker: true,
-      step: (row: any) => {
-        const dt: RowData = { data: row.data, id: tmpParsed.length };
+      bucketObjectInfo.current = {
+        fileName: args.file.name,
+        path: args.path,
+        versionId: args.versionId,
+      };
 
-        tmpParsed.push(dt);
-      },
-      complete: async () => {
-        parsedData.current = tmpParsed;
-        setDisplayedData([...parsedData.current]);
-        setFileData([...parsedData.current]);
-        store.remove('fileData');
-        store.set('fileData', {
-          content: parsedData.current,
-          name: fileRef.current?.name,
-          size: fileRef.current?.size,
-          lastModified: fileRef.current?.lastModified,
-          savedAt: new Date().toLocaleString(),
-        });
-        if (token != null) {
-          await saveOnline({
-            data: rowDataToString(parsedData.current),
-            fileName: bucketObjectInfo.current.fileName,
-            token,
+      Papa.parse<string[]>(args.file, {
+        worker: true,
+        step: (row: any) => {
+          const dt: RowData = { data: row.data, id: tmpParsed.length };
+
+          tmpParsed.push(dt);
+        },
+        complete: async () => {
+          parsedData.current = tmpParsed;
+          setDisplayedData([...parsedData.current]);
+          setFileData([...parsedData.current]);
+          store.remove('fileData');
+          store.set('fileData', {
+            content: parsedData.current,
+            name: fileRef.current?.name,
+            size: fileRef.current?.size,
+            lastModified: fileRef.current?.lastModified,
+            savedAt: new Date().toLocaleString(),
           });
-        }
-        displayAlert(`${t('OpenFile.success')} 🤓`);
-        setIsLoading(false);
-        setIsEditing(true);
-      },
-    });
+          if (args.token != null) {
+            await saveOnline({
+              data: rowDataToString(parsedData.current),
+              fileName: bucketObjectInfo.current.fileName,
+              token: args.token,
+            });
+          }
+          displayAlert(`${t('OpenFile.success')} 🤓`);
+          setIsLoading(false);
+          setIsEditing(true);
+        },
+      });
+    } catch (e) {
+      bucketObjectInfo.current = {
+        fileName: '',
+        path: '',
+        versionId: undefined,
+      };
+
+      displayAlert((e as Error).message, true);
+    }
   }
 
   async function handleUpload(objInfo: BucketObjectInfo, file: File) {
@@ -289,7 +307,7 @@ export default function Translator() {
       const token = await getAccessTokenSilently();
 
       await handleCloseFile();
-      await handleFileOpen(file, token);
+      await handleFileOpen({ file, path: objInfo.path, versionId: objInfo.versionId, token });
 
       setIsLoading(false);
     } catch (e) {
@@ -405,59 +423,59 @@ export default function Translator() {
   }, [isEditing, handleSave, isLoading, hasEdited]);
 
   /* AUTO-OPEN (local memory) */
-  useEffect(() => {
-    async function openFromLocalMemory() {
-      try {
-        await confirmationDialog({
-          allowClose: true,
-          title: t('RestoreSessionDialog.title'),
-          description: t('RestoreSessionDialog.description', {
-            date: formatDistanceToNow(new Date(store.get('fileData').savedAt), {
-              locale: getDateLocale(),
-            }),
-          }),
-          confirmationText: t('General.yesUpper'),
-          cancellationText: t('General.noUpper'),
-          confirmationButtonProps: {
-            disableElevation: true,
-            variant: 'contained',
-          },
-          cancellationButtonProps: {
-            disableElevation: true,
-            variant: 'contained',
-          },
-        });
+  // useEffect(() => {
+  //   async function openFromLocalMemory() {
+  //     try {
+  //       await confirmationDialog({
+  //         allowClose: true,
+  //         title: t('RestoreSessionDialog.title'),
+  //         description: t('RestoreSessionDialog.description', {
+  //           date: formatDistanceToNow(new Date(store.get('fileData').savedAt), {
+  //             locale: getDateLocale(),
+  //           }),
+  //         }),
+  //         confirmationText: t('General.yesUpper'),
+  //         cancellationText: t('General.noUpper'),
+  //         confirmationButtonProps: {
+  //           disableElevation: true,
+  //           variant: 'contained',
+  //         },
+  //         cancellationButtonProps: {
+  //           disableElevation: true,
+  //           variant: 'contained',
+  //         },
+  //       });
 
-        setIsLoading(true);
-        setIsEditing(false);
+  //       setIsLoading(true);
+  //       setIsEditing(false);
 
-        parsedData.current = [];
-        parsedData.current = store.get('fileData').content;
-        setFileData([...parsedData.current]);
-        setDisplayedData([...parsedData.current]);
+  //       parsedData.current = [];
+  //       parsedData.current = store.get('fileData').content;
+  //       setFileData([...parsedData.current]);
+  //       setDisplayedData([...parsedData.current]);
 
-        fileRef.current = { ...store.get('fileData') };
-        setFile({ ...store.get('fileData') });
+  //       fileRef.current = { ...store.get('fileData') };
+  //       setFile({ ...store.get('fileData') });
 
-        displayAlert(
-          `${t('RestoreSessionDialog.alertMsg', {
-            date: store.get('fileData').savedAt,
-          })} 🐘`
-        );
+  //       displayAlert(
+  //         `${t('RestoreSessionDialog.alertMsg', {
+  //           date: store.get('fileData').savedAt,
+  //         })} 🐘`
+  //       );
 
-        setIsLoading(false);
-        setIsEditing(true);
-      } catch {
-        store.remove('fileData');
-      }
-    }
+  //       setIsLoading(false);
+  //       setIsEditing(true);
+  //     } catch {
+  //       store.remove('fileData');
+  //     }
+  //   }
 
-    if (!isEditing && !hasClosed) {
-      if (store.get('fileData')) {
-        openFromLocalMemory();
-      }
-    }
-  }, [isEditing, hasClosed, confirmationDialog, t, i18n.resolvedLanguage]);
+  //   if (!isEditing && !hasClosed) {
+  //     if (store.get('fileData')) {
+  //       openFromLocalMemory();
+  //     }
+  //   }
+  // }, [isEditing, hasClosed, confirmationDialog, t, i18n.resolvedLanguage]);
 
   useEffect(() => {
     store.remove('columns');
