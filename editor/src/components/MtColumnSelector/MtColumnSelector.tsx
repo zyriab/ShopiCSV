@@ -21,7 +21,7 @@ export default function MtColumnSelector(props: MtColumnSelectorProps) {
   const { t } = useTranslation();
 
   function handleSelection(selection: string[]) {
-    const select = selection.length > 0 ? selection : props.choices;
+    const select = selection.length > 0 ? selection : props.choices.map(c => props.choices.indexOf(c).toString());
     const tmp = select.map((s) => +s);
 
     setSelected(select);
