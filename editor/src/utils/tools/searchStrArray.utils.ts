@@ -12,7 +12,7 @@ export function searchStrArray(
       ids = (data as RowData[])
         .filter((e: RowData) =>
           e.data[searchIndex]
-            .trim()
+            ?.trim()
             .toLowerCase()
             .normalize('NFD')
             .replace(/\p{Diacritic}/gu, '')
