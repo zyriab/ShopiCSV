@@ -67,7 +67,6 @@ export default function MtAppBar(props: MtAppBarProps) {
     if (fields.length < displayFields.length) {
       await props.onSave();
     }
-
     setDisplayFields(fields);
     props.onDisplayChange(fields);
   }
@@ -95,11 +94,11 @@ export default function MtAppBar(props: MtAppBarProps) {
     if (
       saveDisplayInterval == null &&
       props.isEditing &&
-      store.get('fileData').savedAt != null
+      store.get('fileData')?.savedAt != null
     ) {
       setSaveDisplayInterval(
         setInterval(() => {
-          setSaveTime(new Date(store.get('fileData').savedAt));
+          setSaveTime(new Date(store.get('fileData')?.savedAt));
         }, 60000)
       );
     }
@@ -219,7 +218,7 @@ export default function MtAppBar(props: MtAppBarProps) {
             <Button
               plain
               icon={ExportMinor}
-              disabled={props.isLoading}
+              disabled={props.isLoading || process.env.REACT_APP_ENV === 'demo'}
               onClick={() => inputEl.current?.click()}></Button>
           </Tooltip>
           <Tooltip content={t('AppBar.saveTooltip')}>
