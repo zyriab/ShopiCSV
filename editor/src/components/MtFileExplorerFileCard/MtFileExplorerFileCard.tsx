@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Stack, Card, Scrollable, EmptyState } from '@shopify/polaris';
 import MtFileExplorerObject from '../MtFileExplorerObject/MtFileExplorerObject';
 import MtBreadCrumbs from '../MtFileExplorerBreadCrumbs/MtFileExplorerBreadCrumbs';
@@ -23,6 +24,8 @@ export default function MtFileExplorerFileCard(
   props: MtFileExplorerFileCardProps
 ) {
   const [content, setContent] = useState<React.ReactElement[]>([]);
+
+  const { t } = useTranslation();
 
   const resetSelection = useCallback(() => {
     props.setSelected(undefined);
@@ -114,13 +117,13 @@ export default function MtFileExplorerFileCard(
                 {props.isLoading && <MtSpinner />}
                 <div>
                   <EmptyState
-                    heading="No files yet"
+                    heading={t('FileExplorer.FileCard.noFilesEmptyStateHeading')}
                     action={{
-                      content: 'Upload a file',
+                      content: t('FileExplorer.FileCard.noFilesEmptyStateAction'),
                       onAction: () => props.onClickUpload(),
                     }}
                     image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png">
-                    Upload a file to get started.
+                      {t('FileExplorer.FileCard.noFilesEmptyStateText')}
                   </EmptyState>
                 </div>
               </Stack.Item>
