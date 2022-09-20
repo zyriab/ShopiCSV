@@ -52,6 +52,7 @@ export default function MtNavMenu(props: MtNavMenuProps) {
         text: t('NavMenu.products'),
         path: '/products',
         icon: <ProductsMinor />,
+        disabled: true,
       },
     ],
     [t]
@@ -59,24 +60,25 @@ export default function MtNavMenu(props: MtNavMenuProps) {
 
   const secondaryNavItems = useMemo(
     () => [
-      {
-        text: t('NavMenu.help'),
-        path: 'https://www.metaoist.io/',
-        icon: <QuestionMarkMinor />,
-        external: true,
-        public: true,
-      },
+      // {
+      //   text: t('NavMenu.help'),
+      //   path: 'https://www.metaoist.io/',
+      //   icon: <QuestionMarkMinor />,
+      //   external: true,
+      //   public: true,
+      // },
       {
         text: t('NavMenu.discord'),
         path: 'https://discord.com/',
         icon: <ConversationMinor />,
         external: true,
-        public: true,
+        public: false,
       },
       {
         text: t('NavMenu.review'),
         path: 'https://www.shopicsv.app/review',
         icon: <ThumbsUpMinor />,
+        disabled: true
       },
     ],
     [t]
@@ -85,7 +87,7 @@ export default function MtNavMenu(props: MtNavMenuProps) {
   useEffect(() => {
     const index = mainNavItems.indexOf(
       mainNavItems.find((itm) => itm.path === location.pathname) ||
-        mainNavItems[0]
+      mainNavItems[0]
     );
     setSelected(index);
     props.onClose();
