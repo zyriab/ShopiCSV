@@ -65,7 +65,7 @@
     "goToPageHelpTxt": "Appuyez sur entrée"
   },
   "FilterDialog": {
-    "title": "Choisissez le contenu à filtrer",
+    "title": "Choisissez le type de contenu à filtrer",
     "toggleAllSwitch": "Sélectionner tout",
     "showOutdated": "Uniquement afficher trad. dépassées",
     "searchPlaceholder": "Filtrer les champs",
