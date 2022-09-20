@@ -19,9 +19,8 @@ interface AppProps {
 }
 
 export function MtSearchField(props: AppProps) {
-  const search = useSearch(props.data, 5);
-  const { inputValue, resultIds, isLoading, handleChange, handleClear } =
-    search;
+  // TODO: add possibility to chose which column to query
+  const { inputValue, resultIds, isLoading, handleChange, handleClear } = useSearch(props.data, 6);
   const { t } = useTranslation();
 
   const endAdornment = isLoading ? (
