@@ -7,6 +7,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   RowData,
   DataType,
@@ -23,7 +24,7 @@ import { MtBackToTopBtn } from '../MtBackToTopBtn/MtBackToTopBtn';
 import { MtEditorField, MtFieldElement } from '../MtEditorField/MtEditorField';
 import useFileExplorer from '../../utils/hooks/useFileExplorer';
 // import { MtDropZone } from '../MtDropZone/MtDropZone';
-import { Stack, Layout } from '@shopify/polaris';
+import { Stack, Layout, EmptyState } from '@shopify/polaris';
 import getFilePosition from '../../utils/tools/getFilePosition.utils';
 import getEditorLanguage from '../../utils/tools/getEditorLanguage.utils';
 import getDataLength from '../../utils/tools/getDataLength.utils';
@@ -33,7 +34,7 @@ import './MtEditorContent.css';
 
 interface MtEditorContentProps {
   onSave: (displayMsg?: boolean, isAutosave?: boolean) => Promise<boolean>;
-  onFileLoad: (file: File) => Promise<void>;
+  onFileLoad: (args: { file: File, path: string, versionId?: string, token?: string }) => Promise<void>;
   onUpload: (objInfo: BucketObjectInfo, file: File) => Promise<void>;
   onDelete: (args: FileInput) => Promise<void>;
   setIsLoading: (loading: boolean) => void;
@@ -57,6 +58,8 @@ const MtEditorContent = forwardRef<
   const [isReady, setIsReady] = useState(false);
 
   const dataLength = useRef(getDataLength(props.data, props.showOutdated));
+
+  const { t } = useTranslation();
 
   const {
     // TopBar,
@@ -140,7 +143,6 @@ const MtEditorContent = forwardRef<
             props.display,
             numOfColumns,
             x,
-            hasEditor
           );
 
           if (props.display.includes(x)) {
@@ -231,7 +233,7 @@ const MtEditorContent = forwardRef<
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={props.isLoading}>
         {' '}
-        {/* TODO: only show backdrop on certain type of loads */}
+        {/* TODO: only show backdrop on certain type of loads? */}
         <MtSpinner />
       </Backdrop>
       <MtBackToTopBtn />
@@ -247,6 +249,13 @@ const MtEditorContent = forwardRef<
               spacing={1}>
               {pageContent}
             </Grid>
+            {props.renderedFields.current.length === 0 && (
+              <EmptyState
+                heading={t('EditorContent.noFieldsEmptyStateHeading')}
+                image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png">
+                {t('EditorContent.noFieldsEmptyStateText')}
+              </EmptyState>
+            )}
           </Layout.Section>
           <Layout.Section secondary fullWidth>
             <Stack distribution="fill" alignment="center">
