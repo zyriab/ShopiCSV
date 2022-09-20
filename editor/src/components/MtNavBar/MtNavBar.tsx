@@ -28,7 +28,7 @@ export default function MtNavBar() {
   const { t } = useTranslation();
   const { isAuthenticated, user, logout } = useAuth0();
   const { isMobile } = useDetectScreenSize();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const userMenuEl = isAuthenticated ? (
     <div className="ml-05">
@@ -36,11 +36,11 @@ export default function MtNavBar() {
         actions={[
           {
             items: [
-              {
-                content: t('General.settings'),
-                icon: SettingsMinor,
-                onAction: () => navigate('/settings'),
-              },
+              // {
+              //   content: t('General.settings'),
+              //   icon: SettingsMinor,
+              //   onAction: () => navigate('/settings'),
+              // },
               {
                 content: t('General.logout'),
                 icon: LogOutMinor,
@@ -48,17 +48,17 @@ export default function MtNavBar() {
               },
             ],
           },
-          {
-            items: [
-              {
-                content: 'How to use ShopiCSV',
-                icon: QuestionMarkMinor,
-                suffix: <Icon source={ExternalSmallMinor} />,
-                url: 'https://metaoist.io/',
-                external: true,
-              },
-            ] as ActionListItemDescriptor[],
-          },
+          // {
+          //   items: [
+          //     {
+          //       content: 'How to use ShopiCSV',
+          //       icon: QuestionMarkMinor,
+          //       suffix: <Icon source={ExternalSmallMinor} />,
+          //       url: 'https://metaoist.io/',
+          //       external: true,
+          //     },
+          //   ] as ActionListItemDescriptor[],
+          // },
         ]}
         name={user?.nickname || 'Not connected'}
         detail={user?.name}
