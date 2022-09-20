@@ -33,6 +33,10 @@
     "ariaToggleGroup": "Champs à afficher",
     "rows": "Rangées :"
   },
+  "EditorContent": {
+    "noFieldsEmptyStateHeading": "Aucun champ à afficher",
+    "noFieldsEmptyStateText": "Aucun champ ne correspond à vos critères, essayez avec d'autres filtres."
+  },
   "RestoreSessionDialog": {
     "title": "Restaurer la dernière session ?",
     "description": "Voulez-vous restaurer votre dernière session d'il y a {{date}} ?",
@@ -106,7 +110,30 @@
     "FileCard": {
       "path": "Chemin : {{path}}/",
       "size": "Taille : {{size}}",
-      "modified": "Modifié le :"
+      "modified": "Modifié le :",
+      "noFilesEmptyStateHeading": "Pas encore de fichiers",
+      "noFilesEmptyStateAction": "Télécharger un fichier",
+      "noFilesEmptyStateText": "Téléchargez un fichier pour démarrer."
+    },
+    "PreviewCard": {
+      "version": "Version",
+      "name": "Nom :",
+      "path": "Chemin :",
+      "size": "Taille :",
+      "modified": "Modifié le :",
+      "delete": "Supprimer",
+      "loadFile": "Charger la version actuelle",
+      "versionSelectorPlaceHolder": "Sélectionnez une version à comparer",
+      "restoreVersion": "Restaurer la version sélectionnée",
+      "emptyTranslation": "Vide",
+      "currentVersion": "Version actuelle",
+      "selectedVersion": "Version sélectionnée",
+      "noDifferencesEmptyStateHeading": "Pas de différences",
+      "noDifferencesEmptyStateText": "Il n'y a pas de différences entre les deux versions.",
+      "compareEmptyStateHeading": "Comparer avec d'anciennes versions",
+      "compareEmptyStateText": "Comparez les champs entre la version la plus récente et d'autres plus anciennes du même fichier.",
+      "previewEmptyStateHeading": "Aperçu",
+      "previewEmptyStateText": "Cliquez sur un fichier ou sous-dossier pour avoir plus d'information à son sujet."
     }
   }
 }

@@ -33,6 +33,10 @@
     "ariaToggleGroup": "Fields to display",
     "rows": "Rows:"
   },
+  "EditorContent": {
+    "noFieldsEmptyStateHeading": "No fields to display",
+    "noFieldsEmptyStateText": "No fields match your criteria, try to broaden your filters."
+  },
   "RestoreSessionDialog": {
     "title": "Restore last session?",
     "description": "Do you want to restore your last session of {{date}} ago?",
@@ -106,7 +110,30 @@
     "FileCard": {
       "path": "Path: {{path}}/",
       "size": "Size: {{size}}",
-      "modified": "Modified:"
+      "modified": "Modified:",
+      "noFilesEmptyStateHeading": "No files yet",
+      "noFilesEmptyStateAction": "Upload a file",
+      "noFilesEmptyStateText": "Upload a file to get started."
+    },
+    "PreviewCard": {
+      "version": "Version",
+      "name": "Name:",
+      "path": "Path:",
+      "size": "Size:",
+      "modified": "Modified:",
+      "delete": "Delete",
+      "loadFile": "Load current version",
+      "versionSelectorPlaceHolder": "Select a version to compare",
+      "restoreVersion": "Restore selected version",
+      "emptyTranslation": "Empty",
+      "currentVersion": "Current version",
+      "selectedVersion": "Selected version",
+      "noDifferencesEmptyStateHeading": "No differences",  
+      "noDifferencesEmptyStateText": "There is no differences between the two versions.",
+      "compareEmptyStateHeading": "Compare with older versions",
+      "compareEmptyStateText": "Compare fields between the most recent and older versions of the same file.",
+      "previewEmptyStateHeading": "Preview",
+      "previewEmptyStateText": "Click on a file or sub-folder to have more information about it."
     }
   }
 }
