@@ -69,7 +69,7 @@ export default function MtNavMenu(props: MtNavMenuProps) {
       // },
       {
         text: t('NavMenu.discord'),
-        path: 'https://discord.com/',
+        path: 'https://discord.gg/b9Myw2UmMw',
         icon: <ConversationMinor />,
         external: true,
         public: false,
