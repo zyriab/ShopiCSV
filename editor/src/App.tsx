@@ -45,8 +45,6 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
-  // TODO: theme material UI confirm
-
   return (
     <MtThemeProvider>
       <Frame logo={logo} topBar={<MtNavBar />}>
