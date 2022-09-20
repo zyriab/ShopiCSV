@@ -3,8 +3,6 @@ import React, {
   useRef,
   useCallback,
   useEffect,
-  forwardRef,
-  useImperativeHandle,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import store from 'store2';
@@ -158,7 +156,7 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
   useEffect(() => {
     let val =
       maxElementsPerPage !== 0
-        ? Math.round((dataLength - 1) / maxElementsPerPage)
+        ? Math.ceil((dataLength - 1) / maxElementsPerPage)
         : 1;
     if (val === 0) val = 1;
     setMaxPageNum(val);
