@@ -362,11 +362,11 @@ export default function Translator() {
     }
   }
 
-  // FIXME: seems to bug (sometimes I have [] ... nothing)
   /* Setting displayed columns */
   useEffect(() => {
     if (store.get('columns')) setDisplayCol(JSON.parse(store.get('columns')));
-    else setDisplayCol([2, 5, 6]);
+    // TODO: set this dynamically depending on the file's columns number (7 or 8)
+    else setDisplayCol([2, 6, 7]);
   }, []);
 
   /* ROW FILTERING */
