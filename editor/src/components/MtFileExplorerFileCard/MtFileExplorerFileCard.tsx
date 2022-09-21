@@ -105,7 +105,7 @@ export default function MtFileExplorerFileCard(
             {content.length > 0 ? (
               <Stack.Item>
                 <Scrollable
-                  style={{ height: '320px', width: '640px', padding: '1%' }}>
+                  style={{ height: '297px', width: '640px', padding: '1%' }}>
                   <Stack spacing="tight" wrap>
                     {content}
                   </Stack>
