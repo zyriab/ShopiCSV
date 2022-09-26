@@ -25,29 +25,28 @@ export default function MtFileExplorerObject(props: MtFileExplorerObjectProps) {
 
   const { t } = useTranslation();
 
-  const className = `Polaris-Button Polaris-Button--sizeLarge ${
-    props.selected
+  const className = `Polaris-Button Polaris-Button--sizeLarge ${props.selected
       ? 'Polaris-Button--outline Polaris-Button--pressed no-outline'
       : ''
-  } ${
-    isHovered && !props.selected
+    } ${isHovered && !props.selected
       ? 'Polaris-Button--outline'
       : 'MtFileExplorerObject__default'
-  }`;
+    }`;
 
   const tooltipContent = (
     <div>
       {formatPath(props.name)}
       <br />
-      {t('FileExplorer.FileCard.path', { path: formatPath(props.path) })}
+      {t('FileExplorer.FileCard.path', { path: `${formatPath(`/${props.path}/`, { stripLeading: false, stripTrailing: false })}` })}
       {!isDirectory(formatPath(props.name)) && (
         <>
           <br />
+          {/* TODO: add size of directory (addition of all files sizes under given path) */}
           {t('FileExplorer.FileCard.size', { size: formatBytes(props.size) })}
           <br />
           {t('FileExplorer.FileCard.modified')}
           <br />
-         { `${props.lastModified.toLocaleDateString()} - ${props.lastModified.toLocaleTimeString()}`}
+          {`${props.lastModified.toLocaleDateString()} - ${props.lastModified.toLocaleTimeString()}`}
         </>
       )}
     </div>
@@ -66,7 +65,7 @@ export default function MtFileExplorerObject(props: MtFileExplorerObjectProps) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         type="button">
-        <Stack vertical>
+        <Stack spacing="tight" vertical>
           <Icon
             source={
               isDirectory(formatPath(props.name)) ? FolderMajor : NoteMajor
