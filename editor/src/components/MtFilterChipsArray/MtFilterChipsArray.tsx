@@ -56,6 +56,7 @@ export default function MtFilterChipsArray(props: MtFilterChipsArrayProps) {
         backgroundColor: 'var(--p-background)',
         borderRadius: '4px',
         width: isDesktop ? '350px' : '200px',
+        cursor: 'pointer',
       }}>
       <Scrollable horizontal>
         <Stack wrap={false} spacing="extraTight">
