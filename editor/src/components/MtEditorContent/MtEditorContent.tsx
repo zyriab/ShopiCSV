@@ -24,11 +24,12 @@ import { MtBackToTopBtn } from '../MtBackToTopBtn/MtBackToTopBtn';
 import { MtEditorField, MtFieldElement } from '../MtEditorField/MtEditorField';
 import useFileExplorer from '../../utils/hooks/useFileExplorer';
 // import { MtDropZone } from '../MtDropZone/MtDropZone';
-import { Stack, Layout, EmptyState } from '@shopify/polaris';
+import { Stack, Layout, EmptyState, CalloutCard } from '@shopify/polaris';
 import getFilePosition from '../../utils/tools/getFilePosition.utils';
 import getEditorLanguage from '../../utils/tools/getEditorLanguage.utils';
 import getDataLength from '../../utils/tools/getDataLength.utils';
 import getStatusColIndex from '../../utils/tools/getStatusColIndex.utils';
+import useTutorial from '../../utils/hooks/useTutorial';
 
 import './MtEditorContent.css';
 
@@ -56,10 +57,12 @@ const MtEditorContent = forwardRef<
   MtEditorContentProps
 >((props: MtEditorContentProps, ref) => {
   const [isReady, setIsReady] = useState(false);
+  const [isWelcomeOpen, setIsWelcomeOpen] = useState(true);
 
   const dataLength = useRef(getDataLength(props.data, props.showOutdated));
 
   const { t } = useTranslation();
+  const tutorial = useTutorial();
 
   const {
     // TopBar,
@@ -273,12 +276,23 @@ const MtEditorContent = forwardRef<
       ) : (
         // File explorer (Buckaroo)
         <Layout>
-          {fileUploadEl}
+          {/* {fileUploadEl} */}
+          <Layout.Section fullWidth>
+            {isWelcomeOpen && (
+              <CalloutCard
+                title={t('EditorContent.tutoCardTitle')}
+                illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
+                primaryAction={{ content: t('EditorContent.tutoCardAction'), onAction: () => setIsWelcomeOpen(false) }}
+                onDismiss={() => setIsWelcomeOpen(false)}
+              >
+                <p>{t('EditorContent.tutoCardP1')}</p>
+                <p>{t('EditorContent.tutoCardP2')}</p>
+                <p>{t('EditorContent.tutoCardP3')}</p>
+              </CalloutCard>
+            )}
+          </Layout.Section>
           <Layout.Section secondary>
-            {/* <Stack vertical> */}
-            {/* <TopBar {...topBarProps} /> */}
             <FileCard {...fileCardProps} />
-            {/* </Stack> */}
           </Layout.Section>
           <Layout.Section>
             <PreviewCard {...previewCardProps} />
