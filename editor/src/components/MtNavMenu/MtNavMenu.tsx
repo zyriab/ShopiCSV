@@ -37,12 +37,12 @@ export default function MtNavMenu(props: MtNavMenuProps) {
 
   const mainNavItems = useMemo(
     () => [
-      {
-        text: t('NavMenu.home'),
-        path: '/',
-        icon: <HomeMinor />,
-        public: true,
-      },
+      // {
+      //   text: t('NavMenu.home'),
+      //   path: '/',
+      //   icon: <HomeMinor />,
+      //   public: true,
+      // },
       {
         text: t('NavMenu.translations'),
         path: '/translations',
