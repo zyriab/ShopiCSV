@@ -17,6 +17,7 @@ export interface MtFileExplorerFileCardProps {
   path: string[];
   setPath: React.Dispatch<React.SetStateAction<string[]>>;
   onClickUpload: () => void;
+  onClickObject: (id: string) => void;
   // TODO: implement sorting
 }
 
@@ -31,28 +32,6 @@ export default function MtFileExplorerFileCard(
     props.setSelected(undefined);
   }, [props]);
 
-  const handleClick = useCallback(
-    (id: string) => {
-      const doubleClicked = id === props.selected;
-
-      if (doubleClicked) {
-        const obj = props.content.find((x) => x.id === id);
-
-        if (obj && isDirectory(getPathRelativeName(obj.name, props.path))) {
-          resetSelection();
-          return props.setPath((current) => [
-            ...current,
-            ...[getPathRelativeName(obj.name, props.path)],
-          ]);
-        }
-        return;
-      }
-
-      props.setSelected(id);
-    },
-    [props, resetSelection]
-  );
-
   const getContent = useCallback(() => {
     const content = props.content.filter(
       (obj) => obj.name !== props.path.at(-1)
@@ -61,7 +40,8 @@ export default function MtFileExplorerFileCard(
     const rootDirs: React.ReactElement[] = [];
 
     content.forEach((o) => {
-      const name = getPathRelativeName(o.name, props.path);
+      const fullName = `${o.path}/${o.name}`;
+      const name = getPathRelativeName(fullName, props.path);
       const path = props.path;
       const isDir = isDirectory(name);
 
@@ -72,11 +52,11 @@ export default function MtFileExplorerFileCard(
           name={name}
           path={path.join('/')}
           selected={props.selected === o.id}
-          onClick={() => handleClick(o.id)}
+          onClick={() => props.onClickObject(o.id)}
         />
       );
 
-      if (o.name.includes(props.path.join('/'))) {
+      if (fullName.includes(props.path.join('/'))) {
         if (isDir) {
           if (!rootDirs.find((x) => formatPath(x.props['name']) === name)) {
             rootDirs.push(objEl);
@@ -88,7 +68,7 @@ export default function MtFileExplorerFileCard(
     });
 
     return [...rootDirs, ...rootFiles];
-  }, [handleClick, props.path, props.content, props.selected]);
+  }, [props]);
 
   useEffect(() => {
     setContent(getContent());
@@ -97,7 +77,7 @@ export default function MtFileExplorerFileCard(
   return (
     <Card>
       <Card.Section>
-        <div onClick={resetSelection}>
+        <div style={{ minHeight: '360px' }} onClick={resetSelection}>
           <Stack vertical>
             <Stack.Item>
               <MtBreadCrumbs path={props.path} onChange={props.setPath} />
@@ -105,7 +85,7 @@ export default function MtFileExplorerFileCard(
             {content.length > 0 ? (
               <Stack.Item>
                 <Scrollable
-                  style={{ height: '297px', width: '640px', padding: '1%' }}>
+                  style={{ height: '100%', padding: '1%' }}>
                   <Stack spacing="tight" wrap>
                     {content}
                   </Stack>
@@ -123,7 +103,7 @@ export default function MtFileExplorerFileCard(
                       onAction: () => props.onClickUpload(),
                     }}
                     image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png">
-                      {t('FileExplorer.FileCard.noFilesEmptyStateText')}
+                    {t('FileExplorer.FileCard.noFilesEmptyStateText')}
                   </EmptyState>
                 </div>
               </Stack.Item>
