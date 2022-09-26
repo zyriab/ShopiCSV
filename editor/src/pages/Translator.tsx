@@ -36,7 +36,7 @@ export default function Translator() {
   const [hasClosed, setHasClosed] = useState(false);
   const [file, setFile] = useState<File | null>(null); // uploaded file or data of restored session (name, size, lastModified, lastSave?, content?)
   const fileRef = useRef<File | null>(null); // used for direct update/access when saving
-  const [displayCol, setDisplayCol] = useState<number[]>([]);
+  const [displayCol, setDisplayCol] = useState<number[]>([2, 6, 7]);
   const [fileData, setFileData] = useState<RowData[]>([]);
   const [displayedData, setDisplayedData] = useState<RowData[]>([]); // used for rendering content
   const [filteredDataIds, setFilteredDataIds] = useState<number[]>([]);
@@ -210,7 +210,7 @@ export default function Translator() {
           } else {
             const token = await getAccessTokenSilently();
 
-            // FIXME: failed to fetch
+            // FIXME: failed to fetch - check with staging and production if it's not a problem with the locally hosted Buckaroo server
             await saveOnline({
               data: rowDataToString(parsedData.current),
               fileName: bucketObjectInfo.current.fileName,
@@ -267,7 +267,7 @@ export default function Translator() {
           store.remove('fileData');
           store.set('fileData', {
             content: parsedData.current,
-            name: fileRef.current?.name,
+            name: fileRef.current?.name?.split('/').at(-1),
             size: fileRef.current?.size,
             lastModified: fileRef.current?.lastModified,
             savedAt: new Date().toLocaleString(),
