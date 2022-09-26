@@ -35,7 +35,12 @@
   },
   "EditorContent": {
     "noFieldsEmptyStateHeading": "Aucun champ à afficher",
-    "noFieldsEmptyStateText": "Aucun champ ne correspond à vos critères, essayez avec d'autres filtres."
+    "noFieldsEmptyStateText": "Aucun champ ne correspond à vos critères, essayez avec d'autres filtres.",
+    "tutoCardTitle": "Bienvenue dans la démo ShopiCSV",
+    "tutoCardAction": "C'est compris !",
+    "tutoCardP1": "Ici vous pouvez tester les fonctionnalités de base de l'éditeur de traductions.",
+    "tutoCardP2": "Vous pouvez commencer par double cliquer sur le dossier ci-dessous et comparer le fichier CSV avec une version plus ancienne pour la restaurer ou simplement charger la version actuelle dans l'éditeur.",
+    "tutoCardP3": "(Notez que certaines fonctionnalités tel que la suppression et le téléchargement (upload) de fichier est désactivé pour la démo)."
   },
   "RestoreSessionDialog": {
     "title": "Restaurer la dernière session ?",
@@ -108,7 +113,7 @@
   },
   "FileExplorer": {
     "FileCard": {
-      "path": "Chemin : {{path}}/",
+      "path": "Chemin : {{path}}",
       "size": "Taille : {{size}}",
       "modified": "Modifié le :",
       "noFilesEmptyStateHeading": "Pas encore de fichiers",
@@ -122,6 +127,7 @@
       "size": "Taille :",
       "modified": "Modifié le :",
       "delete": "Supprimer",
+      "openDir": "Ouvrir le dossier",
       "loadFile": "Charger la version actuelle",
       "versionSelectorPlaceHolder": "Sélectionnez une version à comparer",
       "restoreVersion": "Restaurer la version sélectionnée",
