@@ -36,6 +36,7 @@ export interface MtFileExplorerPreviewCardProps {
   path: string[];
   onLoad: (args: { file: File, path: string, versionId?: string, token?: string }) => Promise<void>;
   onDelete: (args: FileInput) => Promise<void>;
+  onOpenDirectory: (name: string) => void;
   // onRename: () => void;
   // onMove: () => void;
 }
@@ -51,7 +52,8 @@ export default function MtFileExplorerPreviewCard(
   const [previewContent, setPreviewContent] = useState<React.ReactNode>();
   const [isLoadingFile, setIsLoadingFile] = useState(false)
 
-  const name = getPathRelativeName(selectedObject?.name || '', props.path);
+  const fullName = `${selectedObject?.path || ''}/${selectedObject?.name || ''}`;
+  const name = getPathRelativeName(fullName, props.path);
   const path = `${props.path.join('/')}/`;
 
   const { getAccessTokenSilently } = useAuth0();
@@ -214,22 +216,31 @@ export default function MtFileExplorerPreviewCard(
           <div className="text-wrapper">{t('FileExplorer.PreviewCard.name')} {name}</div>
         </Tooltip>
         <Tooltip content={path}>
-          <div className="text-wrapper">{t('FileExplorer.PreviewCard.path')} {path}</div>
+          <div className="text-wrapper">{t('FileExplorer.PreviewCard.path')} {`${formatPath(`/${path}/`, { stripLeading: false, stripTrailing: false })}`}</div>
         </Tooltip>
-        <div className="text-wrapper">
-          {t('FileExplorer.PreviewCard.size')} {formatBytes(selectedObject?.size || 0)}
-        </div>
-        <p>
-          {t('FileExplorer.PreviewCard.modified')}{' '}
-          {`${selectedObject?.lastModified.toLocaleDateString()} - ${selectedObject?.lastModified.toLocaleTimeString()}`}
-        </p>
+        {/* TODO: add size of directory + last modified date (addition of all files sizes and last mod file under given path) */}
+        {!isDirectory(name) && (
+          <>
+            <div className="text-wrapper">
+              {t('FileExplorer.PreviewCard.size')} {formatBytes(selectedObject?.size || 0)}
+            </div>
+            <p>
+              {t('FileExplorer.PreviewCard.modified')}{' '}
+              {`${selectedObject?.lastModified.toLocaleDateString()} - ${selectedObject?.lastModified.toLocaleTimeString()}`}
+            </p>
+          </>
+        )}
       </Stack>
       <Stack distribution="trailing">
         <ButtonGroup>
           <Button onClick={handleDelete} icon={DeleteMinor} disabled={process.env.REACT_APP_ENV === 'demo'} destructive>
             {t('FileExplorer.PreviewCard.delete')}
           </Button>
-          {!isDirectory(name) && (
+          {isDirectory(name) ? (
+            <Button onClick={() => props.onOpenDirectory(name)} primary>
+              {t('FileExplorer.PreviewCard.openDir')}
+            </Button>
+          ) : (
             <Button onClick={handleLoad} loading={isLoadingFile} primary>
               {t('FileExplorer.PreviewCard.loadFile')}
             </Button>
@@ -358,11 +369,11 @@ export default function MtFileExplorerPreviewCard(
     return (
       <div style={{ minHeight: '320px' }}>
         {isDirectory(formatPath(name)) ? (
-          <p>
-            {/* TODO: implement dir card ? ;) */}
-            would be cool to be able to see all folders here to navigate quickly
-            🚀
-          </p>
+          <EmptyState
+            heading={t('FileExplorer.PreviewCard.previewEmptyStateHeading')}
+            image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png">
+            {t('FileExplorer.PreviewCard.previewEmptyStateText')}
+          </EmptyState>
         ) : (
           <EmptyState
             heading={t('FileExplorer.PreviewCard.compareEmptyStateHeading')}
