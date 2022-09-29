@@ -35,7 +35,7 @@ export function MtBackToTopBtn() {
     return () => {
       isMounted.current = false;
       debouncedDisplayFn.cancel();
-    }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

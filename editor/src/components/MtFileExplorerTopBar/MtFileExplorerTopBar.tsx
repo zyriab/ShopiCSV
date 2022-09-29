@@ -17,8 +17,7 @@ export default function MtFileExplorerTopBar(props: MtFileExplorerTopBarProps) {
   return (
     <Card>
       <Card.Section flush>
-        <div
-          style={{padding: '1ch', width: '680px' }}>
+        <div style={{ padding: '1ch', width: '680px' }}>
           <Stack alignment="center" distribution="equalSpacing">
             <ButtonGroup segmented>
               <Button

@@ -78,7 +78,7 @@ export default function MtNavMenu(props: MtNavMenuProps) {
         text: t('NavMenu.review'),
         path: 'https://www.shopicsv.app/review',
         icon: <ThumbsUpMinor />,
-        disabled: true
+        disabled: true,
       },
     ],
     [t]
@@ -87,7 +87,7 @@ export default function MtNavMenu(props: MtNavMenuProps) {
   useEffect(() => {
     const index = mainNavItems.indexOf(
       mainNavItems.find((itm) => itm.path === location.pathname) ||
-      mainNavItems[0]
+        mainNavItems[0]
     );
     setSelected(index);
     props.onClose();

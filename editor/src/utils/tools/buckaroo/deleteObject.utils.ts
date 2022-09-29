@@ -6,7 +6,10 @@ import formatPath from '../fileExplorer/formatPath.utils';
 export default async function deleteObject(args: TokenizedFileInput) {
   try {
     if (isDirectory(args.fileName)) {
-      await deleteDirectory({ ...args, path: formatPath(`${args.path}/${args.fileName}`)});
+      await deleteDirectory({
+        ...args,
+        path: formatPath(`${args.path}/${args.fileName}`),
+      });
       return;
     }
 

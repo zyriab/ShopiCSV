@@ -84,8 +84,7 @@ export default function MtFileExplorerFileCard(
             </Stack.Item>
             {content.length > 0 ? (
               <Stack.Item>
-                <Scrollable
-                  style={{ height: '100%', padding: '1%' }}>
+                <Scrollable style={{ height: '100%', padding: '1%' }}>
                   <Stack spacing="tight" wrap>
                     {content}
                   </Stack>
@@ -97,9 +96,13 @@ export default function MtFileExplorerFileCard(
                 {props.isLoading && <MtSpinner />}
                 <div>
                   <EmptyState
-                    heading={t('FileExplorer.FileCard.noFilesEmptyStateHeading')}
+                    heading={t(
+                      'FileExplorer.FileCard.noFilesEmptyStateHeading'
+                    )}
                     action={{
-                      content: t('FileExplorer.FileCard.noFilesEmptyStateAction'),
+                      content: t(
+                        'FileExplorer.FileCard.noFilesEmptyStateAction'
+                      ),
                       onAction: () => props.onClickUpload(),
                     }}
                     image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png">

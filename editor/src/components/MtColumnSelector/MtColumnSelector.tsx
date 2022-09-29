@@ -13,15 +13,18 @@ interface MtColumnSelectorProps {
 export default function MtColumnSelector(props: MtColumnSelectorProps) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>(
-    store.get('columns')?.length > 0 ? JSON.parse(
-      store.get('columns')).map((c: number) => c.toString())
-      : props.choices.map(c => props.choices.indexOf(c).toString())
+    store.get('columns')?.length > 0
+      ? JSON.parse(store.get('columns')).map((c: number) => c.toString())
+      : props.choices.map((c) => props.choices.indexOf(c).toString())
   );
 
   const { t } = useTranslation();
 
   function handleSelection(selection: string[]) {
-    const select = selection.length > 0 ? selection : props.choices.map(c => props.choices.indexOf(c).toString());
+    const select =
+      selection.length > 0
+        ? selection
+        : props.choices.map((c) => props.choices.indexOf(c).toString());
     const tmp = select.map((s) => +s);
 
     setSelected(select);

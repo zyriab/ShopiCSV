@@ -3,7 +3,8 @@
   width: 100%;
 }
 
-.MtEditorContent-DropZone__Outer-Wrapper, .MtEditorContent-FileExplorer__Wrapper {
+.MtEditorContent-DropZone__Outer-Wrapper,
+.MtEditorContent-FileExplorer__Wrapper {
   display: flex;
   justify-content: center;
 }

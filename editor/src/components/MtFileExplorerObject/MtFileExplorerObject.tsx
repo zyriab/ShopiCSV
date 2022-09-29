@@ -25,19 +25,26 @@ export default function MtFileExplorerObject(props: MtFileExplorerObjectProps) {
 
   const { t } = useTranslation();
 
-  const className = `Polaris-Button Polaris-Button--sizeLarge ${props.selected
+  const className = `Polaris-Button Polaris-Button--sizeLarge ${
+    props.selected
       ? 'Polaris-Button--outline Polaris-Button--pressed no-outline'
       : ''
-    } ${isHovered && !props.selected
+  } ${
+    isHovered && !props.selected
       ? 'Polaris-Button--outline'
       : 'MtFileExplorerObject__default'
-    }`;
+  }`;
 
   const tooltipContent = (
     <div>
       {formatPath(props.name)}
       <br />
-      {t('FileExplorer.FileCard.path', { path: `${formatPath(`/${props.path}/`, { stripLeading: false, stripTrailing: false })}` })}
+      {t('FileExplorer.FileCard.path', {
+        path: `${formatPath(`/${props.path}/`, {
+          stripLeading: false,
+          stripTrailing: false,
+        })}`,
+      })}
       {!isDirectory(formatPath(props.name)) && (
         <>
           <br />

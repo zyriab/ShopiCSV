@@ -20,7 +20,8 @@ interface AppProps {
 
 export function MtSearchField(props: AppProps) {
   // TODO: add possibility to chose which column to query
-  const { inputValue, resultIds, isLoading, handleChange, handleClear } = useSearch(props.data, 6);
+  const { inputValue, resultIds, isLoading, handleChange, handleClear } =
+    useSearch(props.data, 6);
   const { t } = useTranslation();
 
   const endAdornment = isLoading ? (

@@ -34,7 +34,12 @@ export interface MtFileExplorerPreviewCardProps {
   content: BucketObject[];
   selected: string | undefined;
   path: string[];
-  onLoad: (args: { file: File, path: string, versionId?: string, token?: string }) => Promise<void>;
+  onLoad: (args: {
+    file: File;
+    path: string;
+    versionId?: string;
+    token?: string;
+  }) => Promise<void>;
   onDelete: (args: FileInput) => Promise<void>;
   onOpenDirectory: (name: string) => void;
   // onRename: () => void;
@@ -50,9 +55,11 @@ export default function MtFileExplorerPreviewCard(
   const [selectedVersionObject, setSelectedVersionObject] =
     useState<BucketObjectVersion>();
   const [previewContent, setPreviewContent] = useState<React.ReactNode>();
-  const [isLoadingFile, setIsLoadingFile] = useState(false)
+  const [isLoadingFile, setIsLoadingFile] = useState(false);
 
-  const fullName = `${selectedObject?.path || ''}/${selectedObject?.name || ''}`;
+  const fullName = `${selectedObject?.path || ''}/${
+    selectedObject?.name || ''
+  }`;
   const name = getPathRelativeName(fullName, props.path);
   const path = `${props.path.join('/')}/`;
 
@@ -98,13 +105,25 @@ export default function MtFileExplorerPreviewCard(
     }
 
     const data = Papa.unparse(selectedObject.content.map((e) => e.data));
-    const file = new File([data], selectedObject.name, { type: 'text/csv', lastModified: selectedObject.lastModified.getTime() });
+    const file = new File([data], selectedObject.name, {
+      type: 'text/csv',
+      lastModified: selectedObject.lastModified.getTime(),
+    });
 
-    await props.onLoad({ file, path: selectedObject.path, versionId: selectedObject.id });
+    await props.onLoad({
+      file,
+      path: selectedObject.path,
+      versionId: selectedObject.id,
+    });
   }
 
   async function handleRestore() {
-    if (isLoadingFile || selectedVersionObject == null || selectedObject == null || isDirectory(name)) {
+    if (
+      isLoadingFile ||
+      selectedVersionObject == null ||
+      selectedObject == null ||
+      isDirectory(name)
+    ) {
       return;
     }
 
@@ -114,10 +133,14 @@ export default function MtFileExplorerPreviewCard(
       await fetchObjectsContent();
     }
 
-    const data = Papa.unparse(selectedVersionObject.content.map(e => e.data));
+    const data = Papa.unparse(selectedVersionObject.content.map((e) => e.data));
     const file = new File([data], selectedObject.name, { type: 'text/csv' });
 
-    await props.onLoad({ file, path: selectedObject.path, versionId: selectedObject.id });
+    await props.onLoad({
+      file,
+      path: selectedObject.path,
+      versionId: selectedObject.id,
+    });
   }
 
   async function handleDelete() {
@@ -182,27 +205,31 @@ export default function MtFileExplorerPreviewCard(
               {selectedVersionObject?.lastModified.toLocaleDateString()} -{' '}
               {selectedVersionObject?.lastModified.toLocaleTimeString()}
               <br />
-              {t('FileExplorer.PreviewCard.size')} {formatBytes(selectedVersionObject?.size || 0)}{' '}
+              {t('FileExplorer.PreviewCard.size')}{' '}
+              {formatBytes(selectedVersionObject?.size || 0)}{' '}
               <TextStyle
                 variation={
                   (selectedObject?.size || 0) <
-                    (selectedVersionObject?.size || 0)
+                  (selectedVersionObject?.size || 0)
                     ? 'negative'
                     : 'positive'
                 }>
-                {` (${(selectedObject?.size || 0) <=
+                {` (${
+                  (selectedObject?.size || 0) <=
                   (selectedVersionObject?.size || 0)
-                  ? '+'
-                  : '-'
-                  }${formatBytes(
-                    Math.abs(
-                      (selectedObject?.size || 0) -
+                    ? '+'
+                    : '-'
+                }${formatBytes(
+                  Math.abs(
+                    (selectedObject?.size || 0) -
                       (selectedVersionObject?.size || 0)
-                    )
-                  )})`}
+                  )
+                )})`}
               </TextStyle>
             </p>
-            <Button onClick={handleRestore}>{t('FileExplorer.PreviewCard.restoreVersion')}</Button>
+            <Button onClick={handleRestore}>
+              {t('FileExplorer.PreviewCard.restoreVersion')}
+            </Button>
           </Stack>
         </Stack>
       </Stack.Item>
@@ -213,16 +240,25 @@ export default function MtFileExplorerPreviewCard(
     <Stack vertical>
       <Stack vertical spacing="extraTight">
         <Tooltip content={name}>
-          <div className="text-wrapper">{t('FileExplorer.PreviewCard.name')} {name}</div>
+          <div className="text-wrapper">
+            {t('FileExplorer.PreviewCard.name')} {name}
+          </div>
         </Tooltip>
         <Tooltip content={path}>
-          <div className="text-wrapper">{t('FileExplorer.PreviewCard.path')} {`${formatPath(`/${path}/`, { stripLeading: false, stripTrailing: false })}`}</div>
+          <div className="text-wrapper">
+            {t('FileExplorer.PreviewCard.path')}{' '}
+            {`${formatPath(`/${path}/`, {
+              stripLeading: false,
+              stripTrailing: false,
+            })}`}
+          </div>
         </Tooltip>
         {/* TODO: add size of directory + last modified date (addition of all files sizes and last mod file under given path) */}
         {!isDirectory(name) && (
           <>
             <div className="text-wrapper">
-              {t('FileExplorer.PreviewCard.size')} {formatBytes(selectedObject?.size || 0)}
+              {t('FileExplorer.PreviewCard.size')}{' '}
+              {formatBytes(selectedObject?.size || 0)}
             </div>
             <p>
               {t('FileExplorer.PreviewCard.modified')}{' '}
@@ -233,7 +269,11 @@ export default function MtFileExplorerPreviewCard(
       </Stack>
       <Stack distribution="trailing">
         <ButtonGroup>
-          <Button onClick={handleDelete} icon={DeleteMinor} disabled={process.env.REACT_APP_ENV === 'demo'} destructive>
+          <Button
+            onClick={handleDelete}
+            icon={DeleteMinor}
+            disabled={process.env.REACT_APP_ENV === 'demo'}
+            destructive>
             {t('FileExplorer.PreviewCard.delete')}
           </Button>
           {isDirectory(name) ? (
@@ -288,7 +328,11 @@ export default function MtFileExplorerPreviewCard(
         };
 
         if (baseTxt.trim() === '') {
-          return <TextContainer>({t('FileExplorer.PreviewCard.emptyTranslation')})</TextContainer>
+          return (
+            <TextContainer>
+              ({t('FileExplorer.PreviewCard.emptyTranslation')})
+            </TextContainer>
+          );
         }
 
         return (
@@ -317,17 +361,25 @@ export default function MtFileExplorerPreviewCard(
             <Stack alignment="fill" vertical>
               <Stack alignment="center" distribution="center" wrap={false}>
                 <div style={comparatorFieldStyle}>
-                  <TextContainer>{t('FileExplorer.PreviewCard.currentVersion')}</TextContainer>
+                  <TextContainer>
+                    {t('FileExplorer.PreviewCard.currentVersion')}
+                  </TextContainer>
                 </div>
                 <p>-</p>
                 <div style={comparatorFieldStyle}>
-                  <TextContainer>{t('FileExplorer.PreviewCard.selectedVersion')}</TextContainer>
+                  <TextContainer>
+                    {t('FileExplorer.PreviewCard.selectedVersion')}
+                  </TextContainer>
                 </div>
               </Stack>
               {tmp.map((x) => {
                 return (
                   <div key={x}>
-                    <Stack alignment="center" distribution="center" key={x} wrap={false}>
+                    <Stack
+                      alignment="center"
+                      distribution="center"
+                      key={x}
+                      wrap={false}>
                       <div style={comparatorFieldStyle}>
                         {highlightTxt(
                           old[x].data?.at(-1) || '',
@@ -357,7 +409,9 @@ export default function MtFileExplorerPreviewCard(
       return (
         <div style={{ minHeight: '320px' }}>
           <EmptyState
-            heading={t('FileExplorer.PreviewCard.noDifferencesEmptyStateHeading')}
+            heading={t(
+              'FileExplorer.PreviewCard.noDifferencesEmptyStateHeading'
+            )}
             image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png">
             {t('FileExplorer.PreviewCard.noDifferencesEmptyStateText')}
             <div>{versionSelector}</div>
@@ -402,7 +456,9 @@ export default function MtFileExplorerPreviewCard(
         {selectedObject ? (
           <>
             {selectedVersionObject != null && (
-              <Card.Section subdued title={t('FileExplorer.PreviewCard.previewEmptyStateHeading')}>
+              <Card.Section
+                subdued
+                title={t('FileExplorer.PreviewCard.previewEmptyStateHeading')}>
                 {headerActions}
               </Card.Section>
             )}
