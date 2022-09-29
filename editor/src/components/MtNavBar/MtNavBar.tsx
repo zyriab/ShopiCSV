@@ -4,21 +4,9 @@ import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
 import MtDarkModeSwitch from '../MtDarkModeSwitch/MtDarkModeSwitch';
 import { MtAuthenticationBtn } from '../AuthButtons/MtAuthenticationBtn';
 import { MtLanguageSelector } from '../MtLanguageSelector/MtLanguageSelector';
-import {
-  ActionListItemDescriptor,
-  CustomProperties,
-  Icon,
-  Stack,
-  TopBar,
-} from '@shopify/polaris';
-import {
-  QuestionMarkMinor,
-  ExternalSmallMinor,
-  SettingsMinor,
-  LogOutMinor,
-} from '@shopify/polaris-icons';
+import { CustomProperties, Stack, TopBar } from '@shopify/polaris';
+import { LogOutMinor } from '@shopify/polaris-icons';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import MtNavMenu from '../MtNavMenu/MtNavMenu';
 
 export default function MtNavBar() {
@@ -28,7 +16,6 @@ export default function MtNavBar() {
   const { t } = useTranslation();
   const { isAuthenticated, user, logout } = useAuth0();
   const { isMobile } = useDetectScreenSize();
-  // const navigate = useNavigate();
 
   const userMenuEl = isAuthenticated ? (
     <div className="ml-05">
@@ -36,11 +23,6 @@ export default function MtNavBar() {
         actions={[
           {
             items: [
-              // {
-              //   content: t('General.settings'),
-              //   icon: SettingsMinor,
-              //   onAction: () => navigate('/settings'),
-              // },
               {
                 content: t('General.logout'),
                 icon: LogOutMinor,
@@ -48,17 +30,6 @@ export default function MtNavBar() {
               },
             ],
           },
-          // {
-          //   items: [
-          //     {
-          //       content: 'How to use ShopiCSV',
-          //       icon: QuestionMarkMinor,
-          //       suffix: <Icon source={ExternalSmallMinor} />,
-          //       url: 'https://metaoist.io/',
-          //       external: true,
-          //     },
-          //   ] as ActionListItemDescriptor[],
-          // },
         ]}
         name={user?.nickname || 'Not connected'}
         detail={user?.name}
