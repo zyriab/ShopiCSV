@@ -20,6 +20,7 @@ import {
   ImportMinor,
   SaveMinor,
   DeleteMinor,
+  QuestionMarkMinor,
 } from '@shopify/polaris-icons';
 import { MtSearchField } from '../MtSearchField/MtSearchField';
 import MtFieldsFilter from '../MtFieldsFilter/MtFieldsFilter';
@@ -32,6 +33,7 @@ interface MtAppBarProps {
   onUpload: (file: File) => Promise<void>;
   onClose: (deleteFile?: boolean) => Promise<void>;
   onShowOutdated: (show: boolean) => void;
+  onResetTutorial: () => void;
   isLoading: boolean;
   isEditing: boolean;
   loadValue?: number;
@@ -58,6 +60,7 @@ export default function MtAppBar(props: MtAppBarProps) {
   );
 
   const inputEl = useRef<HTMLInputElement>(null);
+  const isMounted = useRef(true);
 
   const { t } = useTranslation();
   const { themeStr } = useContext(themeContext);
@@ -84,14 +87,23 @@ export default function MtAppBar(props: MtAppBarProps) {
     }
   }
 
+  function onResize() {
+    setIsWidthUnder1559px(matchMedia('(max-width: 1559px)').matches);
+  }
+
   useEffect(() => {
-    window.addEventListener('resize', () =>
-      setIsWidthUnder1559px(matchMedia('(max-width: 1559px)').matches)
-    );
+    isMounted.current = true;
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      isMounted.current = false;
+    };
   }, []);
 
   useEffect(() => {
     if (
+      isMounted.current &&
       saveDisplayInterval == null &&
       props.isEditing &&
       store.get('fileData')?.savedAt != null
@@ -105,11 +117,13 @@ export default function MtAppBar(props: MtAppBarProps) {
   }, [saveDisplayInterval, props.isEditing]);
 
   useEffect(() => {
-    setDisplayFields(props.display);
+    if (isMounted.current) {
+      setDisplayFields(props.display);
+    }
   }, [props.display]);
 
   useEffect(() => {
-    if (props.data)
+    if (isMounted.current && props.data)
       setAvailableFilters([
         ...new Set(
           props.data.map((e) => e.data[0] as TranslatableResourceType)
@@ -234,6 +248,12 @@ export default function MtAppBar(props: MtAppBarProps) {
               icon={ImportMinor}
               disabled={props.isLoading || !props.isEditing}
               onClick={props.onDownload}></Button>
+          </Tooltip>
+          <Tooltip content={t('AppBar.tutorialHowToTooltip')}>
+            <Button
+              plain
+              icon={QuestionMarkMinor}
+              onClick={props.onResetTutorial}></Button>
           </Tooltip>
         </ButtonGroup>
         <input
