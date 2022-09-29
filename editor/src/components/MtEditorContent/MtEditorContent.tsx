@@ -29,13 +29,18 @@ import getFilePosition from '../../utils/tools/getFilePosition.utils';
 import getEditorLanguage from '../../utils/tools/getEditorLanguage.utils';
 import getDataLength from '../../utils/tools/getDataLength.utils';
 import getStatusColIndex from '../../utils/tools/getStatusColIndex.utils';
-import useTutorial from '../../utils/hooks/useTutorial';
+import MtTranslatorTutorial from '../MtTranslatorTutorial/MtTranslatorTutorial';
 
 import './MtEditorContent.css';
 
 interface MtEditorContentProps {
   onSave: (displayMsg?: boolean, isAutosave?: boolean) => Promise<boolean>;
-  onFileLoad: (args: { file: File, path: string, versionId?: string, token?: string }) => Promise<void>;
+  onFileLoad: (args: {
+    file: File;
+    path: string;
+    versionId?: string;
+    token?: string;
+  }) => Promise<void>;
   onUpload: (objInfo: BucketObjectInfo, file: File) => Promise<void>;
   onDelete: (args: FileInput) => Promise<void>;
   setIsLoading: (loading: boolean) => void;
@@ -46,6 +51,8 @@ interface MtEditorContentProps {
   data: RowData[];
   headerContent?: string[];
   renderedFields: React.MutableRefObject<React.RefObject<MtFieldElement>[]>;
+  isTutorialOpen: boolean;
+  onTutorialClose: () => void;
 }
 
 export type MtEditorContentElement = {
@@ -62,16 +69,13 @@ const MtEditorContent = forwardRef<
   const dataLength = useRef(getDataLength(props.data, props.showOutdated));
 
   const { t } = useTranslation();
-  const tutorial = useTutorial();
 
   const {
-    // TopBar,
-    // topBarProps,
     FileCard,
     fileCardProps,
     PreviewCard,
     previewCardProps,
-    fileUploadEl,
+    // fileUploadEl, // disabled for demo
   } = useFileExplorer({
     onUpload: props.onUpload,
     onFileLoad: props.onFileLoad,
@@ -96,6 +100,7 @@ const MtEditorContent = forwardRef<
     resetPagination,
   }));
 
+  // TODO: work on upload from the file explorer
   // async function handleUpload(objInfo: BucketObjectInfo, file: File) {
   //   await props.onUpload(objInfo, file);
   // }
@@ -113,7 +118,7 @@ const MtEditorContent = forwardRef<
     props.renderedFields.current = [];
 
     function setRow(i: number) {
-      // i.e: (2 x 5) - (5 - [0, 1, 2, 3, 4])
+      // i.e.: (2 x 5) - (5 - [0, 1, 2, 3, 4])
       const index = getFilePosition(selectedPage, maxElementsPerPage, i);
 
       if (index >= props.data.length) {
@@ -145,7 +150,7 @@ const MtEditorContent = forwardRef<
             props.dataType,
             props.display,
             numOfColumns,
-            x,
+            x
           );
 
           if (props.display.includes(x)) {
@@ -242,49 +247,58 @@ const MtEditorContent = forwardRef<
       <MtBackToTopBtn />
       {/* File Editor */}
       {pageContent.length > 0 && isReady ? (
-        <Layout sectioned>
-          <Layout.Section fullWidth>
-            <Grid
-              container
-              columns={props.headerContent?.length || 0}
-              direction="column"
-              justifyContent="flext-start"
-              spacing={1}>
-              {pageContent}
-            </Grid>
-            {props.renderedFields.current.length === 0 && (
-              <EmptyState
-                heading={t('EditorContent.noFieldsEmptyStateHeading')}
-                image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png">
-                {t('EditorContent.noFieldsEmptyStateText')}
-              </EmptyState>
-            )}
-          </Layout.Section>
-          <Layout.Section secondary fullWidth>
-            <Stack distribution="fill" alignment="center">
-              <MtRowsDisplayControl
-                maxRowDisplay={maxElementsPerPage}
-                handleRowsDisplayChange={handleElementsPerPageChange}
-              />
-              <Stack distribution="trailing" alignment="center">
-                <GoToPageField {...goToPageFieldProps} />
-                <ChangePageButtons {...changePageButtonsProps} />
+        <>
+          <MtTranslatorTutorial
+            isOpen={props.isTutorialOpen}
+            onClose={props.onTutorialClose}
+          />
+          <Layout sectioned>
+            <Layout.Section fullWidth>
+              <Grid
+                container
+                columns={props.headerContent?.length || 0}
+                direction="column"
+                justifyContent="flext-start"
+                spacing={1}>
+                {pageContent}
+              </Grid>
+              {props.renderedFields.current.length === 0 && (
+                <EmptyState
+                  heading={t('EditorContent.noFieldsEmptyStateHeading')}
+                  image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png">
+                  {t('EditorContent.noFieldsEmptyStateText')}
+                </EmptyState>
+              )}
+            </Layout.Section>
+            <Layout.Section secondary fullWidth>
+              <Stack distribution="fill" alignment="center">
+                <MtRowsDisplayControl
+                  maxRowDisplay={maxElementsPerPage}
+                  handleRowsDisplayChange={handleElementsPerPageChange}
+                />
+                <Stack distribution="trailing" alignment="center">
+                  <GoToPageField {...goToPageFieldProps} />
+                  <ChangePageButtons {...changePageButtonsProps} />
+                </Stack>
               </Stack>
-            </Stack>
-          </Layout.Section>
-        </Layout>
+            </Layout.Section>
+          </Layout>
+        </>
       ) : (
         // File explorer (Buckaroo)
         <Layout>
+          {/* disabled for demo */}
           {/* {fileUploadEl} */}
           <Layout.Section fullWidth>
             {isWelcomeOpen && (
               <CalloutCard
                 title={t('EditorContent.tutoCardTitle')}
                 illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
-                primaryAction={{ content: t('EditorContent.tutoCardAction'), onAction: () => setIsWelcomeOpen(false) }}
-                onDismiss={() => setIsWelcomeOpen(false)}
-              >
+                primaryAction={{
+                  content: t('EditorContent.tutoCardAction'),
+                  onAction: () => setIsWelcomeOpen(false),
+                }}
+                onDismiss={() => setIsWelcomeOpen(false)}>
                 <p>{t('EditorContent.tutoCardP1')}</p>
                 <p>{t('EditorContent.tutoCardP2')}</p>
                 <p>{t('EditorContent.tutoCardP3')}</p>
@@ -299,6 +313,7 @@ const MtEditorContent = forwardRef<
           </Layout.Section>
 
           <div className="MtEditorContent-DropZone__Outer-Wrapper">
+            {/* Disabled for demo, need to replace by file explorer drop zone */}
             {/* Wrappers are for dynamic sizing */}
             {/*  <div className="MtEditorContent-DropZone__Inner-Wrapper">
                   <MtDropZone onUpload={handleUpload} dataType="Translations" />
