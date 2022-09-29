@@ -33,7 +33,7 @@ import rowDataToString from '../utils/tools/buckaroo/rowDataToString';
 export default function Translator() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [hasClosed, setHasClosed] = useState(false);
+  // const [hasClosed, setHasClosed] = useState(false); // used for file restore
   const [file, setFile] = useState<File | null>(null); // uploaded file or data of restored session (name, size, lastModified, lastSave?, content?)
   const fileRef = useRef<File | null>(null); // used for direct update/access when saving
   const [displayCol, setDisplayCol] = useState<number[]>([2, 6, 7]);
@@ -45,6 +45,9 @@ export default function Translator() {
   >([]);
   const [numOfDisplayedFields, setNumOfDisplayedFields] = useState(0);
   const [displayOutdated, setDisplayOutdated] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState<boolean>(
+    JSON.parse(store.get('openTutorial') || false) || true
+  );
 
   const bucketObjectInfo = useRef<BucketObjectInfo>({
     fileName: '',
@@ -160,7 +163,7 @@ export default function Translator() {
       setFile(null);
       setFileData([]);
       setDisplayedData([]);
-      setHasClosed(true);
+      // setHasClosed(true); // used for file restore
 
       if (isDeleting) {
         store.remove('fileData');
@@ -183,8 +186,8 @@ export default function Translator() {
     async (displayMsg = false, isAutosave = false) => {
       if (parsedData.current.length > 0 && renderedFields.current) {
         // TODO: upgrade saving UX (no backdrop, etc)
+        // i.e.: setIsSaving(true)
 
-        // setIsSaving(true) (?)
         setIsLoading(true);
 
         const [hasEdit, editedFieldsKid] = hasEdited();
@@ -210,7 +213,7 @@ export default function Translator() {
           } else {
             const token = await getAccessTokenSilently();
 
-            // FIXME: failed to fetch - check with staging and production if it's not a problem with the locally hosted Buckaroo server
+            // FIXME: failed to fetch? - check with staging and production backend if it's not a problem with the locally hosted Buckaroo server
             await saveOnline({
               data: rowDataToString(parsedData.current),
               fileName: bucketObjectInfo.current.fileName,
@@ -234,7 +237,12 @@ export default function Translator() {
     [getAccessTokenSilently, hasEdited, t]
   );
 
-  async function handleFileOpen(args: { file: File, path: string, versionId?: string, token?: string }) {
+  async function handleFileOpen(args: {
+    file: File;
+    path: string;
+    versionId?: string;
+    token?: string;
+  }) {
     try {
       if (isEditing) {
         await handleSave(true, true);
@@ -307,7 +315,12 @@ export default function Translator() {
       const token = await getAccessTokenSilently();
 
       await handleCloseFile();
-      await handleFileOpen({ file, path: objInfo.path, versionId: objInfo.versionId, token });
+      await handleFileOpen({
+        file,
+        path: objInfo.path,
+        versionId: objInfo.versionId,
+        token,
+      });
 
       setIsLoading(false);
     } catch (e) {
@@ -422,6 +435,7 @@ export default function Translator() {
     return () => clearInterval(intervalId);
   }, [isEditing, handleSave, isLoading, hasEdited]);
 
+  // This didn't work on some beta-testers systems, need to debug or just remove this feature if deemed useless
   /* AUTO-OPEN (local memory) */
   // useEffect(() => {
   //   async function openFromLocalMemory() {
@@ -498,6 +512,7 @@ export default function Translator() {
         numOfDisplayedFields={numOfDisplayedFields}
         filteredDataIds={setFilteredDataIds}
         filteredDataTypes={setFilteredTypes}
+        onResetTutorial={() => setIsTutorialOpen(true)}
       />
       <Page fullWidth>
         <MtEditorContent
@@ -514,6 +529,8 @@ export default function Translator() {
           isLoading={isLoading}
           setIsLoading={setIsLoading}
           showOutdated={displayOutdated}
+          isTutorialOpen={isTutorialOpen}
+          onTutorialClose={() => setIsTutorialOpen(false)}
         />
         <MtAlert ref={errorEl} />
         <MtAlert ref={alertEl} />
