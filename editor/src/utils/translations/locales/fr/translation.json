@@ -27,9 +27,9 @@
     "lastModifDate": "Modifié il y a {{date}}",
     "lastSaveDate": "Sauvegardé il y a {{date}}",
     "closeTooltip": "Fermer le fichier",
-    "uploadTooltip": "Télécharger un fichier",
-    "saveTooltip": "Sauvegarder",
-    "downloadTooltip": "Télécharger",
+    "uploadTooltip": "Télécharger (upload) un fichier",
+    "saveTooltip": "Sauvegarder le fichier",
+    "downloadTooltip": "Télécharger le fichier",
     "tutorialHowToTooltip": "Comment utiliser l'éditeur ?",
     "ariaToggleGroup": "Champs à afficher",
     "rows": "Rangées :"
@@ -155,6 +155,6 @@
     "firstTxt": "En haut à gauche, vous pouvez trouver les outils de filtrage:\n\n1. La barre de recherche pour filtrer vos traductions basé sur des mots-clés\n2. La fenêtre \"Filter par type\" pour ne montrer que certains types de champs\n3. Le menu des colonnes pour montrer les valeurs de votre choix dans chaque rangées",
     "secondTxt": "En haut ) droite, vous pouvez trouver les actions principales du fichier:\n\n1. Supprimer le fichier de votre espace de stockage\n2. Télécharger (upload) un nouveau fichier depuis votre ordinateur\n3. Sauvegarder vos modifications\n4. Télécharger le fichier sur votre ordinateur\n5. Ouvrir ce tutoriel",
     "thirdTxt": "En bas à gauche, vous pouvez sélectionner le nombre de rangées à afficher dans l'éditeur.",
-    "fourthTxt": "En bas à droite, vous trouverez les outils pour naviguer à travers le fichier:\n\n1. Entrez un numéro de page et appuyez sur Entrée pour vous y rendrez directement\n2. Cliquez sur les flèches pour aller à la page précédente ou suivante"
+    "fourthTxt": "En bas à droite, vous trouverez les outils pour naviguer à travers le fichier:\n\n1. Entrez un numéro de page et appuyez sur Entrée pour vous y rendrez directement\n2. Cliquez sur les flèches pour aller à la page précédente ou suivante\n\nAstuce: vous pouvez naviguer à travers le fichier en utilisant les flèches de votre clavier."
   }
 }

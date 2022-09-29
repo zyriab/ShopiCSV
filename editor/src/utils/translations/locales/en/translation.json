@@ -28,8 +28,8 @@
     "lastSaveDate": "Saved {{date}} ago",
     "closeTooltip": "Close file",
     "uploadTooltip": "Upload a file",
-    "saveTooltip": "Save",
-    "downloadTooltip": "Download",
+    "saveTooltip": "Save file",
+    "downloadTooltip": "Download file",
     "tutorialHowToTooltip": "How to use the editor?",
     "ariaToggleGroup": "Fields to display",
     "rows": "Rows:"
@@ -155,6 +155,6 @@
     "firstTxt": "On the top left, you can find the filtering tools:\n\n1. The search bar to filter your translations by keywords\n2. The \"Filter by type\" dialog to only show certain types of fields\n3. The column menu to show the desired values out of each row",
     "secondTxt": "On the top right, you can find the main file actions:\n\n1. Delete file from storage\n2. Upload a new file from your computer\n3. Save your modifications\n4. Download the file on your computer\n5. Open this tutorial",
     "thirdTxt": "On the bottom left, you can select the number of rows to display in the editor.",
-    "fourthTxt": "On the bottom right, you will find the tools to navigate through the file:\n\n1. Enter a page number and press Return to go there directly\n2. Press the arrows to go to the previous or next page"
+    "fourthTxt": "On the bottom right, you will find the tools to navigate through the file:\n\n1. Enter a page number and press Return to go there directly\n2. Press the arrows to go to the previous or next page\n\nTip: you can navigate through the file using the arrows on your keyboard."
   }
 }
