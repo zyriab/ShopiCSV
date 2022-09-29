@@ -2,7 +2,6 @@ import { ThemeOptions } from '@mui/material';
 import merge from 'lodash.merge';
 
 // TODO: check that all colors comply with Shopify colors (light and dark, very small variations between text primary, action primary, etc)
-// Also finish cloning Polaris' Navigation (subheader, etc)
 
 const PRIMARY_COLOR = '#178b6e';
 
