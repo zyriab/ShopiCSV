@@ -26,7 +26,8 @@ export default function MtNavBar() {
               {
                 content: t('General.logout'),
                 icon: LogOutMinor,
-                onAction: () => logout({ returnTo: window.location.origin }),
+                // onAction: () => logout({ returnTo: window.location.origin }),
+                onAction: () => console.log('Cannot logout on demo ;)'), // TODO: remove this in production
               },
             ],
           },
