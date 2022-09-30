@@ -14,8 +14,6 @@ interface MtTranslatorTutorialProps {
   onClose: () => void;
 }
 
-// TODO: implement reset and use store to check if tutorial has already been read :)
-
 export default function MtTranslatorTutorial(props: MtTranslatorTutorialProps) {
   const [step, setStep] = useState(0);
 
