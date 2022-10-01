@@ -12,7 +12,7 @@ export function useAuth0() {
     setIsAuthenticated(true);
     setUser({
       nickname: slug,
-      name: `${slug} Mc${slug}`,
+      name: slug,
       email: `${slug}@metaoist.io`,
     });
 
