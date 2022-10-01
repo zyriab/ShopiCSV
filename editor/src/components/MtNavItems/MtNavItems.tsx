@@ -1,7 +1,7 @@
 import React from 'react';
 import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
 import { useNavigate } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0 } from '../../utils/hooks/useAuth0';
 import Stack from '@mui/material/Stack';
 import SvgIcon from '@mui/material/SvgIcon';
 import ListItem from '@mui/material/ListItem';

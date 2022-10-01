@@ -7,7 +7,7 @@ import saveOnline from '../utils/tools/buckaroo/saveOnline.utils';
 // import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { useConfirm } from 'material-ui-confirm';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0 } from '../utils/hooks/useAuth0';
 import { MtAlert, MtAlertElement } from '../components/MtAlert/MtAlert';
 import MtAppBar from '../components/MtAppBar/MtAppBar';
 import {

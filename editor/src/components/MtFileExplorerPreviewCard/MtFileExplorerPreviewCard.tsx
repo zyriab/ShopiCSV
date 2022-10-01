@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0 } from '../../utils/hooks/useAuth0';
 import { useTranslation } from 'react-i18next';
 import {
   Card,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0 } from '../../utils/hooks/useAuth0';
 import MtFileExplorerFileCard, {
   MtFileExplorerFileCardProps,
 } from '../../components/MtFileExplorerFileCard/MtFileExplorerFileCard';
