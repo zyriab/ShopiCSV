@@ -4,8 +4,18 @@ import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
 import MtDarkModeSwitch from '../MtDarkModeSwitch/MtDarkModeSwitch';
 import { MtAuthenticationBtn } from '../AuthButtons/MtAuthenticationBtn';
 import { MtLanguageSelector } from '../MtLanguageSelector/MtLanguageSelector';
-import { CustomProperties, Stack, TopBar } from '@shopify/polaris';
-import { LogOutMinor } from '@shopify/polaris-icons';
+import {
+  ActionListItemDescriptor,
+  CustomProperties,
+  Icon,
+  Stack,
+  TopBar,
+} from '@shopify/polaris';
+import {
+  LogOutMinor,
+  ExternalSmallMinor,
+  QuestionMarkMinor,
+} from '@shopify/polaris-icons';
 import { useTranslation } from 'react-i18next';
 import MtNavMenu from '../MtNavMenu/MtNavMenu';
 
@@ -29,6 +39,17 @@ export default function MtNavBar() {
                 onAction: () => logout({ returnTo: window.location.origin }),
               },
             ],
+          },
+          {
+            items: [
+              {
+                content: 'How to use ShopiCSV',
+                icon: QuestionMarkMinor,
+                suffix: <Icon source={ExternalSmallMinor} />,
+                url: 'https://metaoist.io/',
+                external: true,
+              },
+            ] as ActionListItemDescriptor[],
           },
         ]}
         name={user?.nickname || 'Not connected'}
