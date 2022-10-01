@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
-import { useAuth0 } from '../../utils/hooks/useAuth0';
+import { useAuth0 } from '@auth0/auth0-react';
 import { useTranslation } from 'react-i18next';
 import {
   Card,
@@ -26,7 +26,6 @@ import isDirectory from '../../utils/tools/fileExplorer/isDirectory.utils';
 import getDifferences from '../../utils/tools/fileExplorer/getDifferences.utils';
 import getFileContent from '../../utils/tools/buckaroo/getFileContent.utils';
 import { RowData, FileInput } from '../../definitions/custom';
-import { mockFileContentV1 } from '../../utils/tools/demo/filesContent.utils';
 
 import './MtFileExplorerPreviewCard.css';
 
@@ -68,11 +67,6 @@ export default function MtFileExplorerPreviewCard(
 
   const fetchObjectsContent = useCallback(async () => {
     if (selectedObject == null) {
-      return;
-    }
-
-    if (process.env.REACT_APP_ENV === 'demo') {
-      selectedObject.content = mockFileContentV1.content;
       return;
     }
 
@@ -144,7 +138,7 @@ export default function MtFileExplorerPreviewCard(
   }
 
   async function handleDelete() {
-    if (selectedObject == null || process.env.REACT_APP_ENV === 'demo') {
+    if (selectedObject == null) {
       return;
     }
 
@@ -269,11 +263,7 @@ export default function MtFileExplorerPreviewCard(
       </Stack>
       <Stack distribution="trailing">
         <ButtonGroup>
-          <Button
-            onClick={handleDelete}
-            icon={DeleteMinor}
-            disabled={process.env.REACT_APP_ENV === 'demo'}
-            destructive>
+          <Button onClick={handleDelete} icon={DeleteMinor} destructive>
             {t('FileExplorer.PreviewCard.delete')}
           </Button>
           {isDirectory(name) ? (

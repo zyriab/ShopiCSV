@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth0 } from '../../utils/hooks/useAuth0';
+import { useAuth0 } from '@auth0/auth0-react';
 import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
 import MtDarkModeSwitch from '../MtDarkModeSwitch/MtDarkModeSwitch';
 import { MtAuthenticationBtn } from '../AuthButtons/MtAuthenticationBtn';
@@ -17,8 +17,6 @@ export default function MtNavBar() {
   const { isAuthenticated, user, logout } = useAuth0();
   const { isMobile } = useDetectScreenSize();
 
-  const isDemo = process.env.REACT_APP_ENV === 'demo';
-
   const userMenuEl = isAuthenticated ? (
     <div className="ml-05">
       <TopBar.UserMenu
@@ -28,10 +26,7 @@ export default function MtNavBar() {
               {
                 content: t('General.logout'),
                 icon: LogOutMinor,
-                onAction: () =>
-                  isDemo
-                    ? console.log('Cannot logout on demo ;)')
-                    : logout({ returnTo: window.location.origin }),
+                onAction: () => logout({ returnTo: window.location.origin }),
               },
             ],
           },

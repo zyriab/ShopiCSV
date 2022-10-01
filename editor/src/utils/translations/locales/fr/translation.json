@@ -40,8 +40,7 @@
     "tutoCardTitle": "Bienvenue dans la démo ShopiCSV",
     "tutoCardAction": "C'est compris !",
     "tutoCardP1": "Ici vous pouvez tester les fonctionnalités de base de l'éditeur de traductions.",
-    "tutoCardP2": "Vous pouvez commencer par double cliquer sur le dossier ci-dessous et comparer le fichier CSV avec une version plus ancienne pour la restaurer ou simplement charger la version actuelle dans l'éditeur.",
-    "tutoCardP3": "(Notez que certaines fonctionnalités tel que la suppression et le téléchargement (upload) de fichier est désactivé pour la démo)."
+    "tutoCardP2": "Vous pouvez commencer par double cliquer sur le dossier ci-dessous et comparer le fichier CSV avec une version plus ancienne pour la restaurer ou simplement charger la version actuelle dans l'éditeur."
   },
   "RestoreSessionDialog": {
     "title": "Restaurer la dernière session ?",

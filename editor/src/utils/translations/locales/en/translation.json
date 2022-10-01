@@ -37,11 +37,10 @@
   "EditorContent": {
     "noFieldsEmptyStateHeading": "No fields to display",
     "noFieldsEmptyStateText": "No fields match your criteria, try to broaden your filters.",
-    "tutoCardTitle": "Welcome to ShopiCSV demo",
+    "tutoCardTitle": "Welcome to ShopiCSV",
     "tutoCardAction": "Got it!",
     "tutoCardP1": "Here, you can check out the fundamental features of the translations editor.",
-    "tutoCardP2": "You can start by double clicking on the directory below and compare the CSV file with an older version to restore it or just load the current one in the editor.",
-    "tutoCardP3": "(Note that some features such as deleting or uploading a file are disabled for the sake of the demo)."
+    "tutoCardP2": "You can start by double clicking on the directory below and compare the CSV file with an older version to restore it or just load the current one in the editor."
   },
   "RestoreSessionDialog": {
     "title": "Restore last session?",

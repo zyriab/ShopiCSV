@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { useAuth0 } from './utils/hooks/useAuth0';
+import { useAuth0 } from '@auth0/auth0-react';
 import useLogo from './utils/hooks/useLogo';
 import { ConfirmProvider } from 'material-ui-confirm';
 import MtThemeProvider from './components/MtThemeProvider/MtThemeProvider';

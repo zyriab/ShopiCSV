@@ -7,7 +7,7 @@ import saveOnline from '../utils/tools/buckaroo/saveOnline.utils';
 // import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { useConfirm } from 'material-ui-confirm';
-import { useAuth0 } from '../utils/hooks/useAuth0';
+import { useAuth0 } from '@auth0/auth0-react';
 import { MtAlert, MtAlertElement } from '../components/MtAlert/MtAlert';
 import MtAppBar from '../components/MtAppBar/MtAppBar';
 import {
@@ -22,7 +22,6 @@ import {
   BucketObjectInfo,
   TranslatableResourceType,
 } from '../definitions/custom';
-import saveFileLocally from '../utils/tools/demo/saveFileLocally.utils';
 import getUpdatedParsedData from '../utils/tools/getUpdatedParsedData.utils';
 import deleteObject from '../utils/tools/buckaroo/deleteObject.utils';
 import downloadAndSaveObjectLocally from '../utils/tools/buckaroo/downloadAndSaveObjectLocally.utils';
@@ -61,7 +60,7 @@ export default function Translator() {
   const contentRef = useRef<MtEditorContentElement>(null!);
 
   const confirmationDialog = useConfirm();
-  const { t, i18n } = useTranslation();
+  const { t /* ,i18n */ } = useTranslation();
   const { getAccessTokenSilently } = useAuth0();
 
   function displayAlert(message: string, isError: boolean = false) {
@@ -167,10 +166,7 @@ export default function Translator() {
 
       if (isDeleting) {
         store.remove('fileData');
-
-        if (process.env.REACT_APP_ENV !== 'demo') {
-          await handleDeleteFile(bucketObjectInfo.current, false);
-        }
+        await handleDeleteFile(bucketObjectInfo.current, false);
       }
 
       setIsEditing(false);
@@ -203,23 +199,14 @@ export default function Translator() {
 
           setFileData([...parsedData.current]);
 
-          if (process.env.REACT_APP_ENV === 'demo') {
-            saveFileLocally({
-              content: parsedData.current,
-              name: bucketObjectInfo.current.fileName,
-              size: fileRef.current?.size || -1,
-              lastModified: fileRef.current?.lastModified || Date.now(),
-            });
-          } else {
-            const token = await getAccessTokenSilently();
+          const token = await getAccessTokenSilently();
 
-            // FIXME: failed to fetch? - check with staging and production backend if it's not a problem with the locally hosted Buckaroo server
-            await saveOnline({
-              data: rowDataToString(parsedData.current),
-              fileName: bucketObjectInfo.current.fileName,
-              token,
-            });
-          }
+          // FIXME: failed to fetch? - check with staging and production backend if it's not a problem with the locally hosted Buckaroo server
+          await saveOnline({
+            data: rowDataToString(parsedData.current),
+            fileName: bucketObjectInfo.current.fileName,
+            token,
+          });
 
           if (displayMsg) {
             displayAlert(`${t('Save.success')} 💾`);

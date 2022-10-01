@@ -75,7 +75,7 @@ const MtEditorContent = forwardRef<
     fileCardProps,
     PreviewCard,
     previewCardProps,
-    // fileUploadEl, // disabled for demo
+    fileUploadEl,
   } = useFileExplorer({
     onUpload: props.onUpload,
     onFileLoad: props.onFileLoad,
@@ -287,8 +287,7 @@ const MtEditorContent = forwardRef<
       ) : (
         // File explorer (Buckaroo)
         <Layout>
-          {/* disabled for demo */}
-          {/* {fileUploadEl} */}
+          {fileUploadEl}
           <Layout.Section fullWidth>
             {isWelcomeOpen && (
               <CalloutCard
@@ -301,7 +300,6 @@ const MtEditorContent = forwardRef<
                 onDismiss={() => setIsWelcomeOpen(false)}>
                 <p>{t('EditorContent.tutoCardP1')}</p>
                 <p>{t('EditorContent.tutoCardP2')}</p>
-                <p>{t('EditorContent.tutoCardP3')}</p>
               </CalloutCard>
             )}
           </Layout.Section>
@@ -313,7 +311,7 @@ const MtEditorContent = forwardRef<
           </Layout.Section>
 
           <div className="MtEditorContent-DropZone__Outer-Wrapper">
-            {/* Disabled for demo, need to replace by file explorer drop zone */}
+            {/* TODO: replace by file explorer drop zone */}
             {/* Wrappers are for dynamic sizing */}
             {/*  <div className="MtEditorContent-DropZone__Inner-Wrapper">
                   <MtDropZone onUpload={handleUpload} dataType="Translations" />

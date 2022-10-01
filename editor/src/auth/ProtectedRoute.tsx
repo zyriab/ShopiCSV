@@ -7,10 +7,6 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute(props: ProtectedRouteProps) {
-  if (process.env.REACT_APP_ENV === 'demo') {
-    return <props.component {...props.other} />;
-  }
-
   const Component = withAuthenticationRequired(props.component);
   return <Component {...props.other} />;
 }

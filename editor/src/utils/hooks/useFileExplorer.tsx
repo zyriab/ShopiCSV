@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useAuth0 } from '../../utils/hooks/useAuth0';
+import { useAuth0 } from '@auth0/auth0-react';
 import MtFileExplorerFileCard, {
   MtFileExplorerFileCardProps,
 } from '../../components/MtFileExplorerFileCard/MtFileExplorerFileCard';
@@ -15,10 +15,6 @@ import { BucketObjectInfo, FileInput } from '../../definitions/custom';
 import getDataType from '../tools/getDataType.utils';
 import getPathRelativeName from '../tools/fileExplorer/getPathRelativeName.utils';
 import isDirectory from '../tools/fileExplorer/isDirectory.utils';
-import {
-  mockFileContentV1,
-  mockFileContentV2,
-} from '../tools/demo/filesContent.utils';
 
 import './MtFileExplorer.css';
 
@@ -110,35 +106,8 @@ export default function useFileExplorer(props: useFileExplorerProps) {
     if (isMounted.current) {
       setIsFetchingObjects(true);
 
-      let files: BucketObject[] = [];
-
-      if (process.env.REACT_APP_ENV === 'demo') {
-        const f1v2 = {
-          id: '1',
-          path: 'My store/',
-          content: mockFileContentV2.content,
-          size: 3235620,
-          lastModified: new Date(
-            new Date(2021, 0, 1).getTime() +
-              Math.random() *
-                (new Date().getTime() - new Date(2021, 0, 1).getTime())
-          ),
-        };
-        const f1 = {
-          id: '0',
-          name: 'FR-EN store translation.csv',
-          path: 'My store/',
-          content: mockFileContentV1.content,
-          size: 3452341,
-          lastModified: new Date(),
-          versions: [f1v2],
-        };
-
-        files = [f1];
-      } else {
-        const token = await getAccessTokenSilently();
-        files = await listBucketContent({ token });
-      }
+      const token = await getAccessTokenSilently();
+      const files = await listBucketContent({ token });
 
       setIsFetchingObjects(false);
 
