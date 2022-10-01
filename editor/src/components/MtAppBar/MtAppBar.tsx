@@ -232,7 +232,7 @@ export default function MtAppBar(props: MtAppBarProps) {
             <Button
               plain
               icon={ExportMinor}
-              disabled={props.isLoading || process.env.REACT_APP_ENV === 'demo'}
+              disabled
               onClick={() => inputEl.current?.click()}></Button>
           </Tooltip>
           <Tooltip content={t('AppBar.saveTooltip')}>

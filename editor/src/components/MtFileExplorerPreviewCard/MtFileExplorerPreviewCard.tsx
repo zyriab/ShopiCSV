@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
-import { useAuth0 } from '../../utils/hooks/useAuth0';
 import { useTranslation } from 'react-i18next';
 import {
   Card,
@@ -24,7 +23,6 @@ import {
 import formatBytes from '../../utils/tools/formatBytes.utils';
 import isDirectory from '../../utils/tools/fileExplorer/isDirectory.utils';
 import getDifferences from '../../utils/tools/fileExplorer/getDifferences.utils';
-import getFileContent from '../../utils/tools/buckaroo/getFileContent.utils';
 import { RowData, FileInput } from '../../definitions/custom';
 import { mockFileContentV1 } from '../../utils/tools/demo/filesContent.utils';
 
@@ -63,7 +61,6 @@ export default function MtFileExplorerPreviewCard(
   const name = getPathRelativeName(fullName, props.path);
   const path = `${props.path.join('/')}/`;
 
-  const { getAccessTokenSilently } = useAuth0();
   const { t } = useTranslation();
 
   const fetchObjectsContent = useCallback(async () => {
@@ -71,27 +68,9 @@ export default function MtFileExplorerPreviewCard(
       return;
     }
 
-    if (process.env.REACT_APP_ENV === 'demo') {
-      selectedObject.content = mockFileContentV1.content;
-      return;
-    }
-
-    const args = {
-      token: await getAccessTokenSilently(),
-      fileName: selectedObject.name,
-      path: selectedObject.path.split('/').slice(1).join('/'),
-      versionId: selectedObject.id,
-    };
-
-    selectedObject.content = await getFileContent(args);
-
-    if (selectedVersionObject != null) {
-      selectedVersionObject.content = await getFileContent({
-        ...args,
-        versionId: selectedVersionObject.id,
-      });
-    }
-  }, [getAccessTokenSilently, selectedObject, selectedVersionObject]);
+    selectedObject.content = mockFileContentV1.content;
+    return;
+  }, [selectedObject]);
 
   async function handleLoad() {
     if (isLoadingFile || selectedObject == null || isDirectory(name)) {
@@ -141,20 +120,6 @@ export default function MtFileExplorerPreviewCard(
       path: selectedObject.path,
       versionId: selectedObject.id,
     });
-  }
-
-  async function handleDelete() {
-    if (selectedObject == null || process.env.REACT_APP_ENV === 'demo') {
-      return;
-    }
-
-    const args = {
-      fileName: selectedObject.name,
-      path: selectedObject.path.split('/').slice(1).join('/'),
-      versionId: selectedObject.id,
-    };
-
-    await props.onDelete(args);
   }
 
   const handleSelection = useCallback(
@@ -269,11 +234,7 @@ export default function MtFileExplorerPreviewCard(
       </Stack>
       <Stack distribution="trailing">
         <ButtonGroup>
-          <Button
-            onClick={handleDelete}
-            icon={DeleteMinor}
-            disabled={process.env.REACT_APP_ENV === 'demo'}
-            destructive>
+          <Button onClick={() => {}} icon={DeleteMinor} disabled destructive>
             {t('FileExplorer.PreviewCard.delete')}
           </Button>
           {isDirectory(name) ? (
@@ -404,8 +365,6 @@ export default function MtFileExplorerPreviewCard(
         );
       }
 
-      // setSelectedVersionObject(undefined);
-
       return (
         <div style={{ minHeight: '320px' }}>
           <EmptyState
@@ -451,7 +410,6 @@ export default function MtFileExplorerPreviewCard(
 
   return (
     <Card>
-      {/* <div style={{ width: '680px' }}> */}
       <div>
         {selectedObject ? (
           <>

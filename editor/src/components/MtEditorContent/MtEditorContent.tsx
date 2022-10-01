@@ -23,7 +23,6 @@ import { MtSpinner } from '../MtSpinner/MtSpinner';
 import { MtBackToTopBtn } from '../MtBackToTopBtn/MtBackToTopBtn';
 import { MtEditorField, MtFieldElement } from '../MtEditorField/MtEditorField';
 import useFileExplorer from '../../utils/hooks/useFileExplorer';
-// import { MtDropZone } from '../MtDropZone/MtDropZone';
 import { Stack, Layout, EmptyState, CalloutCard } from '@shopify/polaris';
 import getFilePosition from '../../utils/tools/getFilePosition.utils';
 import getEditorLanguage from '../../utils/tools/getEditorLanguage.utils';
@@ -70,17 +69,12 @@ const MtEditorContent = forwardRef<
 
   const { t } = useTranslation();
 
-  const {
-    FileCard,
-    fileCardProps,
-    PreviewCard,
-    previewCardProps,
-    // fileUploadEl, // disabled for demo
-  } = useFileExplorer({
-    onUpload: props.onUpload,
-    onFileLoad: props.onFileLoad,
-    onDelete: props.onDelete,
-  });
+  const { FileCard, fileCardProps, PreviewCard, previewCardProps } =
+    useFileExplorer({
+      onUpload: props.onUpload,
+      onFileLoad: props.onFileLoad,
+      onDelete: props.onDelete,
+    });
 
   const {
     previousPageNum,
@@ -99,11 +93,6 @@ const MtEditorContent = forwardRef<
   useImperativeHandle(ref, () => ({
     resetPagination,
   }));
-
-  // TODO: work on upload from the file explorer
-  // async function handleUpload(objInfo: BucketObjectInfo, file: File) {
-  //   await props.onUpload(objInfo, file);
-  // }
 
   const displayPage = useCallback(async () => {
     setIsReady(false);
@@ -287,8 +276,6 @@ const MtEditorContent = forwardRef<
       ) : (
         // File explorer (Buckaroo)
         <Layout>
-          {/* disabled for demo */}
-          {/* {fileUploadEl} */}
           <Layout.Section fullWidth>
             {isWelcomeOpen && (
               <CalloutCard
@@ -311,14 +298,6 @@ const MtEditorContent = forwardRef<
           <Layout.Section>
             <PreviewCard {...previewCardProps} />
           </Layout.Section>
-
-          <div className="MtEditorContent-DropZone__Outer-Wrapper">
-            {/* Disabled for demo, need to replace by file explorer drop zone */}
-            {/* Wrappers are for dynamic sizing */}
-            {/*  <div className="MtEditorContent-DropZone__Inner-Wrapper">
-                  <MtDropZone onUpload={handleUpload} dataType="Translations" />
-                </div>*/}
-          </div>
         </Layout>
       )}
     </>

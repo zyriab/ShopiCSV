@@ -14,10 +14,8 @@ export default function MtNavBar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const { t } = useTranslation();
-  const { isAuthenticated, user, logout } = useAuth0();
+  const { isAuthenticated, user } = useAuth0();
   const { isMobile } = useDetectScreenSize();
-
-  const isDemo = process.env.REACT_APP_ENV === 'demo';
 
   const userMenuEl = isAuthenticated ? (
     <div className="ml-05">
@@ -28,10 +26,7 @@ export default function MtNavBar() {
               {
                 content: t('General.logout'),
                 icon: LogOutMinor,
-                onAction: () =>
-                  isDemo
-                    ? console.log('Cannot logout on demo ;)')
-                    : logout({ returnTo: window.location.origin }),
+                onAction: () => console.log('Cannot logout on demo ;)'),
               },
             ],
           },

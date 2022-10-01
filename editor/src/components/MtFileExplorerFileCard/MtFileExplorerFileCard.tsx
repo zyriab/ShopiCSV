@@ -92,7 +92,6 @@ export default function MtFileExplorerFileCard(
               </Stack.Item>
             ) : (
               <Stack.Item fill>
-                {/* <div style={{ width: '640px' }}> */}
                 {props.isLoading && <MtSpinner />}
                 <div>
                   <EmptyState

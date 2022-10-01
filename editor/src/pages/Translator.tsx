@@ -7,7 +7,6 @@ import saveOnline from '../utils/tools/buckaroo/saveOnline.utils';
 // import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { useConfirm } from 'material-ui-confirm';
-import { useAuth0 } from '../utils/hooks/useAuth0';
 import { MtAlert, MtAlertElement } from '../components/MtAlert/MtAlert';
 import MtAppBar from '../components/MtAppBar/MtAppBar';
 import {
@@ -18,16 +17,11 @@ import { MtFieldElement } from '../components/MtEditorField/MtEditorField';
 import { Page } from '@shopify/polaris';
 import {
   RowData,
-  FileInput,
   BucketObjectInfo,
   TranslatableResourceType,
 } from '../definitions/custom';
 import saveFileLocally from '../utils/tools/demo/saveFileLocally.utils';
 import getUpdatedParsedData from '../utils/tools/getUpdatedParsedData.utils';
-import deleteObject from '../utils/tools/buckaroo/deleteObject.utils';
-import downloadAndSaveObjectLocally from '../utils/tools/buckaroo/downloadAndSaveObjectLocally.utils';
-import { getDownloadUrl } from '../utils/tools/buckaroo/queries.utils';
-import { generateSlug } from 'random-word-slugs';
 import rowDataToString from '../utils/tools/buckaroo/rowDataToString';
 
 export default function Translator() {
@@ -61,8 +55,7 @@ export default function Translator() {
   const contentRef = useRef<MtEditorContentElement>(null!);
 
   const confirmationDialog = useConfirm();
-  const { t, i18n } = useTranslation();
-  const { getAccessTokenSilently } = useAuth0();
+  const { t } = useTranslation();
 
   function displayAlert(message: string, isError: boolean = false) {
     if (isError) return errorEl.current.show({ message, isError });
@@ -87,45 +80,6 @@ export default function Translator() {
     }
     return [hasEdit, editedFieldsKid];
   }, []);
-
-  async function handleDeleteFile(args: FileInput, confirm = true) {
-    const alreadyLoading = isLoading;
-
-    setIsLoading(true);
-
-    if (confirm) {
-      try {
-        await confirmationDialog({
-          allowClose: false,
-          title: t('DeleteObjectDialog.title'),
-          description: t('DeleteObjectDialog.description'),
-          confirmationText: t('DeleteObjectDialog.yes'),
-          cancellationText: t('DeleteObjectDialog.no'),
-          confirmationButtonProps: {
-            color: 'error',
-            disableElevation: true,
-            variant: 'contained',
-          },
-          cancellationButtonProps: {
-            disableElevation: true,
-            variant: 'contained',
-          },
-        });
-      } catch {
-        return;
-      }
-    }
-
-    const token = await getAccessTokenSilently();
-
-    try {
-      await deleteObject({ ...args, token });
-    } catch (e) {
-      displayAlert((e as Error).message, true);
-    }
-
-    setIsLoading(alreadyLoading ? true : false);
-  }
 
   async function handleCloseFile(deleteFile = false) {
     try {
@@ -167,10 +121,6 @@ export default function Translator() {
 
       if (isDeleting) {
         store.remove('fileData');
-
-        if (process.env.REACT_APP_ENV !== 'demo') {
-          await handleDeleteFile(bucketObjectInfo.current, false);
-        }
       }
 
       setIsEditing(false);
@@ -203,23 +153,12 @@ export default function Translator() {
 
           setFileData([...parsedData.current]);
 
-          if (process.env.REACT_APP_ENV === 'demo') {
-            saveFileLocally({
-              content: parsedData.current,
-              name: bucketObjectInfo.current.fileName,
-              size: fileRef.current?.size || -1,
-              lastModified: fileRef.current?.lastModified || Date.now(),
-            });
-          } else {
-            const token = await getAccessTokenSilently();
-
-            // FIXME: failed to fetch? - check with staging and production backend if it's not a problem with the locally hosted Buckaroo server
-            await saveOnline({
-              data: rowDataToString(parsedData.current),
-              fileName: bucketObjectInfo.current.fileName,
-              token,
-            });
-          }
+          saveFileLocally({
+            content: parsedData.current,
+            name: bucketObjectInfo.current.fileName,
+            size: fileRef.current?.size || -1,
+            lastModified: fileRef.current?.lastModified || Date.now(),
+          });
 
           if (displayMsg) {
             displayAlert(`${t('Save.success')} 💾`);
@@ -234,7 +173,7 @@ export default function Translator() {
       }
       return false;
     },
-    [getAccessTokenSilently, hasEdited, t]
+    [hasEdited, t]
   );
 
   async function handleFileOpen(args: {
@@ -303,37 +242,6 @@ export default function Translator() {
     }
   }
 
-  async function handleUpload(objInfo: BucketObjectInfo, file: File) {
-    try {
-      setIsLoading(true);
-
-      bucketObjectInfo.current = {
-        ...objInfo,
-        fileName: objInfo.fileName || generateSlug(),
-      };
-
-      const token = await getAccessTokenSilently();
-
-      await handleCloseFile();
-      await handleFileOpen({
-        file,
-        path: objInfo.path,
-        versionId: objInfo.versionId,
-        token,
-      });
-
-      setIsLoading(false);
-    } catch (e) {
-      bucketObjectInfo.current = {
-        fileName: '',
-        path: '',
-        versionId: undefined,
-      };
-
-      displayAlert((e as Error).message, true);
-    }
-  }
-
   async function handleDownload() {
     try {
       if (parsedData.current) {
@@ -350,22 +258,6 @@ export default function Translator() {
 
         displayAlert('Yee haw! 🤠');
         handleCloseFile();
-        return;
-      }
-
-      if (bucketObjectInfo.current.fileName) {
-        const token = await getAccessTokenSilently();
-        const url = await getDownloadUrl({
-          ...bucketObjectInfo.current,
-          token,
-        });
-
-        await downloadAndSaveObjectLocally({
-          url,
-          objectName: bucketObjectInfo.current.fileName,
-        });
-
-        displayAlert('Yee haw! 🤠');
         return;
       }
 
@@ -435,62 +327,6 @@ export default function Translator() {
     return () => clearInterval(intervalId);
   }, [isEditing, handleSave, isLoading, hasEdited]);
 
-  // This didn't work on some beta-testers systems, need to debug or just remove this feature if deemed useless
-  /* AUTO-OPEN (local memory) */
-  // useEffect(() => {
-  //   async function openFromLocalMemory() {
-  //     try {
-  //       await confirmationDialog({
-  //         allowClose: true,
-  //         title: t('RestoreSessionDialog.title'),
-  //         description: t('RestoreSessionDialog.description', {
-  //           date: formatDistanceToNow(new Date(store.get('fileData').savedAt), {
-  //             locale: getDateLocale(),
-  //           }),
-  //         }),
-  //         confirmationText: t('General.yesUpper'),
-  //         cancellationText: t('General.noUpper'),
-  //         confirmationButtonProps: {
-  //           disableElevation: true,
-  //           variant: 'contained',
-  //         },
-  //         cancellationButtonProps: {
-  //           disableElevation: true,
-  //           variant: 'contained',
-  //         },
-  //       });
-
-  //       setIsLoading(true);
-  //       setIsEditing(false);
-
-  //       parsedData.current = [];
-  //       parsedData.current = store.get('fileData').content;
-  //       setFileData([...parsedData.current]);
-  //       setDisplayedData([...parsedData.current]);
-
-  //       fileRef.current = { ...store.get('fileData') };
-  //       setFile({ ...store.get('fileData') });
-
-  //       displayAlert(
-  //         `${t('RestoreSessionDialog.alertMsg', {
-  //           date: store.get('fileData').savedAt,
-  //         })} 🐘`
-  //       );
-
-  //       setIsLoading(false);
-  //       setIsEditing(true);
-  //     } catch {
-  //       store.remove('fileData');
-  //     }
-  //   }
-
-  //   if (!isEditing && !hasClosed) {
-  //     if (store.get('fileData')) {
-  //       openFromLocalMemory();
-  //     }
-  //   }
-  // }, [isEditing, hasClosed, confirmationDialog, t, i18n.resolvedLanguage]);
-
   useEffect(() => {
     store.remove('columns');
     store.set('columns', JSON.stringify(displayCol));
@@ -502,7 +338,7 @@ export default function Translator() {
         data={fileData}
         display={displayCol}
         onDisplayChange={setDisplayCol}
-        onUpload={async (e) => await handleUpload(bucketObjectInfo.current, e)}
+        onUpload={async () => {}}
         onSave={handleSave}
         onDownload={handleDownload}
         onClose={handleCloseFile}
@@ -524,8 +360,8 @@ export default function Translator() {
           renderedFields={renderedFields}
           onSave={handleSave}
           onFileLoad={handleFileOpen}
-          onUpload={handleUpload}
-          onDelete={handleDeleteFile}
+          onUpload={async () => {}}
+          onDelete={async () => {}}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
           showOutdated={displayOutdated}

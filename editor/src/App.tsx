@@ -22,13 +22,8 @@ function App() {
 
   /* Setting up user behavior logging */
   useEffect(() => {
-    if (
-      process.env.NODE_ENV !== 'development' &&
-      process.env.NODE_ENV !== 'test'
-    ) {
-      LogRocket.init('8dmljr/shopicsv');
-      isInit.current = true;
-    }
+    LogRocket.init('8dmljr/shopicsv');
+    isInit.current = true;
   }, []);
 
   useEffect(() => {
