@@ -17,6 +17,10 @@ export const AuthProvider = (props: AppProps) => {
     navigate(appState?.returnTo || window.location.pathname);
   };
 
+  if (process.env.REACT_APP_ENV === 'demo') {
+    return <>{props.children}</>;
+  }
+
   return (
     <Auth0Provider
       domain={domain}
