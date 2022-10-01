@@ -11,7 +11,7 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
   const [maxElementsPerPage, setMaxElementsPerPage] = useState(
     store.get(`${maxElemStorageId}`) === 0
       ? dataLength
-      : store.get(`${maxElemStorageId}`) || 4
+      : store.get(`${maxElemStorageId}`) || 8
   );
   const [maxPageNum, setMaxPageNum] = useState(
     maxElementsPerPage !== 0
