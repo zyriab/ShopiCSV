@@ -1,5 +1,5 @@
-# Reference boilerplate
-ts-boilerplate/
+# Custom
+*.pseudo
 
 # Logs
 logs

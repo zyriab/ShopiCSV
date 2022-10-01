@@ -20,19 +20,20 @@ import {
   ImportMinor,
   SaveMinor,
   DeleteMinor,
+  QuestionMarkMinor,
 } from '@shopify/polaris-icons';
 import { MtSearchField } from '../MtSearchField/MtSearchField';
-import { MtFieldsFilter } from '../MtFieldsFilter/MtFieldsFilter';
+import MtFieldsFilter from '../MtFieldsFilter/MtFieldsFilter';
 import MtColumnSelector from '../MtColumnSelector/MtColumnSelector';
 import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
 
 interface MtAppBarProps {
   onDownload: () => void;
-  onSave: (displayMsg?: boolean, isAutosave?: boolean) => boolean;
-  onUpload: (
-    e: React.ChangeEvent<HTMLInputElement> | { target: DataTransfer }
-  ) => Promise<void>;
+  onSave: (displayMsg?: boolean, isAutosave?: boolean) => Promise<boolean>;
+  onUpload: (file: File) => Promise<void>;
   onClose: (deleteFile?: boolean) => Promise<void>;
+  onShowOutdated: (show: boolean) => void;
+  onResetTutorial: () => void;
   isLoading: boolean;
   isEditing: boolean;
   loadValue?: number;
@@ -54,49 +55,75 @@ export default function MtAppBar(props: MtAppBarProps) {
   );
   const [saveDisplayInterval, setSaveDisplayInterval] =
     useState<NodeJS.Timer | null>(null);
+  const [isWidthUnder1559px, setIsWidthUnder1559px] = useState(
+    matchMedia('(max-width: 1559px)').matches
+  );
+
   const inputEl = useRef<HTMLInputElement>(null);
+  const isMounted = useRef(true);
 
   const { t } = useTranslation();
   const { themeStr } = useContext(themeContext);
   const { isDesktop } = useDetectScreenSize();
 
-  function handleDisplayFields(fields: number[]) {
-    if (fields.length < displayFields.length) props.onSave();
+  async function handleDisplayFields(fields: number[]) {
+    if (fields.length < displayFields.length) {
+      await props.onSave();
+    }
     setDisplayFields(fields);
     props.onDisplayChange(fields);
   }
 
-  function handleSave() {
-    const hasSaved = props.onSave(true);
+  async function handleSave() {
+    const hasSaved = await props.onSave(true);
+
     if (hasSaved) {
       if (saveDisplayInterval !== null) {
         clearInterval(saveDisplayInterval);
         setSaveDisplayInterval(null);
       }
+
       setSaveTime(new Date());
     }
   }
 
+  function onResize() {
+    setIsWidthUnder1559px(matchMedia('(max-width: 1559px)').matches);
+  }
+
+  useEffect(() => {
+    isMounted.current = true;
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      isMounted.current = false;
+    };
+  }, []);
+
   useEffect(() => {
     if (
+      isMounted.current &&
       saveDisplayInterval == null &&
       props.isEditing &&
-      store.get('fileData').savedAt != null
+      store.get('fileData')?.savedAt != null
     ) {
       setSaveDisplayInterval(
         setInterval(() => {
-          setSaveTime(new Date(store.get('fileData').savedAt));
+          setSaveTime(new Date(store.get('fileData')?.savedAt));
         }, 60000)
       );
     }
   }, [saveDisplayInterval, props.isEditing]);
 
   useEffect(() => {
-    setDisplayFields(props.display);
+    if (isMounted.current) {
+      setDisplayFields(props.display);
+    }
   }, [props.display]);
 
   useEffect(() => {
-    if (props.data)
+    if (isMounted.current && props.data)
       setAvailableFilters([
         ...new Set(
           props.data.map((e) => e.data[0] as TranslatableResourceType)
@@ -111,45 +138,47 @@ export default function MtAppBar(props: MtAppBarProps) {
         width: '100%',
         paddingTop: '10px',
         paddingBottom: '10px',
+        paddingLeft: '2rem',
       }}>
       <Stack alignment="center" distribution="center" wrap>
-        <Stack.Item>
-          <div />
-        </Stack.Item>
-        <Stack vertical>
-          <Stack.Item fill>
-            <MtSearchField
-              data={props.data}
-              filteredDataIds={props.filteredDataIds}
-              numOfDisplayedFields={props.numOfDisplayedFields}
-            />
-          </Stack.Item>
-          <Stack distribution="center" alignment="center">
-            <Stack.Item fill>
-              <MtFieldsFilter
-                availableFilters={availableFilters}
-                filteredDataTypes={props.filteredDataTypes}
+        <Stack.Item fill>
+          <Stack
+            // N.B.: matchMedia is not being called again on window resize
+            vertical={!isDesktop || isWidthUnder1559px}>
+            <Stack.Item>
+              <MtSearchField
+                data={props.data}
+                filteredDataIds={props.filteredDataIds}
+                numOfDisplayedFields={props.numOfDisplayedFields}
               />
             </Stack.Item>
-            <div />
-            <MtColumnSelector
-              choices={props.data[0].data}
-              onChange={handleDisplayFields}
-            />
+            <Stack.Item>
+              <Stack alignment="center">
+                <Stack vertical>
+                  <MtFieldsFilter
+                    availableFilters={availableFilters}
+                    filteredDataTypes={props.filteredDataTypes}
+                    onShowOutdated={props.onShowOutdated}
+                  />
+                </Stack>
+                <MtColumnSelector
+                  choices={props.data[0].data}
+                  onChange={handleDisplayFields}
+                />
+              </Stack>
+            </Stack.Item>
           </Stack>
-        </Stack>
+        </Stack.Item>
         {store.get('fileData') && props.isEditing && (
           <Stack.Item fill={isDesktop}>
-            <div style={{ marginLeft: '10px ' }}>
-              <Stack vertical={!isDesktop}>
+            <div style={{ marginRight: '10px ' }}>
+              <Stack vertical={!isDesktop} distribution="trailing">
                 <Stack vertical spacing="extraTight">
                   <CustomProperties
                     colorScheme={themeStr}
+                    className="use-ellipsis"
                     style={{
                       width: '35ch',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
                     }}>
                     <Tooltip content={store.get('fileData').name}>
                       <TextStyle variation="strong">
@@ -203,7 +232,7 @@ export default function MtAppBar(props: MtAppBarProps) {
             <Button
               plain
               icon={ExportMinor}
-              disabled={props.isLoading}
+              disabled={props.isLoading || process.env.REACT_APP_ENV === 'demo'}
               onClick={() => inputEl.current?.click()}></Button>
           </Tooltip>
           <Tooltip content={t('AppBar.saveTooltip')}>
@@ -211,7 +240,7 @@ export default function MtAppBar(props: MtAppBarProps) {
               plain
               icon={SaveMinor}
               disabled={props.isLoading}
-              onClick={handleSave}></Button>
+              onClick={async () => await handleSave()}></Button>
           </Tooltip>
           <Tooltip content={t('AppBar.downloadTooltip')}>
             <Button
@@ -220,14 +249,24 @@ export default function MtAppBar(props: MtAppBarProps) {
               disabled={props.isLoading || !props.isEditing}
               onClick={props.onDownload}></Button>
           </Tooltip>
+          <Tooltip content={t('AppBar.tutorialHowToTooltip')}>
+            <Button
+              plain
+              icon={QuestionMarkMinor}
+              onClick={props.onResetTutorial}></Button>
+          </Tooltip>
         </ButtonGroup>
         <input
           ref={inputEl}
-          onChange={props.onUpload}
+          onChange={async (e) =>
+            e?.target.files
+              ? await props.onUpload(e.target.files[0])
+              : undefined
+          }
           type="file"
           accept="text/csv"
           className="display-none"
-          title="file upload"
+          title="App bar file upload"
         />
       </Stack>
       {props.isLoading && <Loading />}

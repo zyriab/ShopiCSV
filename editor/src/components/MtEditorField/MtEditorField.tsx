@@ -20,7 +20,7 @@ export type MtFieldElement = {
   getElement: () => HTMLInputElement | MtCodeEditorElement;
 };
 
-interface AppProps {
+interface MtEditorFieldProps {
   code?: boolean;
   language: string;
   fullWidth: boolean;
@@ -29,8 +29,8 @@ interface AppProps {
   value: string;
 }
 
-export const MtEditorField = forwardRef<MtFieldElement, AppProps>(
-  (props: AppProps, ref) => {
+export const MtEditorField = forwardRef<MtFieldElement, MtEditorFieldProps>(
+  (props: MtEditorFieldProps, ref) => {
     const [shouldUpdate, setShouldUpdate] = useState(true);
     const inputEl = useRef<HTMLInputElement>(null!);
     const editorEl = useRef<MtCodeEditorElement>(null!);

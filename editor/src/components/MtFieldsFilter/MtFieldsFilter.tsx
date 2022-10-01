@@ -1,18 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  FilterType,
-  TranslatableResourceType,
-} from '../../definitions/custom';
-import { MtFilterChipsArray } from '../MtFilterChipsArray/MtFilterChipsArray';
-import { MtFilterDialog } from '../MtFilterDialog/MtFilterDialog';
+import { FilterType, TranslatableResourceType } from '../../definitions/custom';
+import MtFilterChipsArray from '../MtFilterChipsArray/MtFilterChipsArray';
+import MtFilterDialog from '../MtFilterDialog/MtFilterDialog';
 
 interface MtFieldsFilterProps {
   availableFilters: TranslatableResourceType[];
   filteredDataTypes: (t: TranslatableResourceType[]) => void;
+  onShowOutdated: (show: boolean) => void;
 }
 
-export function MtFieldsFilter(props: MtFieldsFilterProps) {
+export default function MtFieldsFilter(props: MtFieldsFilterProps) {
   const [filters, setFilters] = useState<FilterType[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<FilterType[]>([]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -101,31 +99,39 @@ export function MtFieldsFilter(props: MtFieldsFilterProps) {
     setAnchorEl(el);
   }
 
-  function handleClose(selection: FilterType[]) {
+  function handleClose(selection: FilterType[], showOutdated: boolean) {
     setSelectedFilters(selection);
+    props.onShowOutdated(showOutdated);
     setAnchorEl(null);
   }
 
   useEffect(() => {
-    const tmp = memoizedData.filter((e) =>
-      props.availableFilters.includes(e.type)
-    );
-    setFilters([...new Set(tmp)]);
+    const filtersData = [
+      ...new Set(
+        memoizedData.filter((e) => props.availableFilters.includes(e.type))
+      ),
+    ];
+
+    setFilters(filtersData);
+    setSelectedFilters(filtersData);
   }, [memoizedData, props.availableFilters]);
 
   useEffect(() => {
-    if (selectedFilters.length > 0)
+    if (selectedFilters.length > 0) {
       props.filteredDataTypes(selectedFilters.map((e) => e.type));
-    else props.filteredDataTypes([]);
+      return;
+    }
+
+    props.filteredDataTypes([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFilters, props.filteredDataTypes]);
 
   return (
     <>
       <MtFilterChipsArray
-        data={selectedFilters}
+        data={selectedFilters.length === filters.length ? [] : selectedFilters}
         onSelected={handleClick}
-        onDelete={(val) => setSelectedFilters(val)}
+        onDelete={setSelectedFilters}
       />
       <MtFilterDialog
         anchorEl={anchorEl}

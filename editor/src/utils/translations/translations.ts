@@ -17,7 +17,7 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    debug: process.env.NODE_ENV !== 'production',
+    debug: process.env.NODE_ENV !== 'production' && process.env.REACT_APP_ENV !== 'demo',
     resources,
     fallbackLng: 'en',
     interpolation: {

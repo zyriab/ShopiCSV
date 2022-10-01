@@ -48,7 +48,10 @@ export function MtDropZone(props: MtDropZoneProps) {
       complete: async (file) => {
         if (
           file.data[0].toString() !==
-          getExpectedHeaderContent(props.dataType, file.data[0].length).toString()
+          getExpectedHeaderContent(
+            props.dataType,
+            file.data[0].length
+          ).toString()
         ) {
           setRejectedFiles((current) => [...current, accepted[0]]);
           setErrorType('InvalidHeaderContent');

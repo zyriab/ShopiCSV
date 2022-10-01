@@ -26,3 +26,20 @@ export interface FilterType {
   type: TranslatableResourceType;
   description?: string;
 }
+
+export interface BucketObjectInfo {
+  fileName: string;
+  path: string;
+  versionId?: string;
+}
+
+export interface FileInput {
+  fileName: string;
+  path: string;
+  root?: string;
+  versionId?: string;
+  bucketName?: string;
+}
+export interface TokenizedFileInput extends FileInput {
+  token: string;
+}

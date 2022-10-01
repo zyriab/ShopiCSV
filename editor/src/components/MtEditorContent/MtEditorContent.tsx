@@ -1,12 +1,19 @@
 import React, {
   useState,
+  useRef,
   useEffect,
   useCallback,
   createRef,
   forwardRef,
   useImperativeHandle,
 } from 'react';
-import { RowData, DataType } from '../../definitions/custom';
+import { useTranslation } from 'react-i18next';
+import {
+  RowData,
+  DataType,
+  FileInput,
+  BucketObjectInfo,
+} from '../../definitions/custom';
 import { usePagination } from '../../utils/hooks/usePagination';
 import getFieldWidth from '../../utils/tools/getFieldWidth.utils';
 import Grid from '@mui/material/Grid';
@@ -15,23 +22,37 @@ import { MtRowsDisplayControl } from '../MtRowsDisplayControl/MtRowsDisplayContr
 import { MtSpinner } from '../MtSpinner/MtSpinner';
 import { MtBackToTopBtn } from '../MtBackToTopBtn/MtBackToTopBtn';
 import { MtEditorField, MtFieldElement } from '../MtEditorField/MtEditorField';
-import { MtDropZone } from '../MtDropZone/MtDropZone';
-import { Stack, Layout } from '@shopify/polaris';
-
-import './MtEditorContent.css';
+import useFileExplorer from '../../utils/hooks/useFileExplorer';
+// import { MtDropZone } from '../MtDropZone/MtDropZone';
+import { Stack, Layout, EmptyState, CalloutCard } from '@shopify/polaris';
 import getFilePosition from '../../utils/tools/getFilePosition.utils';
 import getEditorLanguage from '../../utils/tools/getEditorLanguage.utils';
+import getDataLength from '../../utils/tools/getDataLength.utils';
+import getStatusColIndex from '../../utils/tools/getStatusColIndex.utils';
+import MtTranslatorTutorial from '../MtTranslatorTutorial/MtTranslatorTutorial';
+
+import './MtEditorContent.css';
 
 interface MtEditorContentProps {
-  onSave: (displayMsg?: boolean, isAutosave?: boolean) => boolean;
-  onUpload: (files: File[]) => Promise<void>;
+  onSave: (displayMsg?: boolean, isAutosave?: boolean) => Promise<boolean>;
+  onFileLoad: (args: {
+    file: File;
+    path: string;
+    versionId?: string;
+    token?: string;
+  }) => Promise<void>;
+  onUpload: (objInfo: BucketObjectInfo, file: File) => Promise<void>;
+  onDelete: (args: FileInput) => Promise<void>;
   setIsLoading: (loading: boolean) => void;
+  showOutdated: boolean;
   isLoading: boolean;
   display: number[];
   dataType: DataType;
   data: RowData[];
   headerContent?: string[];
   renderedFields: React.MutableRefObject<React.RefObject<MtFieldElement>[]>;
+  isTutorialOpen: boolean;
+  onTutorialClose: () => void;
 }
 
 export type MtEditorContentElement = {
@@ -43,6 +64,23 @@ const MtEditorContent = forwardRef<
   MtEditorContentProps
 >((props: MtEditorContentProps, ref) => {
   const [isReady, setIsReady] = useState(false);
+  const [isWelcomeOpen, setIsWelcomeOpen] = useState(true);
+
+  const dataLength = useRef(getDataLength(props.data, props.showOutdated));
+
+  const { t } = useTranslation();
+
+  const {
+    FileCard,
+    fileCardProps,
+    PreviewCard,
+    previewCardProps,
+    // fileUploadEl, // disabled for demo
+  } = useFileExplorer({
+    onUpload: props.onUpload,
+    onFileLoad: props.onFileLoad,
+    onDelete: props.onDelete,
+  });
 
   const {
     previousPageNum,
@@ -56,11 +94,16 @@ const MtEditorContent = forwardRef<
     goToPageFieldProps,
     ChangePageButtons,
     changePageButtonsProps,
-  } = usePagination(props.data.length, 'rowsNumber');
+  } = usePagination(dataLength.current, 'rowsNumber');
 
   useImperativeHandle(ref, () => ({
     resetPagination,
   }));
+
+  // TODO: work on upload from the file explorer
+  // async function handleUpload(objInfo: BucketObjectInfo, file: File) {
+  //   await props.onUpload(objInfo, file);
+  // }
 
   const displayPage = useCallback(async () => {
     setIsReady(false);
@@ -68,24 +111,33 @@ const MtEditorContent = forwardRef<
 
     // if user has gone to another page, save previous page
     if (selectedPage !== previousPageNum.current) {
-      props.onSave();
+      await props.onSave();
     }
 
     const content: React.ReactNode[] = [];
     props.renderedFields.current = [];
 
     function setRow(i: number) {
-      // i.e: (2 x 5) - (5 - [0, 1, 2, 3, 4])
+      // i.e.: (2 x 5) - (5 - [0, 1, 2, 3, 4])
       const index = getFilePosition(selectedPage, maxElementsPerPage, i);
 
-      if (index >= props.data.length) return;
+      if (index >= props.data.length) {
+        return;
+      }
 
       const row = props.data[index];
       const numOfColumns = props.headerContent!.length;
       const tmp = [];
 
-      // had a bug once, data.length was 9 instead of 7 with empty indexes :/
+      if (
+        props.showOutdated &&
+        row.data[getStatusColIndex(props.data[0].data)] !== 'outdated'
+      ) {
+        return [];
+      }
+
       if (row.data.length > numOfColumns) {
+        // had a bug once, data.length was 9 instead of 7 with empty indexes :/
         row.data = row.data.splice(0, numOfColumns);
       }
 
@@ -98,8 +150,7 @@ const MtEditorContent = forwardRef<
             props.dataType,
             props.display,
             numOfColumns,
-            x,
-            hasEditor
+            x
           );
 
           if (props.display.includes(x)) {
@@ -180,48 +231,94 @@ const MtEditorContent = forwardRef<
     setPageContent,
   ]);
 
+  useEffect(() => {
+    dataLength.current = getDataLength(props.data, props.showOutdated);
+  }, [props.data, props.showOutdated]);
+
   return (
     <>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={props.isLoading}>
+        {' '}
+        {/* TODO: only show backdrop on certain type of loads? */}
         <MtSpinner />
       </Backdrop>
       <MtBackToTopBtn />
+      {/* File Editor */}
       {pageContent.length > 0 && isReady ? (
-        <Layout sectioned>
-          <Layout.Section fullWidth>
-            <Grid
-              container
-              columns={props.headerContent?.length || 0}
-              direction="column"
-              justifyContent="flext-start"
-              spacing={1}>
-              {pageContent}
-            </Grid>
-          </Layout.Section>
-          <Layout.Section secondary fullWidth>
-            <Stack distribution="fill" alignment="center">
-              <MtRowsDisplayControl
-                maxRowDisplay={maxElementsPerPage}
-                handleRowsDisplayChange={handleElementsPerPageChange}
-              />
-              <Stack distribution="trailing" alignment="center">
-                <GoToPageField {...goToPageFieldProps} />
-                <ChangePageButtons {...changePageButtonsProps} />
+        <>
+          <MtTranslatorTutorial
+            isOpen={props.isTutorialOpen}
+            onClose={props.onTutorialClose}
+          />
+          <Layout sectioned>
+            <Layout.Section fullWidth>
+              <Grid
+                container
+                columns={props.headerContent?.length || 0}
+                direction="column"
+                justifyContent="flext-start"
+                spacing={1}>
+                {pageContent}
+              </Grid>
+              {props.renderedFields.current.length === 0 && (
+                <EmptyState
+                  heading={t('EditorContent.noFieldsEmptyStateHeading')}
+                  image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png">
+                  {t('EditorContent.noFieldsEmptyStateText')}
+                </EmptyState>
+              )}
+            </Layout.Section>
+            <Layout.Section secondary fullWidth>
+              <Stack distribution="fill" alignment="center">
+                <MtRowsDisplayControl
+                  maxRowDisplay={maxElementsPerPage}
+                  handleRowsDisplayChange={handleElementsPerPageChange}
+                />
+                <Stack distribution="trailing" alignment="center">
+                  <GoToPageField {...goToPageFieldProps} />
+                  <ChangePageButtons {...changePageButtonsProps} />
+                </Stack>
               </Stack>
-            </Stack>
-          </Layout.Section>
-        </Layout>
+            </Layout.Section>
+          </Layout>
+        </>
       ) : (
+        // File explorer (Buckaroo)
         <Layout>
+          {/* disabled for demo */}
+          {/* {fileUploadEl} */}
           <Layout.Section fullWidth>
-            <div className="MtEditorContent-DropZone__Outer-Wrapper">
-              <div className="MtEditorContent-DropZone__Inner-Wrapper">
-                <MtDropZone onUpload={props.onUpload} dataType="Translations" />
-              </div>
-            </div>
+            {isWelcomeOpen && (
+              <CalloutCard
+                title={t('EditorContent.tutoCardTitle')}
+                illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
+                primaryAction={{
+                  content: t('EditorContent.tutoCardAction'),
+                  onAction: () => setIsWelcomeOpen(false),
+                }}
+                onDismiss={() => setIsWelcomeOpen(false)}>
+                <p>{t('EditorContent.tutoCardP1')}</p>
+                <p>{t('EditorContent.tutoCardP2')}</p>
+                <p>{t('EditorContent.tutoCardP3')}</p>
+              </CalloutCard>
+            )}
           </Layout.Section>
+          <Layout.Section secondary>
+            <FileCard {...fileCardProps} />
+          </Layout.Section>
+          <Layout.Section>
+            <PreviewCard {...previewCardProps} />
+          </Layout.Section>
+
+          <div className="MtEditorContent-DropZone__Outer-Wrapper">
+            {/* Disabled for demo, need to replace by file explorer drop zone */}
+            {/* Wrappers are for dynamic sizing */}
+            {/*  <div className="MtEditorContent-DropZone__Inner-Wrapper">
+                  <MtDropZone onUpload={handleUpload} dataType="Translations" />
+                </div>*/}
+          </div>
         </Layout>
       )}
     </>

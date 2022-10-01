@@ -9,13 +9,17 @@ interface AppProps {
 export const AuthProvider = (props: AppProps) => {
   const domain = process.env.REACT_APP_AUTH0_DOMAIN!;
   const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID!;
-  const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
+  const audience = process.env.REACT_APP_AUTH0_AUDIENCE!;
 
   const navigate = useNavigate();
 
   const onRedirectCallback = (appState?: AppState) => {
     navigate(appState?.returnTo || window.location.pathname);
   };
+
+  if (process.env.REACT_APP_ENV === 'demo') {
+    return <>{props.children}</>;
+  }
 
   return (
     <Auth0Provider
