@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0 } from './utils/hooks/useAuth0';
 import useLogo from './utils/hooks/useLogo';
 import { ConfirmProvider } from 'material-ui-confirm';
 import MtThemeProvider from './components/MtThemeProvider/MtThemeProvider';
@@ -49,7 +49,7 @@ function App() {
     <MtThemeProvider>
       <Frame logo={logo} topBar={<MtNavBar />}>
         <ConfirmProvider>
-          <div className="min-h-600px">
+          <div style={{ height: '100%' }}>
             <MtRouter />
           </div>
           <MtFooter />
