@@ -37,12 +37,12 @@ export default function MtNavMenu(props: MtNavMenuProps) {
 
   const mainNavItems = useMemo(
     () => [
-      // {
-      //   text: t('NavMenu.home'),
-      //   path: '/',
-      //   icon: <HomeMinor />,
-      //   public: true,
-      // },
+      {
+        text: t('NavMenu.home'),
+        path: '/',
+        icon: <HomeMinor />,
+        public: true,
+      },
       {
         text: t('NavMenu.translations'),
         path: '/translations',
@@ -60,13 +60,13 @@ export default function MtNavMenu(props: MtNavMenuProps) {
 
   const secondaryNavItems = useMemo(
     () => [
-      // {
-      //   text: t('NavMenu.help'),
-      //   path: 'https://www.metaoist.io/',
-      //   icon: <QuestionMarkMinor />,
-      //   external: true,
-      //   public: true,
-      // },
+      {
+        text: t('NavMenu.help'),
+        path: 'https://www.metaoist.io/',
+        icon: <QuestionMarkMinor />,
+        external: true,
+        public: true,
+      },
       {
         text: t('NavMenu.discord'),
         path: 'https://discord.gg/b9Myw2UmMw',
