@@ -32,7 +32,7 @@ export default function MtNavBar() {
           },
         ]}
         name={user?.nickname || 'Not connected'}
-        detail={user?.name}
+        detail={user?.email}
         initials={user?.nickname?.at(0)?.toUpperCase() || '?'}
         avatar={user?.picture}
         open={isUserMenuOpen}
