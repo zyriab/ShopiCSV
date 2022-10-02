@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import store from 'store2';
 import Card from '@mui/material/Card';
@@ -8,6 +8,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Backdrop from '@mui/material/Backdrop';
 import Typography from '@mui/material/Typography';
+import themeContext from '../../utils/contexts/theme.context';
 
 interface MtTranslatorTutorialProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ interface MtTranslatorTutorialProps {
 export default function MtTranslatorTutorial(props: MtTranslatorTutorialProps) {
   const [step, setStep] = useState(0);
 
+  const { isDark } = useContext(themeContext);
   const { t } = useTranslation();
 
   const content = [
@@ -83,7 +85,7 @@ export default function MtTranslatorTutorial(props: MtTranslatorTutorialProps) {
                 width: '25vw',
                 height: '16.6vw',
                 position: 'absolute',
-                border: '1px solid #e8e8e8',
+                border: isDark ? '1px solid #e8e8e8' : '1px solid #202223',
                 left: 0,
                 right: 0,
                 top: '10%',
@@ -91,7 +93,7 @@ export default function MtTranslatorTutorial(props: MtTranslatorTutorialProps) {
                 margin: 'auto',
                 whiteSpace: 'pre-line',
               }}>
-              <CardContent>
+              <CardContent sx={{ overflow: 'auto' }}>
                 <Typography component="p">{content[step].body}</Typography>
               </CardContent>
             </Card>
