@@ -45,7 +45,7 @@ export default function Translator() {
   const [numOfDisplayedFields, setNumOfDisplayedFields] = useState(0);
   const [displayOutdated, setDisplayOutdated] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState<boolean>(
-    JSON.parse(store.get('openTutorial') || false) || true
+    JSON.parse(store.get('openTutorial') || false) ?? true
   );
 
   const bucketObjectInfo = useRef<BucketObjectInfo>({
