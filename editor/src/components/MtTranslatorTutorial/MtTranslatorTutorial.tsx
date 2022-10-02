@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import Backdrop from '@mui/material/Backdrop';
 import Typography from '@mui/material/Typography';
 import themeContext from '../../utils/contexts/theme.context';
+import Paper from '@mui/material/Paper';
 
 interface MtTranslatorTutorialProps {
   isOpen: boolean;
@@ -78,12 +79,13 @@ export default function MtTranslatorTutorial(props: MtTranslatorTutorialProps) {
                 {content[step].title}
               </Typography>
             </CardContent>
-            <Card
+            <Paper
               sx={{
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
                 width: '25vw',
-                height: '16.6vw',
+                maxHeight: '16.6vw',
                 position: 'absolute',
                 border: isDark ? '1px solid #e8e8e8' : '1px solid #202223',
                 left: 0,
@@ -91,12 +93,14 @@ export default function MtTranslatorTutorial(props: MtTranslatorTutorialProps) {
                 top: '10%',
                 bottom: 0,
                 margin: 'auto',
+                padding: '10px',
                 whiteSpace: 'pre-line',
+                overflow: 'auto',
               }}>
-              <CardContent sx={{ overflow: 'auto' }}>
+              <div style={{ margin: 'auto', padding: 'inherit' }}>
                 <Typography component="p">{content[step].body}</Typography>
-              </CardContent>
-            </Card>
+              </div>
+            </Paper>
             <CardMedia
               component="img"
               image={content[step].img}
