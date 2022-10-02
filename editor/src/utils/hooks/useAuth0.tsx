@@ -7,7 +7,7 @@ export function useAuth0() {
   const [user, setUser] = useState<User>();
 
   useEffect(() => {
-    const slug = generateSlug();
+    const slug = generateSlug(2);
 
     setIsAuthenticated(true);
     setUser({
