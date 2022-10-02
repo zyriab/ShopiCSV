@@ -8,6 +8,7 @@ import { CustomProperties, Stack, TopBar } from '@shopify/polaris';
 import { LogOutMinor } from '@shopify/polaris-icons';
 import { useTranslation } from 'react-i18next';
 import MtNavMenu from '../MtNavMenu/MtNavMenu';
+import { MtUserMenuTooltip } from '../MtUserMenuTooltip/MtUserMenuTooltip';
 
 export default function MtNavBar() {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
@@ -17,27 +18,36 @@ export default function MtNavBar() {
   const { isAuthenticated, user } = useAuth0();
   const { isMobile } = useDetectScreenSize();
 
+  function handleUserMenuToggle() {
+    setIsUserMenuOpen((current) => !current);
+  }
+
   const userMenuEl = isAuthenticated ? (
     <div className="ml-05">
-      <TopBar.UserMenu
-        actions={[
-          {
-            items: [
-              {
-                content: t('General.logout'),
-                icon: LogOutMinor,
-                onAction: () => console.log('Cannot logout on demo ;)'),
-              },
-            ],
-          },
-        ]}
-        name={user?.nickname || 'Not connected'}
-        detail={user?.email}
-        initials={user?.nickname?.at(0)?.toUpperCase() || '?'}
-        avatar={user?.picture}
-        open={isUserMenuOpen}
-        onToggle={() => setIsUserMenuOpen((current) => !current)}
-      />
+      <MtUserMenuTooltip
+        name={user?.nickname!}
+        email={user?.email!}
+        isUserMenuOpen={isUserMenuOpen}>
+        <TopBar.UserMenu
+          actions={[
+            {
+              items: [
+                {
+                  content: t('General.logout'),
+                  icon: LogOutMinor,
+                  onAction: () => console.log('Cannot logout on demo ;)'),
+                },
+              ],
+            },
+          ]}
+          name={user?.nickname || 'Not connected'}
+          detail={user?.email}
+          initials={user?.nickname?.at(0)?.toUpperCase() || '?'}
+          avatar={user?.picture}
+          open={isUserMenuOpen}
+          onToggle={handleUserMenuToggle}
+        />
+      </MtUserMenuTooltip>
     </div>
   ) : (
     <div className="Auth-Btn__Top-Bar">
