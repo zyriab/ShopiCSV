@@ -12,11 +12,14 @@ export function MtUserMenuTooltip(props: MtUserMenuTooltipProps) {
     <>{props.children}</>
   ) : (
     <Tooltip
-      content={<div>
-        {props.name}
-        <br />
-        <small>{props.email}</small>
-      </div>}>
+      dismissOnMouseOut
+      content={
+        <div>
+          {props.name}
+          <br />
+          <small>{props.email}</small>
+        </div>
+      }>
       {props.children}
     </Tooltip>
   );
