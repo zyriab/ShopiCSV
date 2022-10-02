@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import store from 'store2';
 import Papa from 'papaparse';
-// import getDateLocale from '../utils/tools/getDateLocale.utils';
 import getDataType from '../utils/tools/getDataType.utils';
 import saveOnline from '../utils/tools/buckaroo/saveOnline.utils';
-// import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { useConfirm } from 'material-ui-confirm';
 import { MtAlert, MtAlertElement } from '../components/MtAlert/MtAlert';
@@ -27,7 +25,6 @@ import rowDataToString from '../utils/tools/buckaroo/rowDataToString';
 export default function Translator() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  // const [hasClosed, setHasClosed] = useState(false); // used for file restore
   const [file, setFile] = useState<File | null>(null); // uploaded file or data of restored session (name, size, lastModified, lastSave?, content?)
   const fileRef = useRef<File | null>(null); // used for direct update/access when saving
   const [displayCol, setDisplayCol] = useState<number[]>([2, 6, 7]);
@@ -40,7 +37,7 @@ export default function Translator() {
   const [numOfDisplayedFields, setNumOfDisplayedFields] = useState(0);
   const [displayOutdated, setDisplayOutdated] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState<boolean>(
-    JSON.parse(store.get('openTutorial') || false) || true
+    JSON.parse(store.get('openTutorial') || false) ?? true
   );
 
   const bucketObjectInfo = useRef<BucketObjectInfo>({
@@ -117,7 +114,6 @@ export default function Translator() {
       setFile(null);
       setFileData([]);
       setDisplayedData([]);
-      // setHasClosed(true); // used for file restore
 
       if (isDeleting) {
         store.remove('fileData');
