@@ -201,7 +201,6 @@ export default function Translator() {
 
           const token = await getAccessTokenSilently();
 
-          // FIXME: failed to fetch? - check with staging and production backend if it's not a problem with the locally hosted Buckaroo server
           await saveOnline({
             data: rowDataToString(parsedData.current),
             fileName: bucketObjectInfo.current.fileName,
