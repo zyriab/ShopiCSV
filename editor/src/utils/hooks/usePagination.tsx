@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useCallback,
-  useEffect,
-  forwardRef,
-  useImperativeHandle,
-} from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import store from 'store2';
 import debounce from 'lodash.debounce';
@@ -18,7 +11,7 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
   const [maxElementsPerPage, setMaxElementsPerPage] = useState(
     store.get(`${maxElemStorageId}`) === 0
       ? dataLength
-      : store.get(`${maxElemStorageId}`) || 4
+      : store.get(`${maxElemStorageId}`) || 8
   );
   const [maxPageNum, setMaxPageNum] = useState(
     maxElementsPerPage !== 0
@@ -60,12 +53,6 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
     [maxPageNum]
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedChangeDisplayedPage = useCallback(
-    debounce(changeDisplayedPage, 300),
-    [maxPageNum]
-  );
-
   function changeDisplayedPage(n: number) {
     let p;
     if (n > maxPageNum) p = maxPageNum;
@@ -76,10 +63,10 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const throttledGoNextPage = useCallback(throttle(_nextPage, 200), [
-    maxPageNum,
-    debouncedChangeDisplayedPage,
-  ]);
+  const debouncedChangeDisplayedPage = useCallback(
+    debounce(changeDisplayedPage, 300),
+    [maxPageNum]
+  );
 
   function _nextPage() {
     setCurrentPageNum((current) => {
@@ -95,7 +82,7 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const throttledGoPrevPage = useCallback(throttle(_prevPage, 200), [
+  const throttledGoNextPage = useCallback(throttle(_nextPage, 200), [
     maxPageNum,
     debouncedChangeDisplayedPage,
   ]);
@@ -111,6 +98,12 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
       return current - 1;
     });
   }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const throttledGoPrevPage = useCallback(throttle(_prevPage, 200), [
+    maxPageNum,
+    debouncedChangeDisplayedPage,
+  ]);
 
   const resetPagination = useCallback(() => {
     goToPage(1);
@@ -158,7 +151,7 @@ export function usePagination(dataLength: number, maxElemStorageId: string) {
   useEffect(() => {
     let val =
       maxElementsPerPage !== 0
-        ? Math.round((dataLength - 1) / maxElementsPerPage)
+        ? Math.ceil((dataLength - 1) / maxElementsPerPage)
         : 1;
     if (val === 0) val = 1;
     setMaxPageNum(val);

@@ -20,7 +20,7 @@ export type MtFieldElement = {
   getElement: () => HTMLInputElement | MtCodeEditorElement;
 };
 
-interface AppProps {
+interface MtEditorFieldProps {
   code?: boolean;
   language: string;
   fullWidth: boolean;
@@ -29,20 +29,33 @@ interface AppProps {
   value: string;
 }
 
-export const MtEditorField = forwardRef<MtFieldElement, AppProps>(
-  (props: AppProps, ref) => {
+export const MtEditorField = forwardRef<MtFieldElement, MtEditorFieldProps>(
+  (props: MtEditorFieldProps, ref) => {
     const [shouldUpdate, setShouldUpdate] = useState(true);
     const inputEl = useRef<HTMLInputElement>(null!);
     const editorEl = useRef<MtCodeEditorElement>(null!);
 
     function getValue() {
-      if (props.code) return editorEl.current.getValue();
+      if (props.code) {
+        return editorEl.current?.getValue();
+      }
+
       return (inputEl.current.children[1].children[0] as HTMLInputElement)
-        .value;
+        ?.value;
+    }
+
+    function getElement() {
+      if (props.code) {
+        return editorEl.current;
+      }
+
+      return inputEl.current;
     }
 
     function layout() {
-      if (props.code) editorEl.current.layout();
+      if (props.code) {
+        editorEl.current?.layout();
+      }
     }
 
     useImperativeHandle(ref, () => ({
@@ -50,10 +63,7 @@ export const MtEditorField = forwardRef<MtFieldElement, AppProps>(
       getValue,
       layout,
       isCode: () => props.code || false,
-      getElement: () => {
-        if (props.code) return editorEl.current;
-        return inputEl.current;
-      },
+      getElement,
     }));
 
     // re-rendering to make sure the ref is set
@@ -81,6 +91,7 @@ export const MtEditorField = forwardRef<MtFieldElement, AppProps>(
         kid={props.kid}
         fullWidth={props.fullWidth}
         defaultValue={props.value}
+        // TODO: add this to theme.ts
         inputProps={{
           style: {
             alignSelf: 'start',

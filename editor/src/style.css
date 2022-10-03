@@ -8,6 +8,10 @@
   display: none;
 }
 
+.no-outline {
+  outline: none !important;
+}
+
 .pt-1 {
   padding-top: 1rem;
 }
@@ -63,6 +67,10 @@
 
 /* Polaris customization */
 
+.Polaris-Frame__TopBar {
+  width: 100vw;
+}
+
 /* Removing the small space taken by the (inexistent) search field on the app's main top bar */
 #Top-Bar__Main .Polaris-TopBar__SearchField {
   display: none !important;
@@ -71,6 +79,7 @@
 /* Changing the main top bar color */
 #Top-Bar__Main .Polaris-TopBar {
   background-color: #178b6e;
+  padding-right: 1%;
 }
 
 /* Forcing Polaris' hamburger menu even on desktop */

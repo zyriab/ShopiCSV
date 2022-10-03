@@ -1,5 +1,5 @@
 import React from 'react';
 
 export default function Home() {
-  return <div>Coucou</div>;
+  return <div>You need to connect!</div>
 }

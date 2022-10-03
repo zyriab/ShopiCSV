@@ -12,13 +12,11 @@ import {
   TopBar,
 } from '@shopify/polaris';
 import {
-  QuestionMarkMinor,
-  ExternalSmallMinor,
-  SettingsMinor,
   LogOutMinor,
+  ExternalSmallMinor,
+  QuestionMarkMinor,
 } from '@shopify/polaris-icons';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import MtNavMenu from '../MtNavMenu/MtNavMenu';
 
 export default function MtNavBar() {
@@ -28,7 +26,6 @@ export default function MtNavBar() {
   const { t } = useTranslation();
   const { isAuthenticated, user, logout } = useAuth0();
   const { isMobile } = useDetectScreenSize();
-  const navigate = useNavigate();
 
   const userMenuEl = isAuthenticated ? (
     <div className="ml-05">
@@ -36,11 +33,6 @@ export default function MtNavBar() {
         actions={[
           {
             items: [
-              {
-                content: t('General.settings'),
-                icon: SettingsMinor,
-                onAction: () => navigate('/settings'),
-              },
               {
                 content: t('General.logout'),
                 icon: LogOutMinor,

@@ -2,7 +2,8 @@ import { ThemeOptions } from '@mui/material';
 import merge from 'lodash.merge';
 
 // TODO: check that all colors comply with Shopify colors (light and dark, very small variations between text primary, action primary, etc)
-// Also finish cloning Polaris' Navigation (subheader, etc)
+
+const PRIMARY_COLOR = '#178b6e';
 
 const sharedStyles = {
   typography: {
@@ -91,7 +92,7 @@ export const lightTheme: ThemeOptions = {
   palette: {
     mode: 'light',
     primary: {
-      main: '#008060',
+      main: PRIMARY_COLOR,
     },
     secondary: {
       main: '#5c5f62',
@@ -159,7 +160,7 @@ export const darkTheme: ThemeOptions = {
   palette: {
     mode: 'dark',
     primary: {
-      main: '#008060',
+      main: PRIMARY_COLOR,
     },
     secondary: {
       main: '#cccccc',

@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FilterType } from '../../definitions/custom';
-import { styled } from '@mui/material/styles';
-import Chip from '@mui/material/Chip';
+import useDetectScreenSize from '../../utils/hooks/useDetectScreenSize';
 import { Badge, Tag, Scrollable, Stack } from '@shopify/polaris';
 import { FilterMajor } from '@shopify/polaris-icons';
+import { FilterType } from '../../definitions/custom';
 
 interface MtFilterChipsArrayProps {
   data: FilterType[];
@@ -12,13 +11,14 @@ interface MtFilterChipsArrayProps {
   onDelete: (deleted: FilterType[]) => void;
 }
 
-export function MtFilterChipsArray(props: MtFilterChipsArrayProps) {
+export default function MtFilterChipsArray(props: MtFilterChipsArrayProps) {
   const [chipData, setChipData] = React.useState<FilterType[]>([]);
 
   const refEl = useRef<HTMLDivElement>(null);
   const isDeleting = useRef(false);
 
   const { t } = useTranslation();
+  const { isDesktop } = useDetectScreenSize();
 
   function handleClick() {
     if (!isDeleting.current) {
@@ -36,6 +36,7 @@ export function MtFilterChipsArray(props: MtFilterChipsArrayProps) {
 
   useEffect(() => {
     setChipData([]);
+
     for (const c of props.data) {
       setChipData((current) => [...new Set([...current, c])]);
     }
@@ -54,7 +55,8 @@ export function MtFilterChipsArray(props: MtFilterChipsArrayProps) {
         marginBottom: 0,
         backgroundColor: 'var(--p-background)',
         borderRadius: '4px',
-        width: '200px',
+        width: isDesktop ? '350px' : '200px',
+        cursor: 'pointer',
       }}>
       <Scrollable horizontal>
         <Stack wrap={false} spacing="extraTight">

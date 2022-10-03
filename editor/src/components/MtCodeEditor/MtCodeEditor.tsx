@@ -89,7 +89,12 @@ export const MtCodeEditor = withSize({ monitorWidth: true })(
     }, [layout]);
 
     return (
-      <MonacoEditor options={defaultOptions} onMount={handleMount} theme="vs-dark" {...props} />
+      <MonacoEditor
+        options={defaultOptions}
+        onMount={handleMount}
+        theme="vs-dark"
+        {...props}
+      />
     );
   })
 );

@@ -21,6 +21,7 @@ export function useSearch(data: RowData[] | string[], searchIndex = 0) {
         setResultIds(event.data);
         // Needed because there's a small latency before the correct numOfDisplayedFields reaches the search input
         setTimeout(() => setIsLoading(false), 500);
+        worker.terminate();
       });
     },
     [data, searchIndex]

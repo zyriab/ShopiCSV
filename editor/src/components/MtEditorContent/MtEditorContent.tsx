@@ -1,11 +1,19 @@
 import React, {
   useState,
+  useRef,
   useEffect,
+  useCallback,
   createRef,
   forwardRef,
   useImperativeHandle,
 } from 'react';
-import { RowData, DataType } from '../../definitions/custom';
+import { useTranslation } from 'react-i18next';
+import {
+  RowData,
+  DataType,
+  FileInput,
+  BucketObjectInfo,
+} from '../../definitions/custom';
 import { usePagination } from '../../utils/hooks/usePagination';
 import getFieldWidth from '../../utils/tools/getFieldWidth.utils';
 import Grid from '@mui/material/Grid';
@@ -14,21 +22,37 @@ import { MtRowsDisplayControl } from '../MtRowsDisplayControl/MtRowsDisplayContr
 import { MtSpinner } from '../MtSpinner/MtSpinner';
 import { MtBackToTopBtn } from '../MtBackToTopBtn/MtBackToTopBtn';
 import { MtEditorField, MtFieldElement } from '../MtEditorField/MtEditorField';
-import { MtDropZone } from '../MtDropZone/MtDropZone';
-import { Stack, Layout } from '@shopify/polaris';
+import useFileExplorer from '../../utils/hooks/useFileExplorer';
+// import { MtDropZone } from '../MtDropZone/MtDropZone';
+import { Stack, Layout, EmptyState, CalloutCard } from '@shopify/polaris';
+import getFilePosition from '../../utils/tools/getFilePosition.utils';
+import getEditorLanguage from '../../utils/tools/getEditorLanguage.utils';
+import getDataLength from '../../utils/tools/getDataLength.utils';
+import getStatusColIndex from '../../utils/tools/getStatusColIndex.utils';
+import MtTranslatorTutorial from '../MtTranslatorTutorial/MtTranslatorTutorial';
 
 import './MtEditorContent.css';
 
 interface MtEditorContentProps {
-  onSave: (displayMsg?: boolean, isAutosave?: boolean) => boolean;
-  onUpload: (files: File[]) => Promise<void>;
+  onSave: (displayMsg?: boolean, isAutosave?: boolean) => Promise<boolean>;
+  onFileLoad: (args: {
+    file: File;
+    path: string;
+    versionId?: string;
+    token?: string;
+  }) => Promise<void>;
+  onUpload: (objInfo: BucketObjectInfo, file: File) => Promise<void>;
+  onDelete: (args: FileInput) => Promise<void>;
   setIsLoading: (loading: boolean) => void;
+  showOutdated: boolean;
   isLoading: boolean;
   display: number[];
   dataType: DataType;
   data: RowData[];
   headerContent?: string[];
   renderedFields: React.MutableRefObject<React.RefObject<MtFieldElement>[]>;
+  isTutorialOpen: boolean;
+  onTutorialClose: () => void;
 }
 
 export type MtEditorContentElement = {
@@ -40,6 +64,23 @@ const MtEditorContent = forwardRef<
   MtEditorContentProps
 >((props: MtEditorContentProps, ref) => {
   const [isReady, setIsReady] = useState(false);
+  const [isWelcomeOpen, setIsWelcomeOpen] = useState(true);
+
+  const dataLength = useRef(getDataLength(props.data, props.showOutdated));
+
+  const { t } = useTranslation();
+
+  const {
+    FileCard,
+    fileCardProps,
+    PreviewCard,
+    previewCardProps,
+    fileUploadEl,
+  } = useFileExplorer({
+    onUpload: props.onUpload,
+    onFileLoad: props.onFileLoad,
+    onDelete: props.onDelete,
+  });
 
   const {
     previousPageNum,
@@ -53,175 +94,118 @@ const MtEditorContent = forwardRef<
     goToPageFieldProps,
     ChangePageButtons,
     changePageButtonsProps,
-  } = usePagination(props.data.length, 'rowsNumber');
+  } = usePagination(dataLength.current, 'rowsNumber');
 
   useImperativeHandle(ref, () => ({
     resetPagination,
   }));
 
-  /* Page's content setup */
-  useEffect(() => {
-    if (props.data.length === 0) {
-      return setPageContent([]);
+  // TODO: work on upload from the file explorer
+  // async function handleUpload(objInfo: BucketObjectInfo, file: File) {
+  //   await props.onUpload(objInfo, file);
+  // }
+
+  const displayPage = useCallback(async () => {
+    setIsReady(false);
+    props.setIsLoading(true);
+
+    // if user has gone to another page, save previous page
+    if (selectedPage !== previousPageNum.current) {
+      await props.onSave();
     }
 
-    if (!props.isLoading && props.headerContent != null) {
-      const displayPage = async () => {
-        setIsReady(false);
-        props.setIsLoading(true);
+    const content: React.ReactNode[] = [];
+    props.renderedFields.current = [];
 
-        // if user has gone to another page, save previous page
-        if (selectedPage !== previousPageNum.current) props.onSave();
+    function setRow(i: number) {
+      // i.e.: (2 x 5) - (5 - [0, 1, 2, 3, 4])
+      const index = getFilePosition(selectedPage, maxElementsPerPage, i);
 
-        const content: React.ReactNode[] = [];
-        props.renderedFields.current = [];
+      if (index >= props.data.length) {
+        return;
+      }
 
-        function setRow(i: number) {
-          function hasHTMLInRow(row: string[]) {
-            const regex =
-              /<(br|basefont|hr|input|source|frame|param|area|meta|!--|col|link|option|base|img|wbr|!DOCTYPE|a|abbr|acronym|address|applet|article|aside|audio|b|bdi|bdo|big|blockquote|body|button|canvas|caption|center|cite|code|colgroup|command|datalist|dd|del|details|dfn|dialog|dir|div|dl|dt|em|embed|fieldset|figcaption|figure|font|footer|form|frameset|head|header|hgroup|h1|h2|h3|h4|h5|h6|html|i|iframe|ins|kbd|keygen|label|legend|li|map|mark|menu|meter|nav|noframes|noscript|object|ol|optgroup|output|p|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|span|strike|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|tt|u|ul|var|video).*?>|<(a|abbr|acronym|address|applet|article|aside|audio|b|bdi|bdo|big|blockquote|body|button|canvas|caption|center|cite|code|colgroup|command|datalist|dd|del|details|dfn|dialog|dir|div|dl|dt|em|embed|fieldset|figcaption|figure|font|footer|form|frameset|head|header|hgroup|h1|h2|h3|h4|h5|h6|html|i|iframe|ins|kbd|keygen|label|legend|li|map|mark|menu|meter|nav|noframes|noscript|object|ol|optgroup|output|p|pre|progress|q|rp|rt|ruby|s|samp|script|section|select|small|span|strike|strong|style|sub|summary|sup|table|tbody|td|textarea|tfoot|th|thead|time|title|tr|track|tt|u|ul|var|video).*?<\/\\2>/;
-            return (
-              regex.test(row[5]) ||
-              regex.test(row[6]) ||
-              row[0].includes('SMS_TEMPLATE') ||
-              row[2].includes('BODY_HTML')
-            );
-          }
+      const row = props.data[index];
+      const numOfColumns = props.headerContent!.length;
+      const tmp = [];
 
-          function hasCSSInRow(row: string[]) {
-            const regex =
-              /((?:^\s*)([\w#.@*,:\-.:>,*\s]+)\s*{(?:[\s]*)((?:[A-Za-z\- \s]+[:]\s*['"0-9\w .,/()\-!%]+;?)*)*\s*}(?:\s*))/gim;
-            return regex.test(row[5]) || regex.test(row[6]);
-          }
+      if (
+        props.showOutdated &&
+        row.data[getStatusColIndex(props.data[0].data)] !== 'outdated'
+      ) {
+        return [];
+      }
 
-          function getLanguage(row: string[]) {
-            if (hasHTMLInRow(row)) return 'liquid';
-            if (hasCSSInRow(row)) return 'css';
-            return 'none';
-          }
+      if (row.data.length > numOfColumns) {
+        // had a bug once, data.length was 9 instead of 7 with empty indexes :/
+        row.data = row.data.splice(0, numOfColumns);
+      }
 
-          // i.e: (2 x 5) - (5 - [0, 1, 2, 3, 4])
-          const index = Math.round(
-            selectedPage * maxElementsPerPage - (maxElementsPerPage - (i + 1))
+      if (row.data.length === numOfColumns) {
+        const language = getEditorLanguage(row.data);
+        const hasEditor = language !== 'none';
+
+        for (let x = 0; x < numOfColumns; x++) {
+          const width = getFieldWidth(
+            props.dataType,
+            props.display,
+            numOfColumns,
+            x
           );
 
-          if (index >= props.data.length) return;
+          if (props.display.includes(x)) {
+            props.renderedFields.current.push(createRef<MtFieldElement>());
 
-          let row = props.data[index];
-          const numOfColumns = props.headerContent!.length;
-          const tmp = [];
+            const key = `${row.id}-${x}`;
+            const isCode =
+              hasEditor && (x === numOfColumns - 2 || x === numOfColumns - 1);
+            const fieldRef: React.RefObject<MtFieldElement> =
+              props.renderedFields.current.at(-1)!;
 
-          // had a bug once, data.length was 9 instead of 7 with empty indexes :/
-          if (row.data.length > numOfColumns) {
-            row.data = row.data.splice(0, numOfColumns);
-          }
+            tmp.push(
+              <Grid key={`grid-${x}`} xs={width} alignItems="stretch" item>
+                <MtEditorField
+                  ref={fieldRef}
+                  key={key}
+                  kid={key}
+                  code={isCode}
+                  language={language}
+                  label={props.headerContent![x]}
+                  fullWidth={true}
+                  value={row.data[x]}
+                />
+              </Grid>
+            );
 
-          if (row.data.length === numOfColumns) {
-            const language = getLanguage(row.data);
-            const hasEditor = language !== 'none';
-
-            for (let x = 0; x < numOfColumns; x++) {
-              let width = getFieldWidth(
-                props.dataType,
-                props.display,
-                numOfColumns
-              );
-
-              if (
-                props.dataType === 'Translations' &&
-                props.display.length !== numOfColumns &&
-                (x === numOfColumns - 2 || x === numOfColumns - 1)
-              ) {
-                // code editor does not resize well with xs={true}
-                if (hasEditor) {
-                  if (
-                    (!props.display.includes(numOfColumns - 2) &&
-                      props.display.includes(numOfColumns - 1)) ||
-                    (props.display.includes(numOfColumns - 2) &&
-                      !props.display.includes(numOfColumns - 1))
-                  ) {
-                    // if the 'default content' and/or 'translated content' are present, other fields' width = 1.
-                    // here we substract the number of displayed fields from the number of columns (7)
-                    // -1 is because [def./trans.] is not of size 1 and we want to make this calculation
-                    // based on the OTHER fields, thus removing [def./trans.] from the substraction ;)
-                    // i.e.: 3 fields = 2 [others] and 1 [def./trans.] =  7 [cols] - (3 [fields] - 1 [def./trans.])
-                    // = size of 5 [for def./trans.] + 2 [others] = 7 columns taken 🤓)
-                    width = numOfColumns - (props.display.length - 1);
-                  } else {
-                    // if the 'default content' and 'translated content' are present, other fields' width = 1.
-                    // therefore 'def.' and 'trans.' === (numOfColumns / props.display.length - (1 [other]))
-                    // i.e.: (even) 4 fields = 2 others and 2 [def + trans] -> (7 [cols] - 2 [others]) = 5 / 2 [def + trans]
-                    // or: (odd) 3 fields = 1 other and 2 [def + trans] -> 8 [cols] / 3 = 2.66
-                    // CEIL(2.66) = 3 -> + 0.5 -> * 2 [def. + trans.] = 7 + 1 [other] = 8
-                    // if numOfColumns = 7 -> 7 cols / 3 = 2.33 -> CEIL(2.33) = 3 * 2 [def. + trans] = 6 + 1 [other] = 7
-                    if (props.display.length % 2 === 0) {
-                      width = (numOfColumns - (props.display.length - 2)) / 2;
-                    } else {
-                      width =
-                        Math.ceil(numOfColumns / props.display.length) +
-                        (numOfColumns % 2 === 0 ? 0.5 : 0);
-                    }
-                  }
-                } else width = true;
-              }
-
-              if (props.display.includes(x)) {
-                props.renderedFields.current.push(createRef<MtFieldElement>());
-
-                const key = `${row.id}-${x}`;
-                const isCode =
-                  (x === numOfColumns - 2 || x === numOfColumns - 1) &&
-                  hasEditor;
-                const fieldRef: React.RefObject<MtFieldElement> =
-                  props.renderedFields.current.at(-1)!;
-
-                tmp.push(
-                  <Grid key={`grid-${x}`} xs={width} alignItems="stretch" item>
-                    <MtEditorField
-                      ref={fieldRef}
-                      key={key}
-                      kid={key}
-                      code={isCode}
-                      language={language}
-                      label={props.headerContent![x]}
-                      fullWidth={true}
-                      value={row.data[x]}
-                    />
-                  </Grid>
-                );
-
-                if (fieldRef.current && !fieldRef.current?.isCode()) {
-                  const el = fieldRef.current?.getElement() as HTMLInputElement;
-                  el.style.height = '100%';
-                  (el.children[1] as HTMLInputElement).style.height = '100%';
-                }
-              }
+            if (fieldRef.current && !fieldRef.current?.isCode()) {
+              const el = fieldRef.current?.getElement() as HTMLInputElement;
+              el.style.height = '100%';
+              (el.children[1] as HTMLInputElement).style.height = '100%';
             }
           }
-          return tmp;
         }
-
-        for (let i = 0; i < maxElementsPerPage; i++) {
-          content.push(
-            <Grid
-              key={i}
-              container
-              item
-              direction="row"
-              justifyContent="center"
-              columns={props.headerContent?.length || 0}
-              spacing={1}>
-              {setRow(i)}
-            </Grid>
-          );
-        }
-
-        setPageContent(content);
-        props.setIsLoading(false);
-        setIsReady(true);
-      };
-      displayPage();
+      }
+      return tmp;
     }
+
+    for (let i = 0; i < maxElementsPerPage; i++) {
+      content.push(
+        <Grid
+          key={i}
+          container
+          item
+          direction="row"
+          justifyContent="center"
+          columns={props.headerContent?.length || 0}
+          spacing={1}>
+          {setRow(i)}
+        </Grid>
+      );
+    }
+
+    setPageContent(content);
+    props.setIsLoading(false);
+    setIsReady(true);
   }, [
     maxElementsPerPage,
     previousPageNum,
@@ -230,48 +214,109 @@ const MtEditorContent = forwardRef<
     setPageContent,
   ]);
 
+  /* Page's content setup */
+  useEffect(() => {
+    if (props.data.length === 0) {
+      return setPageContent([]);
+    }
+
+    if (!props.isLoading && props.headerContent != null) {
+      displayPage();
+    }
+  }, [
+    displayPage,
+    props.data.length,
+    props.headerContent,
+    props.isLoading,
+    setPageContent,
+  ]);
+
+  useEffect(() => {
+    dataLength.current = getDataLength(props.data, props.showOutdated);
+  }, [props.data, props.showOutdated]);
+
   return (
     <>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={props.isLoading}>
+        {' '}
+        {/* TODO: only show backdrop on certain type of loads? */}
         <MtSpinner />
       </Backdrop>
       <MtBackToTopBtn />
+      {/* File Editor */}
       {pageContent.length > 0 && isReady ? (
-        <Layout sectioned>
-          <Layout.Section fullWidth>
-            <Grid
-              container
-              columns={props.headerContent?.length || 0}
-              direction="column"
-              justifyContent="flext-start"
-              spacing={1}>
-              {pageContent}
-            </Grid>
-          </Layout.Section>
-          <Layout.Section secondary fullWidth>
-            <Stack distribution="fill" alignment="center">
-              <MtRowsDisplayControl
-                maxRowDisplay={maxElementsPerPage}
-                handleRowsDisplayChange={handleElementsPerPageChange}
-              />
-              <Stack distribution="trailing" alignment="center">
-                <GoToPageField {...goToPageFieldProps} />
-                <ChangePageButtons {...changePageButtonsProps} />
+        <>
+          <MtTranslatorTutorial
+            isOpen={props.isTutorialOpen}
+            onClose={props.onTutorialClose}
+          />
+          <Layout sectioned>
+            <Layout.Section fullWidth>
+              <Grid
+                container
+                columns={props.headerContent?.length || 0}
+                direction="column"
+                justifyContent="flext-start"
+                spacing={1}>
+                {pageContent}
+              </Grid>
+              {props.renderedFields.current.length === 0 && (
+                <EmptyState
+                  heading={t('EditorContent.noFieldsEmptyStateHeading')}
+                  image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png">
+                  {t('EditorContent.noFieldsEmptyStateText')}
+                </EmptyState>
+              )}
+            </Layout.Section>
+            <Layout.Section secondary fullWidth>
+              <Stack distribution="fill" alignment="center">
+                <MtRowsDisplayControl
+                  maxRowDisplay={maxElementsPerPage}
+                  handleRowsDisplayChange={handleElementsPerPageChange}
+                />
+                <Stack distribution="trailing" alignment="center">
+                  <GoToPageField {...goToPageFieldProps} />
+                  <ChangePageButtons {...changePageButtonsProps} />
+                </Stack>
               </Stack>
-            </Stack>
-          </Layout.Section>
-        </Layout>
+            </Layout.Section>
+          </Layout>
+        </>
       ) : (
+        // File explorer (Buckaroo)
         <Layout>
+          {fileUploadEl}
           <Layout.Section fullWidth>
-            <div className="MtEditorContent-DropZone__Outer-Wrapper">
-              <div className="MtEditorContent-DropZone__Inner-Wrapper">
-                <MtDropZone onUpload={props.onUpload} dataType="Translations" />
-              </div>
-            </div>
+            {isWelcomeOpen && (
+              <CalloutCard
+                title={t('EditorContent.tutoCardTitle')}
+                illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
+                primaryAction={{
+                  content: t('EditorContent.tutoCardAction'),
+                  onAction: () => setIsWelcomeOpen(false),
+                }}
+                onDismiss={() => setIsWelcomeOpen(false)}>
+                <p>{t('EditorContent.tutoCardP1')}</p>
+                <p>{t('EditorContent.tutoCardP2')}</p>
+              </CalloutCard>
+            )}
           </Layout.Section>
+          <Layout.Section secondary>
+            <FileCard {...fileCardProps} />
+          </Layout.Section>
+          <Layout.Section>
+            <PreviewCard {...previewCardProps} />
+          </Layout.Section>
+
+          <div className="MtEditorContent-DropZone__Outer-Wrapper">
+            {/* TODO: replace by file explorer drop zone */}
+            {/* Wrappers are for dynamic sizing */}
+            {/*  <div className="MtEditorContent-DropZone__Inner-Wrapper">
+                  <MtDropZone onUpload={handleUpload} dataType="Translations" />
+                </div>*/}
+          </div>
         </Layout>
       )}
     </>

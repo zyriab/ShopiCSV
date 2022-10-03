@@ -17,6 +17,7 @@ interface MtNavItemsProps {
     icon: JSX.Element;
     external?: boolean;
     public?: boolean;
+    disabled?: boolean;
   }[];
   selectedItem?: number;
   setSelectedItem?: (n: number) => void;
@@ -37,7 +38,7 @@ export default function MtNavItems(props: MtNavItemsProps) {
       {props.items.map((itm, index) => (
         <ListItem key={itm.path}>
           <ListItemButton
-            disabled={!itm.public && !isAuthenticated}
+            disabled={(!itm.public && !isAuthenticated) || itm.disabled}
             selected={props.selectedItem === index}
             onClick={() => handleClick(index, itm.path, itm.external)}>
             <ListItemIcon>

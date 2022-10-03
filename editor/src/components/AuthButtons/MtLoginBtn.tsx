@@ -5,9 +5,9 @@ import { Button } from '@shopify/polaris';
 
 export function MtLoginBtn() {
   const { t } = useTranslation();
-  const { loginWithPopup } = useAuth0();
+  const { loginWithRedirect } = useAuth0();
   return (
-    <Button primary fullWidth onClick={() => loginWithPopup()}>
+    <Button primary fullWidth onClick={() => loginWithRedirect()}>
       {t('General.login')}
     </Button>
   );

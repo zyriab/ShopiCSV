@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import store from 'store2';
 import { useTranslation } from 'react-i18next';
 import { Button, OptionList, Popover } from '@shopify/polaris';
+import { ViewMinor } from '@shopify/polaris-icons';
 import { OptionDescriptor } from '@shopify/polaris/build/ts/latest/src/types';
 
 interface MtColumnSelectorProps {
@@ -12,14 +13,21 @@ interface MtColumnSelectorProps {
 export default function MtColumnSelector(props: MtColumnSelectorProps) {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>(
-    JSON.parse(store.get('columns')).map((c: number) => c.toString())
+    store.get('columns')?.length > 0
+      ? JSON.parse(store.get('columns')).map((c: number) => c.toString())
+      : props.choices.map((c) => props.choices.indexOf(c).toString())
   );
 
   const { t } = useTranslation();
 
   function handleSelection(selection: string[]) {
-    const tmp = selection.map((s) => +s);
-    setSelected(selection);
+    const select =
+      selection.length > 0
+        ? selection
+        : props.choices.map((c) => props.choices.indexOf(c).toString());
+    const tmp = select.map((s) => +s);
+
+    setSelected(select);
     props.onChange(tmp);
   }
 
@@ -28,7 +36,7 @@ export default function MtColumnSelector(props: MtColumnSelectorProps) {
   }
 
   const activatorBtn = (
-    <Button onClick={handleTogglePopover} disclosure>
+    <Button onClick={handleTogglePopover} icon={ViewMinor} disclosure>
       {t('ColumnSelector.label')}
     </Button>
   );

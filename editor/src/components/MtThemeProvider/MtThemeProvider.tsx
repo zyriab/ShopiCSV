@@ -16,10 +16,10 @@ interface MtThemeProviderProps {
 
 export default function MtThemeProvider(props: MtThemeProviderProps) {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [isDark, setIsDark] = useState(
+  const [isDark, setIsDark] = useState<boolean>(
     store.get('themeMode') === 'dark' ||
       (store.get('themeMode') == null && prefersDarkMode) ||
-      false
+      true
   );
 
   function activateDarkTheme(active: boolean) {

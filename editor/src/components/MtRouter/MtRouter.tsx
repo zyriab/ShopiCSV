@@ -12,7 +12,7 @@ export function MtRouter() {
           path="/translations"
           element={<ProtectedRoute component={TranslatorPage} />}
         />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/translations" />} />
       </Routes>
     </>
   );
