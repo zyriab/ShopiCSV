@@ -1,4 +1,4 @@
-const HOME_URL = 'https://editors.shopicsv.app/';
+const HOME_URL = window.location.origin;
 const A11Y_LABEL = 'ShopiCSV';
 const LOGO_WIDTH = 124;
 
