@@ -1,0 +1,72 @@
+{
+  "General": {
+    "yesUpper": "",
+    "yesLower": "",
+    "noUpper": "",
+    "noLower": "",
+    "search": ""
+  },
+  "AppBar": {
+    "lastModifDate": "",
+    "lastSaveDate": "",
+    "closeToolTip": "",
+    "uploadToolTip": "",
+    "saveToolTip": "",
+    "downloadToolTip": "",
+    "ariaToggleGroup": ""
+  },
+  "RestoreSessionDialog": {
+    "title": "",
+    "description": "",
+    "alertMsg": ""
+  },
+  "Upload": {
+    "success": "",
+    "error": "",
+    "wrongType": ""
+  },
+  "Save": {
+    "success": "",
+    "upToDate": ""
+  },
+  "CloseFileDialog": {
+    "title": "",
+    "description": "",
+    "yes": "",
+    "no": ""
+  },
+  "RowDisplayControl": {
+    "displayPer": ""
+  },
+  "FilterDialog": {
+    "title": "",
+    "searchPlaceholder": "",
+    "noOptionsText": ""
+  },
+  "EmptyFilterChip": {
+    "label": ""
+  },
+  "DropZone": {
+    "message": ""
+  },
+  "FilterType": {
+    "COLLECTION": "",
+    "DELIVERY_METHOD_DEFINITION": "",
+    "EMAIL_TEMPLATE": "",
+    "SMS_TEMPLATE": "",
+    "LINK": "",
+    "METAFIELD": "",
+    "ONLINE_STORE_ARTICLE": "",
+    "ONLINE_STORE_BLOG": "",
+    "ONLINE_STORE_MENU": "",
+    "ONLINE_STORE_PAGE": "",
+    "ONLINE_STORE_THEME": "",
+    "PACKING_SLIP_TEMPLATE": "",
+    "PAYMENT_GATEWAY": "",
+    "PRODUCT": "",
+    "PRODUCT_OPTION": "",
+    "PRODUCT_VARIANT": "",
+    "SHOP": "",
+    "SHOP_POLICY": ""
+  }
+}

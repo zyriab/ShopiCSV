@@ -1,64 +1,60 @@
-import React, { useState } from 'react';
+import React from 'react';
+import useDetectBreakpoints from '../../utils/hooks/useDetectMUIBreakpoints';
+
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+
+// @ts-ignore
+import logo from '../../images/ShopiCSVwholeLogo4whiteBg.svg';
 
 const barStyle: React.CSSProperties = {
-  display: 'flex',
-  height: '60px',
-  padding: '0 4ch 0 4ch',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  borderBottom: '2px solid #178b6e',
-};
-
-const btnWrapperStyle = {
-  display: 'flex',
-  width: '100%',
-  alignItems: 'center',
-  justifyContent: 'end',
-};
-
-const btnStyle = {
-  margin: '0 1ch 0 1ch',
-  padding: '2ch',
-  border: '2px solid #178b6e',
-  borderRadius: '4px',
-  transition: 'background-color .3s, color: .3s',
+  height: '80px',
+  boxShadow: '0 0 4px grey',
 };
 
 export default function NavBar() {
-  const [lightBtnHovered, setLightBtnHovered] = useState(false);
-  const [darkBtnHovered, setDarkBtnHovered] = useState(false);
-
-  const lightBtnStyle = {
-    ...btnStyle,
-    color: lightBtnHovered ? '#fff' : '#178b6e',
-    backgroundColor: lightBtnHovered ? '#1A178B6E' : '#f5f5f5',
-  };
-
-  const darkBtnStyle = {
-    ...btnStyle,
-    color: darkBtnHovered ? '#178b6e' : '#fff',
-    backgroundColor: darkBtnHovered ? '#f5f5f5' : '#178b6e',
-  };
+  const { isXs, isSm } = useDetectBreakpoints();
 
   return (
     <header style={barStyle}>
-      <div>ShopiCSV</div>
-      <div style={btnWrapperStyle}>
-        <button
-          style={lightBtnStyle}
-          onMouseEnter={() => setLightBtnHovered(true)}
-          onMouseLeave={() => setLightBtnHovered(false)}
-          type="button">
-          Sign up for the newsletter
-        </button>
-        <button
-          style={darkBtnStyle}
-          onMouseEnter={() => setDarkBtnHovered(true)}
-          onMouseLeave={() => setDarkBtnHovered(false)}
-          type="button">
-          Try the demo
-        </button>
-      </div>
+      <Paper elevation={0} square sx={{ height: '100%' }}>
+        <Box
+          style={{
+            height: '97%',
+            padding: '0 4ch',
+            borderBottom: '2px solid #178b6e',
+          }}>
+          <Stack
+            direction="row"
+            justifyContent={isXs ? 'center' : 'space-between'}
+            alignItems="center"
+            sx={{ height: '100%' }}>
+            <img style={{ width: 180 }} src={logo} alt="ShopiCSV logo" />
+            {!isXs && (
+              <Stack direction="row" spacing={2}>
+                <Button
+                  href="#newsletter"
+                  variant="outlined"
+                  size="large"
+                  disableElevation
+                  disableRipple>
+                  Sign up to our newsletter
+                </Button>
+                <Button
+                  target="_blank"
+                  href="https://demo.shopicsv.app/"
+                  variant="contained"
+                  size="large"
+                  disableElevation>
+                  Try the demo
+                </Button>
+              </Stack>
+            )}
+          </Stack>
+        </Box>
+      </Paper>
     </header>
   );
 }
