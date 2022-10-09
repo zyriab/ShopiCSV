@@ -1,46 +1,114 @@
 import React from 'react';
-import { useTheme } from '@mui/material';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
-import Container from '@mui/material/Container';
+import useDetectBreakpoints from '../../utils/hooks/useDetectMUIBreakpoints';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Unstable_Grid2';
+import Stack from '@mui/material/Stack';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
 
-// TODO: i18n
+import './Footer.css';
+
 export function MtFooter() {
-  const theme = useTheme();
+  const { isLg, isXl } = useDetectBreakpoints();
+
   return (
-    <footer>
-      <Box
-        px={{ xs: 3, sm: 5 }}
-        pt={{ xs: 5, sm: 3 }}
-        pb={{ xs: 2 }}
-        bgcolor={theme.palette.primary.main}
-        color="#e8e8e8">
-        <Container>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            divider={<Divider orientation="vertical" flexItem />}
-            spacing={3}>
-            <Link sx={{ color: '#e8e8e8' }} href="http://www.metaoist.io/">
-              Metaoist.io
-            </Link>
-            <Link sx={{ color: '#e8e8e8' }} href="/">
-              Our products
-            </Link>
-            <Link sx={{ color: '#e8e8e8' }} href="/">
-              About us
-            </Link>
-          </Stack>
-          <Box pt={{ xs: 2 }} pb={{ xs: 5, sm: 0 }} textAlign="center">
+    <footer style={{ minHeight: '150px' }}>
+      <Paper
+        square
+        elevation={0}
+        sx={{
+          padding: '0 5%',
+          height: isLg || isXl ? '150px' : '100%',
+          backgroundColor: '#178b6e',
+        }}>
+        <Grid
+          container
+          sx={{
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+          }}>
+          <Grid
+            xs={12}
+            lg={4}
+            sx={{
+              display: 'flex',
+              justifyContent: isLg || isXl ? 'start' : 'center',
+            }}>
+            <Stack justifyContent="center" alignItems="center">
+              <img
+                style={{ width: 200, height: 'auto' }}
+                src="/images/logos/shopicsvTextLogo.svg"
+                alt="ShopiCSV"
+              />
+              <Stack direction="row" justifyContent="center" spacing={1}>
+                <Link href="https://discord.gg/b9Myw2UmMw" target="_blank">
+                  <img
+                    style={{ width: 40 }}
+                    src="/images/logos/discord-logo.svg"
+                    alt="Discord logo"
+                  />
+                </Link>
+                <Link
+                  href="https://www.linkedin.com/in/wallenart/"
+                  target="_blank">
+                  <img
+                    style={{ width: 40 }}
+                    src="/images/logos/linkedin-logo.svg"
+                    alt="Linkedin logo"
+                  />
+                </Link>
+                <Link href="" target="_blank">
+                  <img
+                    style={{ width: 40 }}
+                    src="/images/logos/gh-logo.svg"
+                    alt="Github logo"
+                  />
+                </Link>
+              </Stack>
+            </Stack>
+          </Grid>
+          <Grid
+            xs={12}
+            lg={4}
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              margin: isLg || isXl ? 0 : '4% 0 2% 0',
+            }}>
+            <Stack direction="row" alignItems="center" spacing={3}>
+              <Link
+                sx={{ color: '#fff' }}
+                target="_blank"
+                href=""
+                className="links">
+                Contact
+              </Link>
+              <Link
+                sx={{ color: '#fff' }}
+                target="_blank"
+                href=""
+                className="links">
+                About Metaoist Dsgn
+              </Link>
+            </Stack>
+          </Grid>
+          <Grid
+            xs={12}
+            lg={4}
+            sx={{
+              display: 'flex',
+              alignItems: 'end',
+              justifyContent: isLg || isXl ? 'end' : 'center',
+              height: isLg || isXl ? '100%' : 'auto',
+              color: 'white',
+            }}>
             <Typography variant="subtitle1">
-              Made with 👶 @ Metaoist Dsgn - {new Date().getFullYear()}
+              Made with 👶 at Metaoist Dsgn © {new Date().getFullYear()}
             </Typography>
-          </Box>
-        </Container>
-      </Box>
+          </Grid>
+        </Grid>
+      </Paper>
     </footer>
   );
 }
