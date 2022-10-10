@@ -7,7 +7,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 
 // @ts-ignore
-import discordLogo from '../../images/discord-logo.svg';
+import blob from '../../images/story-blob.png';
 
 export default function StoryRow() {
   const { isLg, isXl } = useDetectBreakpoints();
@@ -50,26 +50,29 @@ export default function StoryRow() {
               display: 'flex',
               alignItems: 'center',
               height: '100%',
+              backgroundImage: `url(${blob})`,
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: 'contain',
+              backgroundPosition: 'center',
             }}>
-            <Button
-              sx={{ height: isLg || isXl ? '35%' : '100%' }}
-              href="https://discord.gg/b9Myw2UmMw"
-              target="_blank"
-              variant="contained"
-              size="large"
-              disableElevation>
-              <Stack
-                sx={{
-                  height: isLg || isXl ? '70%' : '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}>
-                <img style={{ width: 64 }} src={discordLogo} alt="" />
-                <Typography variant="subtitle1">
-                  <strong>Chat with us on Discord</strong>
-                </Typography>
-              </Stack>
-            </Button>
+            <Stack spacing={2}>
+              <Button
+                href="https://demo.shopicsv.app/"
+                target="_blank"
+                variant="outlined"
+                size="large"
+                disableElevation>
+                Try the demo
+              </Button>
+              <Button
+                href="https://discord.gg/b9Myw2UmMw"
+                target="_blank"
+                variant="outlined"
+                size="large"
+                disableElevation>
+                Chat with us on Discord
+              </Button>
+            </Stack>
           </Box>
         </Grid>
         <Grid
