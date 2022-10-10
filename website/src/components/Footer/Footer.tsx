@@ -86,10 +86,18 @@ export default function Footer() {
               margin: isLg || isXl ? 0 : '4% 0 2% 0',
             }}>
             <Stack direction="row" alignItems="center" spacing={3}>
-              <Link target="_blank" href="" className="links">
+              <Link
+                sx={{ color: '#fff' }}
+                target="_blank"
+                href=""
+                className="links">
                 Contact
               </Link>
-              <Link target="_blank" href="" className="links">
+              <Link
+                sx={{ color: '#fff' }}
+                target="_blank"
+                href=""
+                className="links">
                 About Metaoist Dsgn
               </Link>
             </Stack>
