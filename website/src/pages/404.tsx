@@ -1,49 +1,37 @@
-import * as React from "react"
-import { Link, HeadFC } from "gatsby"
-
-const pageStyles = {
-  color: "#232129",
-  padding: "96px",
-  fontFamily: "-apple-system, Roboto, sans-serif, serif",
-}
-const headingStyles = {
-  marginTop: 0,
-  marginBottom: 64,
-  maxWidth: 320,
-}
-
-const paragraphStyles = {
-  marginBottom: 48,
-}
-const codeStyles = {
-  color: "#8A6534",
-  padding: 4,
-  backgroundColor: "#FFF4DB",
-  fontSize: "1.25rem",
-  borderRadius: 4,
-}
+import * as React from 'react';
+import { Link, HeadFC } from 'gatsby';
+import NavBar from '../components/NavBar/NavBar';
+import Footer from '../components/Footer/Footer';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { lightTheme } from '../utils/theme.utils';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import '../utils/translations/translations';
 
 const NotFoundPage = () => {
+  const theme = createTheme(lightTheme);
+
   return (
-    <main style={pageStyles}>
-      <h1 style={headingStyles}>Page not found</h1>
-      <p style={paragraphStyles}>
-        Sorry 😔, we couldn’t find what you were looking for.
-        <br />
-        {process.env.NODE_ENV === "development" ? (
-          <>
+    <main>
+      <ThemeProvider theme={theme}>
+        <NavBar />
+        <Container sx={{height: '68vh'}}>
+          <Typography variant="h3">Page not found</Typography>
+          <br />
+          <br />
+          <Typography variant="subtitle1" component="p">
+            Sorry 😔, we couldn't find what you were looking for.
             <br />
-            Try creating a page in <code style={codeStyles}>src/pages/</code>.
             <br />
-          </>
-        ) : null}
-        <br />
-        <Link to="/">Go home</Link>.
-      </p>
+            <Link to="/">Go home</Link>.
+          </Typography>
+        </Container>
+        <Footer />
+      </ThemeProvider>
     </main>
-  )
-}
+  );
+};
 
-export default NotFoundPage
+export default NotFoundPage;
 
-export const Head: HeadFC = () => <title>Not found</title>
+export const Head: HeadFC = () => <title>Not found</title>;
