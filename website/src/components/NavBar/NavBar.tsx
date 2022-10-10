@@ -31,7 +31,9 @@ export default function NavBar() {
             justifyContent={isXs ? 'center' : 'space-between'}
             alignItems="center"
             sx={{ height: '100%' }}>
-            <img style={{ width: 180 }} src={logo} alt="ShopiCSV logo" />
+            <a href={window.location.origin}>
+              <img style={{ width: 180 }} src={logo} alt="ShopiCSV logo" />
+            </a>
             {!isXs && (
               <Stack direction="row" spacing={2}>
                 <Button
