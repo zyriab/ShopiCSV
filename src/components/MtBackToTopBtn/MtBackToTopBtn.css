@@ -1,0 +1,15 @@
+#top-btn {
+  display: flex;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  border: none;
+  outline: none;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 1%;
+  width: 3rem;
+  height: 3rem;
+  z-index: 99;
+  justify-content: center;
+  transition: opacity 0.5s ease;
+}

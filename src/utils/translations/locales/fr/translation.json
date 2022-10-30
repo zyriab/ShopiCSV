@@ -1,0 +1,159 @@
+{
+  "General": {
+    "yesUpper": "Oui",
+    "yesLower": "oui",
+    "noUpper": "Non",
+    "noLower": "non",
+    "search": "Rechercher",
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "language": "Langue",
+    "settings": "Paramètres"
+  },
+  "Language": {
+    "french": "français",
+    "english": "anglais"
+  },
+  "NavMenu": {
+    "home": "Accueil",
+    "translations": "Traductions",
+    "products": "Produits",
+    "sectionSeparator": "AIDE & COMMUNAUTÉ",
+    "help": "Comment utiliser ShopiCSV",
+    "discord": "Discuter avec nous sur Discord",
+    "review": "Laisser un avis"
+  },
+  "AppBar": {
+    "lastModifDate": "Modifié il y a {{date}}",
+    "lastSaveDate": "Sauvegardé il y a {{date}}",
+    "closeTooltip": "Fermer le fichier",
+    "uploadTooltip": "Télécharger (upload) un fichier",
+    "saveTooltip": "Sauvegarder le fichier",
+    "downloadTooltip": "Télécharger le fichier",
+    "tutorialHowToTooltip": "Comment utiliser l'éditeur ?",
+    "ariaToggleGroup": "Champs à afficher",
+    "rows": "Rangées :"
+  },
+  "EditorContent": {
+    "noFieldsEmptyStateHeading": "Aucun champ à afficher",
+    "noFieldsEmptyStateText": "Aucun champ ne correspond à vos critères, essayez avec d'autres filtres.",
+    "tutoCardTitle": "Bienvenue dans la démo ShopiCSV",
+    "tutoCardAction": "C'est compris !",
+    "tutoCardP1": "Ici vous pouvez tester les fonctionnalités de base de l'éditeur de traductions.",
+    "tutoCardP2": "Vous pouvez commencer par double cliquer sur le dossier ci-dessous et comparer le fichier CSV avec une version plus ancienne pour la restaurer ou simplement charger la version actuelle dans l'éditeur."
+  },
+  "RestoreSessionDialog": {
+    "title": "Restaurer la dernière session ?",
+    "description": "Voulez-vous restaurer votre dernière session d'il y a {{date}} ?",
+    "alertMsg": "Session restaurée"
+  },
+  "OpenFile": {
+    "success": "Document transcrit avec succès",
+    "error": "Le fichier n'est pas supporté"
+  },
+  "Save": {
+    "success": "Sauvegardé",
+    "upToDate": "Déjà à jour"
+  },
+  "DeleteObjectDialog": {
+    "title": "Supprimer le fichier ?",
+    "description": "Cela retirera le fichier et versions précédentes de votre espace de stockage.",
+    "yes": "Oui, supprimer",
+    "no": "Non, garder le fichier"
+  },
+  "RowDisplayControl": {
+    "displayPer": "Afficher les rangées par :",
+    "btnA11yLabel": "Afficher les rangées par {{number}} sur la page."
+  },
+  "Pagination": {
+    "goToPageLabel": "Aller à la page",
+    "goToPageHelpTxt": "Appuyez sur entrée"
+  },
+  "FilterDialog": {
+    "title": "Choisissez le type de contenu à filtrer",
+    "toggleAllSwitch": "Sélectionner tout",
+    "showOutdated": "Uniquement afficher trad. dépassées",
+    "searchPlaceholder": "Filtrer les champs",
+    "noOptionsText": "Aucun filtre disponible"
+  },
+  "EmptyFilterChip": {
+    "label": "Filtrer par type"
+  },
+  "ColumnSelector": {
+    "label": "Colonnes",
+    "title": "Afficher/cacher des colonnes"
+  },
+  "DropZone": {
+    "button": "Ajouter un fichier",
+    "message": "ou déposer un fichier à télécharger",
+    "bannerTitle": "Le fichier suivant n'a pas pu être téléchargé :",
+    "wrongType": "\"{{name}}\" n'est pas pris en charge. Le type du fichier doit être .csv.",
+    "fileTooBig": "\"{{name}}\" n'est pas pris en charge. La taille du fichier ne peut excéder {{maxSize}}. (Taille actuelle: {{size}}).",
+    "invalidHeaderContent": "\"{{name}}\" n'est pas pris en charge.\nAssurez-vous que la première rangée contient le nom de chaque colonne sans fautes.\nPour plus d'information, consultez les <4>structures de fichier prises en charge</4>."
+  },
+  "FilterType": {
+    "COLLECTION": "Une collection de produit.",
+    "DELIVERY_METHOD_DEFINITION": "La définition de méthode de livraison. Par exemple, \"Standard\", ou \"Expédié\".",
+    "EMAIL_TEMPLATE": "Un modèle d'e-mail.",
+    "SMS_TEMPLATE": "Un modèle de SMS.",
+    "LINK": "Un lien pour diriger les utilisateurs.",
+    "METAFIELD": "Un métachamp.",
+    "ONLINE_STORE_ARTICLE": "Un article de boutique en ligne.",
+    "ONLINE_STORE_BLOG": "Un blog de boutique en ligne.",
+    "ONLINE_STORE_MENU": "Une catégorie de liens.",
+    "ONLINE_STORE_PAGE": "Une page de boutique en ligne.",
+    "ONLINE_STORE_THEME": "Un thème de boutique en ligne.",
+    "PACKING_SLIP_TEMPLATE": "Un modèle de bordereau d'emballage.",
+    "PAYMENT_GATEWAY": "Une passerelle de paiement.",
+    "PRODUCT": "Un article de boutique en ligne.",
+    "PRODUCT_OPTION": "Le nom d'une propriété d'article personnalisée. Par exemple, \"Taille\", \"Couleur\", ou \"Matière\".",
+    "PRODUCT_VARIANT": "Une variante d'article de boutique en ligne.",
+    "SHOP": "Une boutique.",
+    "SHOP_POLICY": "Une politique de boutique."
+  },
+  "FileExplorer": {
+    "FileCard": {
+      "path": "Chemin : {{path}}",
+      "size": "Taille : {{size}}",
+      "modified": "Modifié le :",
+      "noFilesEmptyStateHeading": "Pas encore de fichiers",
+      "noFilesEmptyStateAction": "Télécharger un fichier",
+      "noFilesEmptyStateText": "Téléchargez un fichier pour démarrer."
+    },
+    "PreviewCard": {
+      "version": "Version",
+      "name": "Nom :",
+      "path": "Chemin :",
+      "size": "Taille :",
+      "modified": "Modifié le :",
+      "delete": "Supprimer",
+      "openDir": "Ouvrir le dossier",
+      "loadFile": "Charger la version actuelle",
+      "versionSelectorPlaceHolder": "Sélectionnez une version à comparer",
+      "restoreVersion": "Restaurer la version sélectionnée",
+      "emptyTranslation": "Vide",
+      "currentVersion": "Version actuelle",
+      "selectedVersion": "Version sélectionnée",
+      "noDifferencesEmptyStateHeading": "Pas de différences",
+      "noDifferencesEmptyStateText": "Il n'y a pas de différences entre les deux versions.",
+      "compareEmptyStateHeading": "Comparer avec d'anciennes versions",
+      "compareEmptyStateText": "Comparez les champs entre la version la plus récente et d'autres plus anciennes du même fichier.",
+      "previewEmptyStateHeading": "Aperçu",
+      "previewEmptyStateText": "Cliquez sur un fichier ou sous-dossier pour avoir plus d'information à son sujet."
+    }
+  },
+  "Tutorial": {
+    "previous": "Precédent",
+    "next": "Suivant",
+    "close": "Ok !",
+    "skip": "Passer",
+    "firstTitle": "Rechercher & filtrer",
+    "secondTitle": "Actions du fichier",
+    "thirdTitle": "Affichage des rangées",
+    "fourthTitle": "Navigation",
+    "firstTxt": "En haut à gauche, vous pouvez trouver les outils de filtrage :\n\n1. La barre de recherche pour filtrer vos traductions basé sur des mots-clés\n2. La fenêtre \"Filter par type\" pour ne montrer que certains types de champs\n3. Le menu des colonnes pour montrer les valeurs de votre choix dans chaque rangées",
+    "secondTxt": "En haut ) droite, vous pouvez trouver les actions principales du fichier :\n\n1. Supprimer le fichier de votre espace de stockage\n2. Télécharger (upload) un nouveau fichier depuis votre ordinateur\n3. Sauvegarder vos modifications\n4. Télécharger le fichier sur votre ordinateur\n5. Ouvrir ce tutoriel",
+    "thirdTxt": "En bas à gauche, vous pouvez sélectionner le nombre de rangées à afficher dans l'éditeur.",
+    "fourthTxt": "En bas à droite, vous trouverez les outils pour naviguer à travers le fichier :\n\n1. Entrez un numéro de page et appuyez sur Entrée pour vous y rendrez directement\n2. Cliquez sur les flèches pour aller à la page précédente ou suivante\n\nAstuce : vous pouvez naviguer à travers le fichier en utilisant les flèches de votre clavier."
+  }
+}
