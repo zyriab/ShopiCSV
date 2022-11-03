@@ -25,11 +25,22 @@ You can check [Buckaroo's readme](https://www.github.com/ZyriabDsgn/Buckaroo#rea
 
 ### Auth0
 
-_This is not necessary if you use the demo but note that it won't necessarily get the latest updates and probably won't showcase all features either_
+_This is not necessary if you use the demo but note that it won't necessarily get the latest updates and probably won't showcase all features either._
 
-The best place to start is the [Auth0 React SDK Quickstarts](https://auth0.com/docs/quickstart/spa/react/interactive)
+The best place to start is the [Auth0 React SDK Quickstarts](https://auth0.com/docs/quickstart/spa/react/interactive).
 
-For Buckaroo, you need to create an API in the Auth0 dashboard, you can follow [this tutorial](https://auth0.com/docs/quickstart/spa/vanillajs/02-calling-an-api) to get it done.
+*Make sure ShopiCSV and Buckaroo are in the same tenant.*
+
+In the application's settings:
+  
+  - Make sure "Rotation" is enabled
+  - Make sure "Inactivity Expiration" is enabled
+ 
+In "Advanced Settings" ("Application Metadata" tab):
+
+  - Add the following metadata:
+    - Key: `tenant`
+    - Value: AES encrypted tenant name (i.e.: `shopicsv`)
 
 **Note**: You can also remove the authentication from Buckaroo (it's just an Express middleware you can tweak) as well as in ShopiCSV (a bit more work but if you don't want to bother with auth in your local implementation, that's a solution).
 
