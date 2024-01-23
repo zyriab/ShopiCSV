@@ -1,5 +1,5 @@
 <p align="center"><img
-  src="https://www.wallenart.dev/src/images/shopiLogo.svg"
+  src="logo.svg"
   alt="shopicsv logo" /></p>
  
  <p align="center">
